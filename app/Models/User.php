@@ -7,7 +7,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -15,26 +14,14 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['firstname', 'national_number'];
-
-    /**
-     * Get the indexable data array for the model.
-     *
-     * @return array
-     */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = ['national_number', 'firstname', 'lastname', 'surname', 'gender', 'birth_city', 'birth_date', 'nationality', 'p_o_box', 'email', 'phone', 'email_verified_at', 'password', 'remember_token', 'api_token', 'avatar_url', 'updated_at', 'status_id'];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -60,7 +47,16 @@ class User extends Authenticatable
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_users');
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * ONE-TO-MANY
+     * One status for several users
+     */
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 
     /**
@@ -70,42 +66,6 @@ class User extends Authenticatable
     public function status()
     {
         return $this->belongsTo(Status::class);
-    }
-
-    /**
-     * ONE-TO-ONE
-     * One image for a user
-     */
-    public function image()
-    {
-        return $this->hasOne(Image::class);
-    }
-
-    /**
-     * MANY-TO-ONE
-     * Several role_users for a user
-     */
-    public function role_users()
-    {
-        return $this->hasMany(RoleUser::class);
-    }
-
-    /**
-     * MANY-TO-ONE
-     * Several addresses for a user
-     */
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
-    }
-
-    /**
-     * MANY-TO-ONE
-     * Several offers for a user
-     */
-    public function offers()
-    {
-        return $this->hasMany(Offer::class);
     }
 
     /**
@@ -119,19 +79,19 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-ONE
-     * Several messages for a user
+     * Several notifications for a user
      */
-    public function messages()
+    public function notifications()
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(Notification::class);
     }
 
     /**
      * MANY-TO-ONE
      * Several notifications for a user
      */
-    public function notifications()
+    public function sessions()
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Session::class);
     }
 }

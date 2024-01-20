@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -12,19 +11,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Country extends Model
 {
-    use HasFactory/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['country_name'];
-
-    protected $fillable = ['country_name', 'country_phone_code', 'country_lang_code', 'updated_at'];
+    use HasFactory;
 
     /**
-     * Get the indexable data array for the model.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array<int, string>
      */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
+    protected $guarded = [];
+
 }
