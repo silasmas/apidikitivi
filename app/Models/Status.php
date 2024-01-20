@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -12,21 +11,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Status extends Model
 {
-    use HasFactory/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['status_name'];
-
-    protected $fillable = ['status_name', 'status_description', 'color', 'updated_at', 'group_id'];
+    use HasFactory;
 
     /**
-     * Get the indexable data array for the model.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array<int, string>
      */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
+    protected $guarded = [];
 
     /**
      * ONE-TO-MANY
@@ -44,6 +36,15 @@ class Status extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    /**
+     * MANY-TO-ONE
+     * Several carts for a status
+     */
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
     }
 
     /**

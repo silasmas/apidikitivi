@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -12,21 +11,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Type extends Model
 {
-    use HasFactory/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['type_name'];
-
-    protected $fillable = ['type_name', 'type_description', 'updated_at', 'group_id'];
+    use HasFactory;
 
     /**
-     * Get the indexable data array for the model.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array<int, string>
      */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
+    protected $guarded = [];
 
     /**
      * ONE-TO-MANY
@@ -39,20 +31,29 @@ class Type extends Model
 
     /**
      * MANY-TO-ONE
-     * Several addresses for a type
+     * Several medias for a type
      */
-    public function addresses()
+    public function medias()
     {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(Media::class);
     }
 
     /**
      * MANY-TO-ONE
-     * Several images for a type
+     * Several books for a type
      */
-    public function images()
+    public function books()
     {
-        return $this->hasMany(Image::class);
+        return $this->hasMany(Book::class);
+    }
+
+    /**
+     * MANY-TO-ONE
+     * Several carts for a type
+     */
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
     }
 
     /**
