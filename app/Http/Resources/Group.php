@@ -22,6 +22,7 @@ class Group extends JsonResource
             'id' => $this->id,
             'group_name' => $this->group_name,
             'group_description' => $this->group_description,
+            'statuses' => Status::collection($this->statuses),
             'types' => Type::collection($this->types),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')

@@ -22,6 +22,8 @@ class Type extends JsonResource
             'id' => $this->id,
             'type_name' => $this->type_name,
             'type_description' => $this->type_description,
+            'icon' => $this->icon,
+            'color' => $this->color,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'group_id' => $this->group_id

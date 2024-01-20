@@ -29,6 +29,7 @@ class Payment extends JsonResource
             'currency' => $this->currency,
             'channel' => $this->channel,
             'type' => Type::make($this->type),
+            'cart' => Cart::make($this->cart),
             'status' => Status::make($this->status),
             'created_at' => timeAgo($this->created_at->format('Y-m-d H:i:s')),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
