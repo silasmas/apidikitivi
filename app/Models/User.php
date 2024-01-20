@@ -43,7 +43,7 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-MANY
-     * One status for several users
+     * Several roles for several users
      */
     public function roles()
     {
@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     /**
      * ONE-TO-MANY
-     * One status for several users
+     * One country for several users
      */
     public function country()
     {
@@ -79,6 +79,15 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-ONE
+     * Several carts for a user
+     */
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    /**
+     * MANY-TO-ONE
      * Several notifications for a user
      */
     public function notifications()
@@ -88,7 +97,7 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-ONE
-     * Several notifications for a user
+     * Several sessions for a user
      */
     public function sessions()
     {

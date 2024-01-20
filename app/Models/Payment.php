@@ -13,7 +13,12 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['reference', 'provider_reference', 'order_number', 'amount', 'amount_customer', 'phone', 'currency', 'channel', 'updated_at', 'type_id', 'status_id', 'user_id'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = [];
 
     /**
      * ONE-TO-MANY
@@ -31,6 +36,15 @@ class Payment extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    /**
+     * ONE-TO-MANY
+     * One cart for several payments
+     */
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
     }
 
     /**

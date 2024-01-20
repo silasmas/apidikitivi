@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -12,30 +11,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Group extends Model
 {
-    use HasFactory/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['group_name'];
-
-    protected $fillable = ['group_name', 'group_description', 'updated_at'];
+    use HasFactory;
 
     /**
-     * Get the indexable data array for the model.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array<int, string>
      */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
-
-    /**
-     * MANY-TO-ONE
-     * Several types for a group
-     */
-    public function types()
-    {
-        return $this->hasMany(Type::class);
-    }
+    protected $guarded = [];
 
     /**
      * MANY-TO-ONE
@@ -44,5 +27,14 @@ class Group extends Model
     public function statuses()
     {
         return $this->hasMany(Status::class);
+    }
+
+    /**
+     * MANY-TO-ONE
+     * Several types for a group
+     */
+    public function types()
+    {
+        return $this->hasMany(Type::class);
     }
 }

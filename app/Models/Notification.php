@@ -13,7 +13,12 @@ class Notification extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['notification_url', 'notification_content', 'notif_name', 'status_id', 'user_id'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = [];
 
     /**
      * ONE-TO-MANY

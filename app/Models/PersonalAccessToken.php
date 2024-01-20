@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @author Xanders
  * @see https://www.linkedin.com/in/xanders-samoth-b2770737/
  */
-class PasswordReset extends Model
+class PersonalAccessToken extends Model
 {
     use HasFactory;
 

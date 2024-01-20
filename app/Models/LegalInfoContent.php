@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -12,21 +11,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class LegalInfoContent extends Model
 {
-    use HasFactory/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['content'];
-
-    protected $fillable = ['subtitle', 'content', 'photo_url', 'video_url', 'updated_at', 'legal_info_title_id'];
+    use HasFactory;
 
     /**
-     * Get the indexable data array for the model.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array<int, string>
      */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
+    protected $guarded = [];
 
     /**
      * ONE-TO-MANY

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Laravel\Scout\Searchable;
 
 /**
  * @author Xanders
@@ -12,28 +11,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Role extends Model
 {
-    use HasFactory/*, Searchable*/;
-
-    // const SEARCHABLE_FIELDS = ['role_name'];
-
-    protected $fillable = ['role_name', 'role_description', 'updated_at'];
+    use HasFactory;
 
     /**
-     * Get the indexable data array for the model.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array<int, string>
      */
-    // public function toSearchableArray()
-    // {
-    //     return $this->only(self::SEARCHABLE_FIELDS);
-    // }
+    protected $guarded = [];
 
     /**
-     * MANY-TO-ONE
-     * Several role_users for a role
+     * MANY-TO-MANY
+     * Several users for several roles
      */
-    public function role_users()
+    public function users()
     {
-        return $this->hasMany(RoleUser::class);
+        return $this->belongsToMany(User::class);
     }
 }
