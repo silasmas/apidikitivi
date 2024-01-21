@@ -162,14 +162,14 @@ return [
         'email_or_phone' => [
             'required' => 'The email address or the phone number must be defined'
         ],
-        'surname_and_birthdate' => [
-            'required' => 'The surname and the birth date must be defined'
-        ],
         'group_name' => [
             'exists' => 'This group name already exists'
         ],
         'role_name' => [
             'exists' => 'This role name already exists'
+        ],
+        'code' => [
+            'exists' => 'This code already exists'
         ],
         'content' => [
             'exists' => 'This content already exists'

@@ -366,26 +366,6 @@ class UserController extends BaseController
 
         $current_user = User::find($inputs['id']);
 
-        if (!is_null($current_user)) {
-            if ($current_user->lastname == null OR $current_user->birth_date == null) {
-                if ($request->lastname != null AND $request->birth_date != null) {
-                    $user->update([
-                        'national_number' => 'ACR-' . Random::generate(4, '0-9') . '-' . strtoupper(substr($request->lastname, 0, 3)) . '-' . explode('-', $request->birth_date)[0] . '.' . explode('-', $request->birth_date)[1] . '.' . explode('-', $request->birth_date)[2] . '-0000',
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
-
-            if ($current_user->lastname != null AND $current_user->birth_date != null) {
-                if ($current_user->national_number == null) {
-                    $user->update([
-                        'national_number' => 'ACR-' . Random::generate(4, '0-9') . '-' . strtoupper(substr($current_user->lastname, 0, 3)) . '-' . explode('-', $current_user->birth_date)[0] . '.' . explode('-', $current_user->birth_date)[1] . '.' . explode('-', $current_user->birth_date)[2] . '-0000',
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
-        }
-
         if ($inputs['firstname'] != null) {
             $user->update([
                 'firstname' => $request->firstname,

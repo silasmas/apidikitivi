@@ -24,6 +24,7 @@ class Session extends JsonResource
             'user_agent' => $this->user_agent,
             'payload' => $this->payload,
             'last_activity' => $this->last_activity,
+            'medias' => Media::collection($this->medias),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'user_id' => $this->user_id
