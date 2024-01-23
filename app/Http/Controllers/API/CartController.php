@@ -147,4 +147,19 @@ class CartController extends BaseController
 
         return $this->handleResponse(ResourcesCart::collection($carts), __('notifications.delete_cart_success'));
     }
+
+    // ==================================== CUSTOM METHODS ====================================
+    /**
+     * Get user cart by type.
+     *
+     * @param  int $user_id
+     * @param  int $type_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findByType($user_id, $type_id)
+    {
+        $cart = Cart::where([['user_id', $user_id], ['type_id', $type_id]])->first();
+
+        return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+    }
 }

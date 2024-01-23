@@ -205,8 +205,8 @@ class PasswordResetController extends BaseController
      */
     public function searchByPhone($data)
     {
-        $basic  = new \Vonage\Client\Credentials\Basic('5a4c014d', 'dhOq17USeZadLgIw');
-        $client = new \Vonage\Client($basic);
+        // $basic  = new \Vonage\Client\Credentials\Basic('5a4c014d', 'dhOq17USeZadLgIw');
+        // $client = new \Vonage\Client($basic);
         $password_reset = PasswordReset::where('phone', $data)->first();
         $user = User::where('phone', $data)->first();
 
@@ -231,14 +231,14 @@ class PasswordResetController extends BaseController
                 'updated_at' => now()
             ]);
 
-            try {
-                $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'ACR', (string) $password_reset->token));
+            // try {
+            //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-            } catch (\Throwable $th) {
-                $response_error = json_decode($th->getMessage(), false);
+            // } catch (\Throwable $th) {
+            //     $response_error = json_decode($th->getMessage(), false);
 
-                return $this->handleError($response_error, __('notifications.create_user_SMS_failed'), 500);
-            }
+            //     return $this->handleError($response_error, __('notifications.create_user_SMS_failed'), 500);
+            // }
         }
 
         return $this->handleResponse(new ResourcesPasswordReset($password_reset), __('notifications.find_password_reset_success'));

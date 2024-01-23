@@ -21,10 +21,10 @@ class Order extends JsonResource
         return [
             'id' => $this->id,
             'pricing' => Pricing::make($this->pricing),
+            'media' => Media::make($this->media),
+            'book' => Book::make($this->book),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'book_id' => $this->book_id,
-            'media_id' => $this->media_id,
             'cart_id' => $this->cart_id
         ];
     }

@@ -94,17 +94,27 @@ class RoleController extends BaseController
         $roles = Role::all();
         $current_role = Role::find($inputs['id']);
 
-        if ($inputs['role_name'] == null OR $inputs['role_name'] == ' ') {
-            return $this->handleError($inputs['role_name'], __('validation.required'), 400);
+        if ($inputs['role_name'] != null) {
+            foreach ($roles as $another_role):
+                if ($current_role->role_name != $inputs['role_name']) {
+                    if ($another_role->role_name == $inputs['role_name']) {
+                        return $this->handleError($inputs['role_name'], __('validation.custom.role_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $role->update([
+                'role_name' => $request->role_name,
+                'updated_at' => now(),
+            ]);
         }
 
-        foreach ($roles as $another_role):
-            if ($current_role->role_name != $inputs['role_name']) {
-                if ($another_role->role_name == $inputs['role_name']) {
-                    return $this->handleError($inputs['role_name'], __('validation.custom.role_name.exists'), 400);
-                }
-            }
-        endforeach;
+        if ($inputs['role_description'] != null) {
+            $role->update([
+                'role_description' => $request->role_description,
+                'updated_at' => now(),
+            ]);
+        }
 
         $role->update($inputs);
 

@@ -37,6 +37,7 @@ class StatusController extends BaseController
         $inputs = [
             'status_name' => $request->status_name,
             'status_description' => $request->status_description,
+            'icon' => $request->icon,
             'color' => $request->color,
             'group_id' => $request->group_id
         ];
@@ -95,31 +96,56 @@ class StatusController extends BaseController
             'id' => $request->id,
             'status_name' => $request->status_name,
             'status_description' => $request->status_description,
+            'icon' => $request->icon,
             'color' => $request->color,
-            'group_id' => $request->group_id,
-            'updated_at' => now()
+            'group_id' => $request->group_id
         ];
         // Select all statuses and specific status to check unique constraint
         $statuses = Status::where('group_id', $inputs['group_id'])->get();
         $current_status = Status::find($inputs['id']);
 
-        if ($inputs['status_name'] == null OR $inputs['status_name'] == ' ') {
-            return $this->handleError($inputs['status_name'], __('validation.required'), 400);
-        }
-
-        if ($inputs['group_id'] == null OR $inputs['group_id'] == ' ') {
-            return $this->handleError($inputs['group_id'], __('validation.required'), 400);
-        }
-
-        foreach ($statuses as $another_status):
-            if ($current_status->status_name != $inputs['status_name']) {
-                if ($another_status->status_name == $inputs['status_name']) {
-                    return $this->handleError($inputs['status_name'], __('validation.custom.status_name.exists'), 400);
+        if ($inputs['status_name'] != null) {
+            foreach ($statuses as $another_status):
+                if ($current_status->status_name != $inputs['status_name']) {
+                    if ($another_status->status_name == $inputs['status_name']) {
+                        return $this->handleError($inputs['status_name'], __('validation.custom.status_name.exists'), 400);
+                    }
                 }
-            }
-        endforeach;
+            endforeach;
 
-        $status->update($inputs);
+            $status->update([
+                'status_name' => $request->status_name,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['status_description'] != null) {
+            $status->update([
+                'status_description' => $request->status_description,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['icon'] != null) {
+            $status->update([
+                'icon' => $request->icon,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['color'] != null) {
+            $status->update([
+                'color' => $request->color,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['group_id'] != null) {
+            $status->update([
+                'group_id' => $request->group_id,
+                'updated_at' => now(),
+            ]);
+        }
 
         return $this->handleResponse(new ResourcesStatus($status), __('notifications.update_status_success'));
     }

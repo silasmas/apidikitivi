@@ -94,17 +94,27 @@ class GroupController extends BaseController
         $groups = Group::all();
         $current_group = Group::find($inputs['id']);
 
-        if ($inputs['group_name'] == null OR $inputs['group_name'] == ' ') {
-            return $this->handleError($inputs['group_name'], __('validation.required'), 400);
+        if ($inputs['group_name'] != null) {
+            foreach ($groups as $another_group):
+                if ($current_group->group_name != $inputs['group_name']) {
+                    if ($another_group->group_name == $inputs['group_name']) {
+                        return $this->handleError($inputs['group_name'], __('validation.custom.group_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $group->update([
+                'group_name' => $request->group_name,
+                'updated_at' => now(),
+            ]);
         }
 
-        foreach ($groups as $another_group):
-            if ($current_group->group_name != $inputs['group_name']) {
-                if ($another_group->group_name == $inputs['group_name']) {
-                    return $this->handleError($inputs['group_name'], __('validation.custom.group_name.exists'), 400);
-                }
-            }
-        endforeach;
+        if ($inputs['group_description'] != null) {
+            $group->update([
+                'group_description' => $request->group_description,
+                'updated_at' => now(),
+            ]);
+        }
 
         $group->update($inputs);
 

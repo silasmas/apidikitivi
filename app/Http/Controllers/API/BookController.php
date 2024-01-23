@@ -19,7 +19,7 @@ class BookController extends BaseController
      */
     public function index()
     {
-        $books = Book::all();
+        $books = Book::orderByDesc('created_at')->get();
 
         return $this->handleResponse(ResourcesBook::collection($books), __('notifications.find_all_books_success'));
     }
@@ -41,8 +41,8 @@ class BookController extends BaseController
             'for_youth' => $request->for_youth,
             'type_id' => $request->type_id
         ];
-        // Select all books to check unique constraint
-        $books = Book::all();
+        // Select all books of an author to check unique constraint
+        $books = Book::where('author_names', $inputs['author_names'])->get();
 
         // Validate required fields
         if (trim($inputs['book_title']) == null) {
@@ -51,10 +51,6 @@ class BookController extends BaseController
 
         if (trim($inputs['book_url']) == null) {
             return $this->handleError($inputs['book_url'], __('validation.required'), 400);
-        }
-
-        if (trim($inputs['price']) == null) {
-            return $this->handleError($inputs['price'], __('validation.required'), 400);
         }
 
         // Check if book title already exists
@@ -105,8 +101,8 @@ class BookController extends BaseController
             'for_youth' => $request->for_youth,
             'type_id' => $request->type_id
         ];
-        // Select all books to check unique constraint
-        $books = Book::all();
+        // Select all books of an author to check unique constraint
+        $books = Book::where('author_names', $inputs['author_names'])->get();
         $current_book = Book::find($inputs['id']);
 
         if ($inputs['book_title'] != null) {
@@ -179,7 +175,7 @@ class BookController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
-     * Get by age.
+     * Get all by age.
      *
      * @param  int $for_youth
      * @return \Illuminate\Http\Response
@@ -192,7 +188,7 @@ class BookController extends BaseController
     }
 
     /**
-     * Get by age and type.
+     * Get all by age and type.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int $for_youth

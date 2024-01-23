@@ -171,6 +171,9 @@ return [
         'code' => [
             'exists' => 'This code already exists'
         ],
+        'token' => [
+            'exists' => 'This token already exists'
+        ],
         'content' => [
             'exists' => 'This content already exists'
         ],
@@ -185,6 +188,9 @@ return [
         ],
         'country_name' => [
             'exists' => 'This country already exists'
+        ],
+        'deadline' => [
+            'exists' => 'This deadline already exists'
         ],
         'owner' => [
             'required' => 'What entity does it belong to?'

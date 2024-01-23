@@ -94,28 +94,54 @@ class TypeController extends BaseController
             'id' => $request->id,
             'type_name' => $request->type_name,
             'type_description' => $request->type_description,
-            'group_id' => $request->group_id,
-            'updated_at' => now()
+            'group_id' => $request->group_id
         ];
         // Select all group types and specific type to check unique constraint
         $types = Type::where('group_id', $inputs['group_id'])->get();
         $current_type = Type::find($inputs['id']);
 
-        if ($inputs['type_name'] == null OR $inputs['type_name'] == ' ') {
-            return $this->handleError($inputs['type_name'], __('validation.required'), 400);
-        }
-
-        if ($inputs['group_id'] == null OR $inputs['group_id'] == ' ') {
-            return $this->handleError($inputs['group_id'], __('validation.required'), 400);
-        }
-
-        foreach ($types as $another_type):
-            if ($current_type->type_name != $inputs['type_name']) {
-                if ($another_type->type_name == $inputs['type_name']) {
-                    return $this->handleError($inputs['type_name'], __('validation.custom.type_name.exists'), 400);
+        if ($inputs['type_name'] != null) {
+            foreach ($types as $another_type):
+                if ($current_type->type_name != $inputs['type_name']) {
+                    if ($another_type->type_name == $inputs['type_name']) {
+                        return $this->handleError($inputs['type_name'], __('validation.custom.type_name.exists'), 400);
+                    }
                 }
-            }
-        endforeach;
+            endforeach;
+
+            $type->update([
+                'type_name' => $request->type_name,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['type_description'] != null) {
+            $type->update([
+                'type_description' => $request->type_description,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['icon'] != null) {
+            $type->update([
+                'icon' => $request->icon,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['color'] != null) {
+            $type->update([
+                'color' => $request->color,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['group_id'] != null) {
+            $type->update([
+                'group_id' => $request->group_id,
+                'updated_at' => now(),
+            ]);
+        }
 
         $type->update($inputs);
 

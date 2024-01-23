@@ -31,6 +31,7 @@ class PaymentController extends BaseController
     public function store(Request $request)
     {
         $user_id = is_numeric(explode('-', $request->reference)[2]) ? (int) explode('-', $request->reference)[2] : null;
+        $cart_id = is_numeric(explode('-', $request->reference)[3]) ? (int) explode('-', $request->reference)[3] : null;
         // Check if payment already exists
         $payment = Payment::where('order_number', $request->orderNumber)->first();
 
@@ -47,6 +48,7 @@ class PaymentController extends BaseController
                     'channel' => $request->channel,
                     'type_id' => $request->type,
                     'status_id' => $request->code,
+                    'cart_id' => $cart_id,
                     'user_id' => $user_id,
                     'updated_at' => now()
                 ]);
@@ -67,6 +69,7 @@ class PaymentController extends BaseController
                 'created_at' => $request->createdAt,
                 'type_id' => $request->type,
                 'status_id' => $request->code,
+                'cart_id' => $cart_id,
                 'user_id' => $user_id
             ]);
 
@@ -113,6 +116,7 @@ class PaymentController extends BaseController
             'channel' => $request->channel,
             'type_id' => $request->type_id,
             'status_id' => $request->status_id,
+            'cart_id' => $request->cart_id,
             'user_id' => $request->user_id,
             'updated_at' => now()
         ];
