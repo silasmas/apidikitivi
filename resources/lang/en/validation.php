@@ -183,6 +183,9 @@ return [
         'title' => [
             'exists' => 'This title already exists'
         ],
+        'subtitle' => [
+            'exists' => 'This subtitle already exists'
+        ],
         'description' => [
             'exists' => 'This description already exists'
         ],

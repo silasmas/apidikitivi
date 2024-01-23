@@ -35,7 +35,11 @@ class StatusController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'status_name' => $request->status_name,
+            'status_name' => [
+                'en' => $request->status_name_en,
+                'fr' => $request->status_name_fr,
+                'ln' => $request->status_name_ln
+            ],
             'status_description' => $request->status_description,
             'icon' => $request->icon,
             'color' => $request->color,
@@ -45,7 +49,7 @@ class StatusController extends BaseController
         $statuses = Status::where('group_id', $inputs['group_id'])->get();
 
         // Validate required fields
-        if ($inputs['status_name'] == null OR $inputs['status_name'] == ' ') {
+        if (trim($inputs['status_name']['en']) == null AND trim($inputs['status_name']['fr']) == null AND trim($inputs['status_name']['ln']) == null) {
             return $this->handleError($inputs['status_name'], __('validation.required'), 400);
         }
 
@@ -94,7 +98,11 @@ class StatusController extends BaseController
         // Get inputs
         $inputs = [
             'id' => $request->id,
-            'status_name' => $request->status_name,
+            'status_name' => [
+                'en' => $request->status_name_en,
+                'fr' => $request->status_name_fr,
+                'ln' => $request->status_name_ln
+            ],
             'status_description' => $request->status_description,
             'icon' => $request->icon,
             'color' => $request->color,
@@ -104,18 +112,54 @@ class StatusController extends BaseController
         $statuses = Status::where('group_id', $inputs['group_id'])->get();
         $current_status = Status::find($inputs['id']);
 
-        if ($inputs['status_name'] != null) {
+        if ($inputs['status_name']['en'] != null) {
             foreach ($statuses as $another_status):
-                if ($current_status->status_name != $inputs['status_name']) {
-                    if ($another_status->status_name == $inputs['status_name']) {
-                        return $this->handleError($inputs['status_name'], __('validation.custom.status_name.exists'), 400);
+                if ($current_status->status_name->en != $inputs['status_name']['en']) {
+                    if ($another_status->status_name->en == $inputs['status_name']['en']) {
+                        return $this->handleError($inputs['status_name']['en'], __('validation.custom.status_name.exists'), 400);
                     }
                 }
             endforeach;
 
             $status->update([
-                'status_name' => $request->status_name,
-                'updated_at' => now(),
+                'status_name' => [
+                    'en' => $request->status_name_en
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['status_name']['fr'] != null) {
+            foreach ($statuses as $another_status):
+                if ($current_status->status_name->fr != $inputs['status_name']['fr']) {
+                    if ($another_status->status_name->fr == $inputs['status_name']['fr']) {
+                        return $this->handleError($inputs['status_name']['fr'], __('validation.custom.status_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $status->update([
+                'status_name' => [
+                    'fr' => $request->status_name_fr
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['status_name']['ln'] != null) {
+            foreach ($statuses as $another_status):
+                if ($current_status->status_name->ln != $inputs['status_name']['ln']) {
+                    if ($another_status->status_name->ln == $inputs['status_name']['ln']) {
+                        return $this->handleError($inputs['status_name']['ln'], __('validation.custom.status_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $status->update([
+                'status_name' => [
+                    'ln' => $request->status_name_ln
+                ],
+                'updated_at' => now()
             ]);
         }
 
@@ -169,12 +213,13 @@ class StatusController extends BaseController
     /**
      * Search a status by its name.
      *
+     * @param  string $locale
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function search($locale, $data)
     {
-        $status = Status::where('status_name', $data)->first();
+        $status = Status::where('status_name->' . $locale, $data)->first();
 
         if (is_null($status)) {
             return $this->handleError(__('notifications.find_status_404'));
@@ -186,12 +231,13 @@ class StatusController extends BaseController
     /**
      * Find all type by group.
      *
+     * @param  string $locale
      * @param  string $group_name
      * @return \Illuminate\Http\Response
      */
-    public function findByGroup($group_name)
+    public function findByGroup($locale, $group_name)
     {
-        $group = Group::where('group_name', $group_name)->first();
+        $group = Group::where('group_name->' . $locale, $group_name)->first();
 
         if (is_null($group)) {
             return $this->handleError(__('notifications.find_group_404'));

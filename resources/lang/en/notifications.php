@@ -42,6 +42,13 @@ return [
     'no_record' => 'There is no recording!',
     'create_error' => 'The creation failed!',
     'update_error' => 'The change failed!',
+    'registered_data' => 'Data registered',
+    'required_fields' => 'Please check the required fields',
+    'transaction_waiting' => 'Please confirm the message from your operator on your phone. Then press the button below.',
+    'transaction_done' => 'Your transaction is complete!',
+    'transaction_failed' => 'Failed to send your payment.',
+    'transaction_type_error' => 'Please select transaction type',
+    'new_partner_message' => 'You can now log in as a partner with your phone number. Temporary password:',
     // LegalInfoSubject
     'find_all_legal_info_subjects_success' => 'Subjects found',
     'find_legal_info_subject_success' => 'Subject found',
@@ -63,13 +70,6 @@ return [
     'create_legal_info_content_success' => 'Content created',
     'update_legal_info_content_success' => 'Content updated',
     'delete_legal_info_content_success' => 'Content deleted',
-    // Image
-    'find_all_images_success' => 'Images found',
-    'find_image_success' => 'Image found',
-    'find_image_404' => 'Image not found',
-    'create_image_success' => 'Image created',
-    'update_image_success' => 'Image updated',
-    'delete_image_success' => 'Image deleted',
     // Group
     'find_all_groups_success' => 'Groups found',
     'find_group_success' => 'Group found',
@@ -98,13 +98,48 @@ return [
     'create_country_success' => 'Country created',
     'update_country_success' => 'Country updated',
     'delete_country_success' => 'Country deleted',
-    // Address
-    'find_all_addresses_success' => 'Addresses found',
-    'find_address_success' => 'Address found',
-    'find_address_404' => 'Address not found',
-    'create_address_success' => 'Address created',
-    'update_address_success' => 'Address updated',
-    'delete_address_success' => 'Address deleted',
+    // Book
+    'find_all_books_success' => 'Books found',
+    'find_book_success' => 'Book found',
+    'find_book_404' => 'Book not found',
+    'create_book_success' => 'Book created',
+    'update_book_success' => 'Book updated',
+    'delete_book_success' => 'Book deleted',
+    // Media
+    'find_all_medias_success' => 'Medias found',
+    'find_media_success' => 'Media found',
+    'find_media_404' => 'Media not found',
+    'create_media_success' => 'Media created',
+    'update_media_success' => 'Media updated',
+    'delete_media_success' => 'Media deleted',
+    // Part
+    'find_all_parts_success' => 'Medias parts found',
+    'find_part_success' => 'Media part found',
+    'find_part_404' => 'Media part not found',
+    'create_part_success' => 'Media part created',
+    'update_part_success' => 'Media part updated',
+    'delete_part_success' => 'Media part deleted',
+    // Order
+    'find_all_orders_success' => 'Orders found',
+    'find_order_success' => 'Order found',
+    'find_order_404' => 'Order not found',
+    'create_order_success' => 'Order created',
+    'update_order_success' => 'Order updated',
+    'delete_order_success' => 'Order deleted',
+    // Cart
+    'find_all_carts_success' => 'Carts or Watchlists found',
+    'find_cart_success' => 'Cart or Watchlist found',
+    'find_cart_404' => 'Cart or Watchlist not found',
+    'create_cart_success' => 'Cart or Watchlist created',
+    'update_cart_success' => 'Cart or Watchlist updated',
+    'delete_cart_success' => 'Cart or Watchlist deleted',
+    // Pricing
+    'find_all_pricings_success' => 'Pricings found',
+    'find_pricing_success' => 'Pricing found',
+    'find_pricing_404' => 'Pricing not found',
+    'create_pricing_success' => 'Pricing created',
+    'update_pricing_success' => 'Pricing updated',
+    'delete_pricing_success' => 'Pricing deleted',
     // Role
     'find_all_roles_success' => 'Roles found',
     'find_role_success' => 'Role found',
@@ -124,13 +159,6 @@ return [
     'confirm_password_error' => 'Please confirm your password',
     'confirm_new_password' => 'Please confirm the new password',
     'delete_user_success' => 'User deleted',
-    // RoleUser
-    'find_all_role_users_success' => 'Roles with users found',
-    'find_role_user_success' => 'Role with user found',
-    'find_role_user_404' => 'Role with user not found',
-    'create_role_user_success' => 'Role with user created',
-    'update_role_user_success' => 'Role with user updated',
-    'delete_role_user_success' => 'Role with user deleted',
     // PasswordReset
     'find_all_password_resets_success' => 'Passwords resets found',
     'find_password_reset_success' => 'Password reset found',
@@ -138,13 +166,13 @@ return [
     'create_password_reset_success' => 'Password reset created',
     'update_password_reset_success' => 'Password reset updated',
     'delete_password_reset_success' => 'Password reset deleted',
-    // Message
-    'find_all_messages_success' => 'Messages found',
-    'find_message_success' => 'Message found',
-    'find_message_404' => 'Message not found',
-    'create_message_success' => 'Message created',
-    'update_message_success' => 'Message updated',
-    'delete_message_success' => 'Message deleted',
+    // PersonalAccessToken
+    'find_all_password_resets_success' => 'Personal tokens found',
+    'find_password_reset_success' => 'Personal token found',
+    'find_password_reset_404' => 'Personal token not found',
+    'create_password_reset_success' => 'Personal token created',
+    'update_password_reset_success' => 'Personal token updated',
+    'delete_password_reset_success' => 'Personal token deleted',
     // Notification
     'find_all_notifications_success' => 'Notifications found',
     'find_notification_success' => 'Notification found',
@@ -152,20 +180,6 @@ return [
     'create_notification_success' => 'Notification created',
     'update_notification_success' => 'Notification updated',
     'delete_notification_success' => 'Notification deleted',
-    // News
-    'find_all_news_success' => 'News found',
-    'find_news_success' => 'News found',
-    'find_news_404' => 'News not found',
-    'create_news_success' => 'News created',
-    'update_news_success' => 'News updated',
-    'delete_news_success' => 'News deleted',
-    // Offer
-    'find_all_offers_success' => 'Offers found',
-    'find_offer_success' => 'Offer found',
-    'find_offer_404' => 'Offer not found',
-    'create_offer_success' => 'Offer created',
-    'update_offer_success' => 'Offer updated',
-    'delete_offer_success' => 'Offer deleted',
     // Payment
     'find_all_payments_success' => 'Payments found',
     'find_payment_success' => 'Payment found',
@@ -179,11 +193,6 @@ return [
     'delete_payment_success' => 'Payment deleted',
 
     // ===== PLATFORM NOTIFICATIONS
-    'welcome_user' => 'WWelcome to the ACR app! Please read our terms before you start.',
-    'welcome_member' => 'Thank you for trusting the ACR party. We will notify you as soon as your membership is approved.',
-    'subscribed_to_party' => 'subscribed to the party.',
-    'member_joined' => 'Your membership application is approved. Please read our rules and conditions of use.',
-    'member_locked' => 'Your account has been blocked. If you have any questions, contact us via the telephone number displayed on our website.',
-    'party_published' => 'The party issued',
-    'party_changed' => 'The party has changed',
+    'welcome' => 'WWelcome to the DikiTivi app! Please read our terms before you start.',
+    'member_locked' => 'Your account has been blocked. If you have any questions, contact us via the telephone number displayed on our website.'
 ];

@@ -34,20 +34,24 @@ class GroupController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'group_name' => $request->group_name,
+            'group_name' => [
+                'en' => $request->group_name_en,
+                'fr' => $request->group_name_fr,
+                'ln' => $request->group_name_ln
+            ],
             'group_description' => $request->group_description
         ];
         // Select all groups to check unique constraint
         $groups = Group::all();
 
         // Validate required fields
-        if ($inputs['group_name'] == null OR $inputs['group_name'] == ' ') {
+        if (trim($inputs['group_name']['en']) == null AND trim($inputs['group_name']['fr']) == null AND trim($inputs['group_name']['ln']) == null) {
             return $this->handleError($inputs['group_name'], __('validation.required'), 400);
         }
 
         // Check if group name already exists
         foreach ($groups as $another_group):
-            if ($another_group->group_name == $inputs['group_name']) {
+            if ($another_group->group_name->en == $inputs['group_name']) {
                 return $this->handleError($inputs['group_name'], __('validation.custom.group_name.exists'), 400);
             }
         endforeach;
@@ -86,26 +90,65 @@ class GroupController extends BaseController
         // Get inputs
         $inputs = [
             'id' => $request->id,
-            'group_name' => $request->group_name,
-            'group_description' => $request->group_description,
-            'updated_at' => now()
+            'group_name' => [
+                'en' => $request->group_name_en,
+                'fr' => $request->group_name_fr,
+                'ln' => $request->group_name_ln
+            ],
+            'group_description' => $request->group_description
         ];
         // Select all groups and specific group to check unique constraint
         $groups = Group::all();
         $current_group = Group::find($inputs['id']);
 
-        if ($inputs['group_name'] != null) {
+        if ($inputs['group_name']['en'] != null) {
             foreach ($groups as $another_group):
-                if ($current_group->group_name != $inputs['group_name']) {
-                    if ($another_group->group_name == $inputs['group_name']) {
-                        return $this->handleError($inputs['group_name'], __('validation.custom.group_name.exists'), 400);
+                if ($current_group->group_name->en != $inputs['group_name']['en']) {
+                    if ($another_group->group_name->en == $inputs['group_name']['en']) {
+                        return $this->handleError($inputs['group_name']['en'], __('validation.custom.group_name.exists'), 400);
                     }
                 }
             endforeach;
 
             $group->update([
-                'group_name' => $request->group_name,
-                'updated_at' => now(),
+                'group_name' => [
+                    'en' => $request->group_name_en
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['group_name']['fr'] != null) {
+            foreach ($groups as $another_group):
+                if ($current_group->group_name->fr != $inputs['group_name']['fr']) {
+                    if ($another_group->group_name->fr == $inputs['group_name']['fr']) {
+                        return $this->handleError($inputs['group_name']['fr'], __('validation.custom.group_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $group->update([
+                'group_name' => [
+                    'fr' => $request->group_name_fr
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['group_name']['ln'] != null) {
+            foreach ($groups as $another_group):
+                if ($current_group->group_name->ln != $inputs['group_name']['ln']) {
+                    if ($another_group->group_name->ln == $inputs['group_name']['ln']) {
+                        return $this->handleError($inputs['group_name']['ln'], __('validation.custom.group_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $group->update([
+                'group_name' => [
+                    'ln' => $request->group_name_ln
+                ],
+                'updated_at' => now()
             ]);
         }
 
@@ -140,12 +183,13 @@ class GroupController extends BaseController
     /**
      * Search a group by its name.
      *
+     * @param  string $locale
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function search($locale, $data)
     {
-        $groups = Group::where('group_name', $data)->get();
+        $groups = Group::where('group_name->' . $locale, 'LIKE', '%' . $data . '%')->get();
 
         return $this->handleResponse(ResourcesGroup::collection($groups), __('notifications.find_all_groups_success'));
     }

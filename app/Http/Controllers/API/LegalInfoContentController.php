@@ -37,8 +37,16 @@ class LegalInfoContentController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'subtitle' => $request->subtitle,
-            'content' => $request->content,
+            'subtitle' => [
+                'en' => $request->subtitle_en,
+                'fr' => $request->subtitle_fr,
+                'ln' => $request->subtitle_ln
+            ],
+            'content' => [
+                'en' => $request->content_en,
+                'fr' => $request->content_fr,
+                'ln' => $request->content_ln
+            ],
             'video_url' => $request->video_url,
             'legal_info_title_id' => $request->legal_info_title_id
         ];
@@ -46,10 +54,6 @@ class LegalInfoContentController extends BaseController
         $legal_info_contents = LegalInfoContent::where('legal_info_title_id', $inputs['legal_info_title_id'])->get();
 
         // Validate required fields
-        if ($inputs['content'] == null OR $inputs['content'] == ' ') {
-            return $this->handleError($inputs['content'], __('validation.required'), 400);
-        }
-
         if ($inputs['legal_info_title_id'] == null OR $inputs['legal_info_title_id'] == ' ') {
             return $this->handleError($inputs['legal_info_title_id'], __('validation.required'), 400);
         }
@@ -95,58 +99,90 @@ class LegalInfoContentController extends BaseController
         // Get inputs
         $inputs = [
             'id' => $request->id,
-            'subtitle' => $request->subtitle,
-            'content' => $request->content,
+            'subtitle' => [
+                'en' => $request->subtitle_en,
+                'fr' => $request->subtitle_fr,
+                'ln' => $request->subtitle_ln
+            ],
+            'content' => [
+                'en' => $request->content_en,
+                'fr' => $request->content_fr,
+                'ln' => $request->content_ln
+            ],
             'video_url' => $request->video_url,
             'legal_info_title_id' => $request->legal_info_title_id
         ];
 
         // Validate required fields
-        if ($inputs['content'] == null OR $inputs['content'] == ' ') {
-            return $this->handleError($inputs['content'], __('validation.required'), 400);
-        }
-
         if ($inputs['legal_info_title_id'] == null OR $inputs['legal_info_title_id'] == ' ') {
             return $this->handleError($inputs['legal_info_title_id'], __('validation.required'), 400);
         }
 
-        if ($inputs['subtitle'] != null) {
+        if ($inputs['subtitle']['en'] != null) {
             $legal_info_content->update([
-                'subtitle' => $request->subtitle,
-                'updated_at' => now(),
+                'subtitle' => [
+                    'en' => $request->subtitle_en
+                ],
+                'updated_at' => now()
             ]);
         }
 
-        if ($inputs['content'] != null) {
-            // Select all contents of a same title and current content to check unique constraint
-            $legal_info_contents = LegalInfoContent::where('legal_info_title_id', $inputs['legal_info_title_id'])->get();
-            $current_legal_info_content = LegalInfoContent::find($inputs['id']);
-
-            foreach ($legal_info_contents as $another_legal_info_content):
-                if ($current_legal_info_content->content != $inputs['content']) {
-                    if ($another_legal_info_content->content == $inputs['content']) {
-                        return $this->handleError($inputs['content'], __('validation.custom.content.exists'), 400);
-                    }
-                }
-            endforeach;
-
+        if ($inputs['subtitle']['fr'] != null) {
             $legal_info_content->update([
-                'content' => $request->content,
-                'updated_at' => now(),
+                'subtitle' => [
+                    'fr' => $request->subtitle_fr
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['subtitle']['ln'] != null) {
+            $legal_info_content->update([
+                'subtitle' => [
+                    'ln' => $request->subtitle_ln
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['content']['en'] != null) {
+            $legal_info_content->update([
+                'content' => [
+                    'en' => $request->content_en
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['content']['fr'] != null) {
+            $legal_info_content->update([
+                'content' => [
+                    'fr' => $request->content_fr
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['content']['ln'] != null) {
+            $legal_info_content->update([
+                'content' => [
+                    'ln' => $request->content_ln
+                ],
+                'updated_at' => now()
             ]);
         }
 
         if ($inputs['video_url'] != null) {
             $legal_info_content->update([
                 'video_url' => $request->video_url,
-                'updated_at' => now(),
+                'updated_at' => now()
             ]);
         }
 
         if ($inputs['legal_info_title_id'] != null) {
             $legal_info_content->update([
                 'legal_info_title_id' => $request->legal_info_title_id,
-                'updated_at' => now(),
+                'updated_at' => now()
             ]);
         }
 
@@ -172,12 +208,13 @@ class LegalInfoContentController extends BaseController
     /**
      * Search a content of legal info by a string.
      *
+     * @param  string $locale
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function search($locale, $data)
     {
-        $legal_info_contents = LegalInfoContent::where('content', $data)->get();
+        $legal_info_contents = LegalInfoContent::where('content->' . $locale, 'LIKE', '%' . $data . '%')->get();
 
         return $this->handleResponse(ResourcesLegalInfoContent::collection($legal_info_contents), __('notifications.find_all_legal_info_contents_success'));
     }

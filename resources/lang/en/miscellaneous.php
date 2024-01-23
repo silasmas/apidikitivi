@@ -13,13 +13,16 @@ return [
     |
      */
     'drc' => 'Democratic Republic of the Congo',
-    'slogan' => 'ACR | Politics of love',
-    'keywords' => 'Common Action for the Republic,acr,love of politics,politics of love',
+    'foundation_name' => 'Jean Pierre Tshienda Foundation',
+    'foundation_description' => 'Our primary vocation is to support the underprivileged, particularly in the LUKUNGA district and throughout the Democratic Republic of Congo, to facilitate their socio-economic and cultural development.',
+    'slogan' => 'Alongside the underprivileged',
+    'keywords' => 'jean pierre tshienda foundation, jptshienda, alongside the underprivileged',
     'all_right_reserved' => 'All right reserved',
     'follow_us' => 'Follow us:',
     'call_us' => 'Call us:',
-    'bank_transaction_description' => 'Bank transaction from the ACR application',
+    'bank_transaction_description' => 'Bank transaction from the JPTSHIENDA application',
     'your_language' => 'Your language',
+    'your_activation_code' => 'Your activation code: ',
     'back_home' => 'Return to the home',
     'back_list' => 'Return to the list',
     'back_form' => 'Return to the form',
@@ -246,15 +249,6 @@ return [
     'currency' => 'Choose currency',
     'usd' => 'American dollar',
     'cdf' => 'Congolese franc',
-    // Alert message
-    'registered_data' => 'Data registered',
-    'no_data' => 'This datas don\'t exist',
-    'required_fields' => 'Please check the required fields',
-    'transaction_waiting' => 'Please confirm the message from your operator on your phone. Then press the button below.',
-    'transaction_done' => 'Your transaction is complete!',
-    'transaction_failed' => 'Failed to send your payment.',
-    'transaction_type_error' => 'Please select transaction type',
-    'new_partner_message' => 'You can now log in as a partner with your phone number. Temporary password:',
 
     // ===== NAVIGATION MENU
     'menu' => [
@@ -305,7 +299,7 @@ return [
             'title' => 'Change password',
             'former_password' => 'Former password',
             'new_password' => 'New password',
-            'confirm_password' => 'Confirm new password',
+            'new_password' => 'Confirm new password',
         ],
         'identity_document' => [
             'title' => 'Identity document',
@@ -558,50 +552,57 @@ return [
         // Footer
         'footer' => [
             'useful_links' => 'Useful links',
+            'message' => [
+                'subject' => 'Subject',
+                'content' => 'Message content'
+            ],
             'head_office' => [
                 'title' => 'Our head office',
-                'address' => '102, Kabinda street, Kinshasa 012 area, Kinshasa-DRC',
-                'phone' => '+243 810 503 074',
-                'email' => 'acr@gmail.com',
+                'address' => '73, LOPORI street, Municipality of KASA-VUBU, Kinshasa-DRC',
+                'phone' => '+243 000 000 000',
+                'email' => 'fondationjptshienda@gmail.com'
             ],
             'newsletter' => [
                 'title' => 'Newsletter',
                 'text' => 'Subscribe to receive our most relevant information.',
                 'email' => 'Your email',
-                'submit' => 'Send',
-            ],
+                'submit' => 'Send'
+            ]
         ],
 
         // Home
         'home' => [
-            'slide1' => [
-                'title' => 'Let\'s write history and do politics differently',
-                'content' => 'All engaged in the politics of love',
-            ],
-            'slide2' => [
-                'title' => 'Support for the FARDC against aggression in the east of the country',
-                'content' => 'For a strong and disciplined army',
-            ],
-            'slide3' => [
-                'title' => 'Securing food for our people',
-                'content' => 'Through a good agricultural policy',
+            'who_are_we' => [
+                'title' => 'Who are we?',
+                'content' => '',
+                'children' => [
+                    'title' => 'Children',
+                    'content' => ''
+                ],
+                'partners' => [
+                    'title' => 'Partners',
+                    'content' => ''
+                ],
             ],
             'download_mobile_app' => [
-                'title' => 'Download the ACR mobile app',
-                'content' => 'The ACR mobile app allows you to join the <span class="acr-text-yellow">Action Commune pour la République</span> party, stay informed about party news and contribute online.',
+                'title' => 'Download the JPTSHIENDA mobile app',
+                'content' => 'The JPTSHIENDA mobile app allows you to join the <span class="text-yellow">Jean Pierre Tshienda Foundation</span>, stay informed about foundation news and contribute online.',
             ],
-            'register_member' => [
+            'join_us' => [
                 'title' => 'Join us',
-                'content1' => 'You can join us, because ACR is not just a matter of a few individuals. Together, let us unite in a real commitment to transform our country.',
-                'content2' => 'If you are already registered in the site or in the mobile app, click on the button below to log in. Otherwise, give your names and your phone number to start.',
-                'login' => 'I already have an account',
-                'register' => 'Start registration',
+                'content' => 'If you are already registered in the site or in the mobile app, click on the button below to log in. Otherwise, give your names and your phone number to start.'
+            ],
+            'projects' => [
+                'title' => 'Projects',
+                'all' => 'All',
+                'project1' => 'Public',
+                'project2' => 'Children',
+                'project3' => 'Unwell'
             ],
             'donate' => [
                 'title' => 'Make an anonymous donation or become a partner',
-                'content1' => 'By supporting the ACR party, you not only contribute to the change of your country, but also you contribute to the help that the party brings to the ophelines and the poor.',
-                'content2' => 'If it\'s money you want to send, just select the payment method; then you send it directly online.',
-                'content3' => 'If you want to donate something other than money, just enter a description of your donation.',
+                'content1' => 'If it\'s money you want to send, just select the payment method; then you send it directly online.',
+                'content2' => 'If you want to donate something other than money, just enter a description of your donation.',
                 'anonyme' => 'Make an anonymous donation',
                 'partner' => 'Become a partner',
                 'your_identity' => 'Your identity',

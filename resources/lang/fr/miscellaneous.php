@@ -13,13 +13,16 @@ return [
     |
     */
     'drc' => 'République Démocratique du Congo',
-    'slogan' => 'ACR | La politique de l\'amour',
-    'keywords' => 'Action Commune pour la République,acr,l\'amour de la politique,politique de l\'amour',
+    'foundation_name' => 'Fondation Jean Pierre Tshienda',
+    'foundation_description' => 'Notre vocation première est de soutenir les défavorisés, en particulier dans le district de LUKUNGA et dans toute la République Démocratique du Congo, pour faciliter leur épanouissement socio-économique et culturel.',
+    'slogan' => 'Au côtés des défavorisés',
+    'keywords' => 'fondation jean pierre tshienda,jptshienda,au côtés des défavorisés',
     'all_right_reserved' => 'Tous droits réservés',
     'follow_us' => 'Suivez-nous :',
     'call_us' => 'Appelez-nous :',
-    'bank_transaction_description' => 'Transaction bancaire depuis l\'application ACR',
+    'bank_transaction_description' => 'Transaction bancaire depuis l\'application JPTSHIENDA',
     'your_language' => 'Votre langue',
+    'your_activation_code' => 'Votre code d\'activation : ',
     'back_home' => 'Retour à l\'accueil',
     'back_list' => 'Retourner à la liste',
     'back_form' => 'Retourner au formulaire',
@@ -246,15 +249,6 @@ return [
     'currency' => 'Choisir devise',
     'usd' => 'Dollar américain',
     'cdf' => 'Franc congolais',
-    // Alert message
-    'registered_data' => 'Données enregistrées',
-    'no_data' => 'Ces données n\'existent pas',
-    'required_fields' => 'Veuillez vérifier les champs obligatoires',
-    'transaction_waiting' => 'Veuillez valider le message de votre opérateur sur votre téléphone. Ensuite appuyez sur le bouton ci-dessous.',
-    'transaction_done' => 'Votre opération est terminée !',
-    'transaction_failed' => 'L\'envoi de votre paiement a échoué',
-    'transaction_type_error' => 'Veuillez choisir le type de transaction',
-    'new_partner_message' => 'Vous pouvez maintenant vous connecter en tant que partenaire avec votre n° de téléphone. Mot de passe temportaire :',
 
     // ===== NAVIGATION MENU
     'menu' => [
@@ -305,7 +299,7 @@ return [
             'title' => 'Modifier mot de passe',
             'former_password' => 'Ancien mot de passe',
             'new_password' => 'Nouveau mot de passe',
-            'confirm_password' => 'Confirmer nouveau mot de passe',
+            'new_password' => 'Confirmer nouveau mot de passe',
         ],
         'identity_document' => [
             'title' => 'Pièce d\'identité',
@@ -558,50 +552,57 @@ return [
         // Footer
         'footer' => [
             'useful_links' => 'Liens utiles',
+            'message' => [
+                'subject' => 'Sujet',
+                'content' => 'Contenu du message'
+            ],
             'head_office' => [
                 'title' => 'Notre siège social',
-                'address' => '102, ave Kabinda, C/Kinshasa 012, Kinshasa-RDC',
-                'phone' => '+243 810 503 074',
-                'email' => 'acr@gmail.com'
+                'address' => '73, avenue LOPORI, Commune de KASA-VUBU, Kinshasa-RDC',
+                'phone' => '+243 000 000 000',
+                'email' => 'fondationjptshienda@gmail.com'
             ],
             'newsletter' => [
                 'title' => 'Newsletter',
                 'text' => 'Abonnez-vous pour recevoir nos infos les plus pertinentes.',
                 'email' => 'Votre e-mail',
                 'submit' => 'Envoyer'
-            ],
+            ]
         ],
 
         // Home
         'home' => [
-            'slide1' => [
-                'title' => 'Écrivons l\'histoire et faisons la politique autrement',
-                'content' => 'Tous engagés dans la politique de l\'amour'
-            ],
-            'slide2' => [
-                'title' => 'Soutien aux FARDC contre l\'agression à l\'Est du pays',
-                'content' => 'Pour une armée forte et disciplinée'
-            ],
-            'slide3' => [
-                'title' => 'Assurer de la nourriture pour notre peuple',
-                'content' => 'À travers une bonne politique agricole'
+            'who_are_we' => [
+                'title' => 'Qui sommes-nous ?',
+                'content' => 'Nous sommes une fondation qui soutient les défavorisés, en particulier dans le district de LUKUNGA et dans toute la République Démocratique du Congo, pour faciliter leur épanouissement socio-économique et culturel.',
+                'children' => [
+                    'title' => 'Enfants',
+                    'content' => 'qui sont inscrits dans les écoles et dont nous prenons soin en cas de maladie et autres besoins.'
+                ],
+                'partners' => [
+                    'title' => 'Partenaires',
+                    'content' => 'qui contribuent financièrement ou autrement pour l\'avancement de la fondation.'
+                ],
             ],
             'download_mobile_app' => [
-                'title' => 'Télécharger l\'appli mobile ACR',
-                'content' => 'L\'appli mobile ACR vous permet d\'adhérer au parti <span class="acr-text-yellow">Action Commune pour la République</span>, de rester informé(e) sur les infos du parti et de contribuer en ligne.'
+                'title' => 'Télécharger l\'appli mobile JPTSHIENDA',
+                'content' => 'L\'appli mobile JPTSHIENDA vous permet d\'adhérer à la <span class="text-yellow">Fondation Jean Pierre Tshienda</span>, de rester informé(e) sur les infos de la fondation et de contribuer en ligne.'
             ],
-            'register_member' => [
+            'join_us' => [
                 'title' => 'Nous réjoindre',
-                'content1' => 'Vous pouvez nous réjoindre, car ACR n\'est pas qu\'une affaire de quelques individus. Ensemble, unissons-nous en un réel engagement pour transformer notre pays.',
-                'content2' => 'Si vous êtes déjà inscrit(e) dans le site ou dans l\'appli mobile, cliquez sur le bouton ci-dessous pour vous connecter. Sinon, donnez vos noms et votre n&deg; de téléphone pour commencer.',
-                'login' => 'J\'ai déjà un compte',
-                'register' => 'Commencer l\'inscription'
+                'content' => 'Si vous êtes déjà inscrit(e) dans le site ou dans l\'appli mobile, cliquez sur le bouton ci-dessous pour vous connecter. Sinon, donnez vos noms et votre n&deg; de téléphone pour commencer.'
+            ],
+            'projects' => [
+                'title' => 'Projets',
+                'all' => 'Tous',
+                'project1' => 'Public',
+                'project2' => 'Enfants',
+                'project3' => 'Malades'
             ],
             'donate' => [
                 'title' => 'Faire un don anonyme ou devenir partenaire',
-                'content1' => 'En soutenant le parti ACR, non seulement vous contribuez au changement de votre pays, mais aussi vous contribuez à l\'aide qu\'apporte le parti aux ophelins et aux démunis.',
-                'content2' => 'Si c\'est l\'argent que vous voulez envoyer, vous n\'avez qu\'à sélectionner le mode de paiement ; ensuite, vous l\'envoyez directement en ligne.',
-                'content3' => 'Si vous voulez donner autre chose que de l\'argent, vous n\'avez qu\'à donner la description de votre don.',
+                'content1' => 'Si c\'est l\'argent que vous voulez envoyer, vous n\'avez qu\'à sélectionner le mode de paiement ; ensuite, vous l\'envoyez directement en ligne.',
+                'content2' => 'Si vous voulez donner autre chose que de l\'argent, vous n\'avez qu\'à donner la description de votre don.',
                 'anonyme' => 'Faire un don anonyme',
                 'partner' => 'Devenir partenaire',
                 'your_identity' => 'Votre identité',

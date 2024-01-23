@@ -34,17 +34,17 @@ class LegalInfoTitleController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'title' => $request->title,
+            'title' => [
+                'en' => $request->title_en,
+                'fr' => $request->title_fr,
+                'ln' => $request->title_ln
+            ],
             'legal_info_subject_id' => $request->legal_info_subject_id
         ];
         // Select all titles of a same subject to check unique constraint
         $legal_info_titles = LegalInfoTitle::where('legal_info_subject_id', $inputs['legal_info_subject_id'])->get();
 
         // Validate required fields
-        if ($inputs['title'] == null OR $inputs['title'] == ' ') {
-            return $this->handleError($inputs['title'], __('validation.required'), 400);
-        }
-
         if ($inputs['legal_info_subject_id'] == null OR $inputs['legal_info_subject_id'] == ' ') {
             return $this->handleError($inputs['legal_info_subject_id'], __('validation.required'), 400);
         }
@@ -90,32 +90,67 @@ class LegalInfoTitleController extends BaseController
         // Get inputs
         $inputs = [
             'id' => $request->id,
-            'title' => $request->title,
-            'legal_info_subject_id' => $request->legal_info_subject_id,
-            'updated_at' => now()
+            'title' => [
+                'en' => $request->title_en,
+                'fr' => $request->title_fr,
+                'ln' => $request->title_ln
+            ],
+            'legal_info_subject_id' => $request->legal_info_subject_id
         ];
         // Select all titles of a same subject and current title to check unique constraint
         $legal_info_titles = LegalInfoTitle::where('legal_info_subject_id', $inputs['legal_info_subject_id'])->get();
         $current_legal_info_title = LegalInfoTitle::find($inputs['id']);
 
-        // Validate required fields
-        if ($inputs['title'] == null OR $inputs['title'] == ' ') {
-            return $this->handleError($inputs['title'], __('validation.required'), 400);
-        }
-
-        if ($inputs['legal_info_title_id'] == null OR $inputs['legal_info_title_id'] == ' ') {
-            return $this->handleError($inputs['legal_info_title_id'], __('validation.required'), 400);
-        }
-
-        foreach ($legal_info_titles as $another_legal_info_title):
-            if ($current_legal_info_title->title != $inputs['title']) {
-                if ($another_legal_info_title->title == $inputs['title']) {
-                    return $this->handleError($inputs['title'], __('validation.custom.title.exists'), 400);
+        if ($inputs['title']['en'] != null) {
+            foreach ($legal_info_titles as $another_legal_info_title):
+                if ($current_legal_info_title->title->en != $inputs['title']['en']) {
+                    if ($another_legal_info_title->title->en == $inputs['title']['en']) {
+                        return $this->handleError($inputs['title']['en'], __('validation.custom.title.exists'), 400);
+                    }
                 }
-            }
-        endforeach;
+            endforeach;
+    
+            $legal_info_title->update([
+                'title' => [
+                    'en' => $request->title_en
+                ],
+                'updated_at' => now()
+            ]);
+        }
 
-        $legal_info_title->update($inputs);
+        if ($inputs['title']['fr'] != null) {
+            foreach ($legal_info_titles as $another_legal_info_title):
+                if ($current_legal_info_title->title->fr != $inputs['title']['fr']) {
+                    if ($another_legal_info_title->title->fr == $inputs['title']['fr']) {
+                        return $this->handleError($inputs['title']['fr'], __('validation.custom.title.exists'), 400);
+                    }
+                }
+            endforeach;
+    
+            $legal_info_title->update([
+                'title' => [
+                    'fr' => $request->title_fr
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['title']['ln'] != null) {
+            foreach ($legal_info_titles as $another_legal_info_title):
+                if ($current_legal_info_title->title->ln != $inputs['title']['ln']) {
+                    if ($another_legal_info_title->title->ln == $inputs['title']['ln']) {
+                        return $this->handleError($inputs['title']['ln'], __('validation.custom.title.exists'), 400);
+                    }
+                }
+            endforeach;
+    
+            $legal_info_title->update([
+                'title' => [
+                    'ln' => $request->title_ln
+                ],
+                'updated_at' => now()
+            ]);
+        }
 
         return $this->handleResponse(new ResourcesLegalInfoTitle($legal_info_title), __('notifications.update_legal_info_title_success'));
     }
@@ -139,12 +174,13 @@ class LegalInfoTitleController extends BaseController
     /**
      * Search a title of subject about the app operation by its name.
      *
+     * @param  string $locale
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function search($locale, $data)
     {
-        $legal_info_titles = LegalInfoTitle::where('title', $data)->get();
+        $legal_info_titles = LegalInfoTitle::where('title->' . $locale, 'LIKE', '%' . $data . '%')->get();
 
         return $this->handleResponse(ResourcesLegalInfoTitle::collection($legal_info_titles), __('notifications.find_all_legal_info_titles_success'));
     }

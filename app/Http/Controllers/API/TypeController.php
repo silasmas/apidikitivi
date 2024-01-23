@@ -35,7 +35,13 @@ class TypeController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'type_name' => $request->type_name,
+            'type_name' => [
+                'en' => $request->type_name_en,
+                'fr' => $request->type_name_fr,
+                'ln' => $request->type_name_ln
+            ],
+            'icon' => $request->icon,
+            'color' => $request->color,
             'type_description' => $request->type_description,
             'group_id' => $request->group_id
         ];
@@ -43,7 +49,7 @@ class TypeController extends BaseController
         $types = Type::where('group_id', $inputs['group_id'])->get();
 
         // Validate required fields
-        if ($inputs['type_name'] == null OR $inputs['type_name'] == ' ') {
+        if (trim($inputs['type_name']['en']) == null AND trim($inputs['type_name']['fr']) == null AND trim($inputs['type_name']['ln']) == null) {
             return $this->handleError($inputs['type_name'], __('validation.required'), 400);
         }
 
@@ -92,26 +98,68 @@ class TypeController extends BaseController
         // Get inputs
         $inputs = [
             'id' => $request->id,
-            'type_name' => $request->type_name,
+            'type_name' => [
+                'en' => $request->type_name_en,
+                'fr' => $request->type_name_fr,
+                'ln' => $request->type_name_ln
+            ],
             'type_description' => $request->type_description,
+            'icon' => $request->icon,
+            'color' => $request->color,
             'group_id' => $request->group_id
         ];
         // Select all group types and specific type to check unique constraint
         $types = Type::where('group_id', $inputs['group_id'])->get();
         $current_type = Type::find($inputs['id']);
 
-        if ($inputs['type_name'] != null) {
+        if ($inputs['type_name']['en'] != null) {
             foreach ($types as $another_type):
-                if ($current_type->type_name != $inputs['type_name']) {
-                    if ($another_type->type_name == $inputs['type_name']) {
-                        return $this->handleError($inputs['type_name'], __('validation.custom.type_name.exists'), 400);
+                if ($current_type->type_name->en != $inputs['type_name']['en']) {
+                    if ($another_type->type_name->en == $inputs['type_name']['en']) {
+                        return $this->handleError($inputs['type_name']['en'], __('validation.custom.type_name.exists'), 400);
                     }
                 }
             endforeach;
 
             $type->update([
-                'type_name' => $request->type_name,
-                'updated_at' => now(),
+                'type_name' => [
+                    'en' => $request->type_name_en
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['type_name']['fr'] != null) {
+            foreach ($types as $another_type):
+                if ($current_type->type_name->fr != $inputs['type_name']['fr']) {
+                    if ($another_type->type_name->fr == $inputs['type_name']['fr']) {
+                        return $this->handleError($inputs['type_name']['fr'], __('validation.custom.type_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $type->update([
+                'type_name' => [
+                    'fr' => $request->type_name_fr
+                ],
+                'updated_at' => now()
+            ]);
+        }
+
+        if ($inputs['type_name']['ln'] != null) {
+            foreach ($types as $another_type):
+                if ($current_type->type_name->ln != $inputs['type_name']['ln']) {
+                    if ($another_type->type_name->ln == $inputs['type_name']['ln']) {
+                        return $this->handleError($inputs['type_name']['ln'], __('validation.custom.type_name.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $type->update([
+                'type_name' => [
+                    'ln' => $request->type_name_ln
+                ],
+                'updated_at' => now()
             ]);
         }
 
@@ -167,25 +215,31 @@ class TypeController extends BaseController
     /**
      * Search a type by its name.
      *
+     * @param  string $locale
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function search($locale, $data)
     {
-        $types = Type::where('type_name', $data)->get();
+        $type = Type::where('type_name->' . $locale, $data)->first();
 
-        return $this->handleResponse(ResourcesType::collection($types), __('notifications.find_all_types_success'));
+        if (is_null($type)) {
+            return $this->handleError(__('notifications.find_type_404'));
+        }
+
+        return $this->handleResponse(new ResourcesType($type), __('notifications.find_type_success'));
     }
 
     /**
      * Find all type by group.
      *
+     * @param  string $locale
      * @param  string $group_name
      * @return \Illuminate\Http\Response
      */
-    public function findByGroup($group_name)
+    public function findByGroup($locale, $group_name)
     {
-        $group = Group::where('group_name', $group_name)->first();
+        $group = Group::where('group_name->' . $locale, $group_name)->first();
 
         if (is_null($group)) {
             return $this->handleError(__('notifications.find_group_404'));
