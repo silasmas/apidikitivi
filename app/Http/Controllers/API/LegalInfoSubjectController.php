@@ -298,23 +298,23 @@ class LegalInfoSubjectController extends BaseController
                 ],
                 'legal_info_subject_id' => $legal_info_subject->id
             ]);
-        }
 
-        foreach ($request->subtitles_en as $key_c => $subtitle_en) {
-            LegalInfoContent::create([
-                'subtitle' => [
-                    'en' => $subtitle_en,
-                    'fr' => $request->subtitles_fr[$key_c],
-                    'ln' => $request->subtitles_ln[$key_c]
-                ],
-                'content' => [
-                    'en' => $request->contents_en[$key_c],
-                    'fr' => $request->contents_fr[$key_c],
-                    'ln' => $request->contents_ln[$key_c]
-                ],
-                'video_url' => $request->videos_url[$key_c],
-                'legal_info_title_id' => $legal_info_title->id
-            ]);
+            foreach ($request->subtitles_en as $key_c => $subtitle_en) {
+                LegalInfoContent::create([
+                    'subtitle' => [
+                        'en' => $subtitle_en,
+                        'fr' => $request->subtitles_fr[$key_c],
+                        'ln' => $request->subtitles_ln[$key_c]
+                    ],
+                    'content' => [
+                        'en' => $request->contents_en[$key_c],
+                        'fr' => $request->contents_fr[$key_c],
+                        'ln' => $request->contents_ln[$key_c]
+                    ],
+                    'video_url' => $request->videos_url[$key_c],
+                    'legal_info_title_id' => $legal_info_title->id
+                ]);
+            }
         }
 
         return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
