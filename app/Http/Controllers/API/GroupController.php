@@ -178,19 +178,4 @@ class GroupController extends BaseController
 
         return $this->handleResponse(ResourcesGroup::collection($groups), __('notifications.delete_group_success'));
     }
-
-    // ==================================== CUSTOM METHODS ====================================
-    /**
-     * Search a group by its name.
-     *
-     * @param  string $locale
-     * @param  string $data
-     * @return \Illuminate\Http\Response
-     */
-    public function search($locale, $data)
-    {
-        $groups = Group::where('group_name->' . $locale, 'LIKE', '%' . $data . '%')->get();
-
-        return $this->handleResponse(ResourcesGroup::collection($groups), __('notifications.find_all_groups_success'));
-    }
 }

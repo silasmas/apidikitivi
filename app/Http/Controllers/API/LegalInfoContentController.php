@@ -239,10 +239,9 @@ class LegalInfoContentController extends BaseController
         $image = str_replace($replace, '', $inputs['image_64']);
         $image = str_replace(' ', '+', $image);
 
-        // Clean "legal_infos" directory
+        // Clean selected "abouts" directory
         $file = new Filesystem;
         $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/abouts/' . $inputs['legal_info_content_id']);
-        // $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/storage/images/abouts/' . $inputs['legal_info_content_id']);
         // Create image URL
         $image_url = 'images/abouts/' . $inputs['legal_info_content_id'] . '/' . Str::random(50) . '.png';
 

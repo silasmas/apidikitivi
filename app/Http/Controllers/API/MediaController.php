@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use App\Http\Resources\Media as ResourcesMedia;
+use App\Models\User;
 
 class MediaController extends BaseController
 {
@@ -29,18 +30,17 @@ class MediaController extends BaseController
             if ($session->medias() != null) {
                 $session->medias()->sync($medias->pluck('id'));
             }
+        }
 
-        } else {
-            if ($request->ip_address != null) {
-                $session = Session::where(['ip_address', $request->ip_address])->first();
+        if ($request->ip_address != null) {
+            $session = Session::where(['ip_address', $request->ip_address])->first();
 
-                if ($session->medias() == null) {
-                    $session->medias()->attach($medias->pluck('id'));
-                }
+            if ($session->medias() == null) {
+                $session->medias()->attach($medias->pluck('id'));
+            }
 
-                if ($session->medias() != null) {
-                    $session->medias()->sync($medias->pluck('id'));
-                }
+            if ($session->medias() != null) {
+                $session->medias()->sync($medias->pluck('id'));
             }
         }
 
@@ -113,18 +113,17 @@ class MediaController extends BaseController
             if ($session->medias() != null) {
                 $session->medias()->syncWithoutDetaching([$media->id]);
             }
+        }
 
-        } else {
-            if ($request->ip_address != null) {
-                $session = Session::where(['ip_address', $request->ip_address])->first();
+        if ($request->ip_address != null) {
+            $session = Session::where(['ip_address', $request->ip_address])->first();
 
-                if ($session->medias() == null) {
-                    $session->medias()->attach([$media->id]);
-                }
+            if ($session->medias() == null) {
+                $session->medias()->attach([$media->id]);
+            }
 
-                if ($session->medias() != null) {
-                    $session->medias()->syncWithoutDetaching([$media->id]);
-                }
+            if ($session->medias() != null) {
+                $session->medias()->syncWithoutDetaching([$media->id]);
             }
         }
 
@@ -235,19 +234,15 @@ class MediaController extends BaseController
     {
         if ($request->user_id != null) {
             $medias = Media::whereHas('sessions', function ($query) use ($request) {
-                            $query->where('sessions.user_id', $request->user_id);
-                        })->where(function ($query) use ($for_youth, $type_id) {
-                            $query->where([['for_youth', $for_youth], ['type_id', $type_id]]);
-                        })->orderByDesc('medias.created_at')->get();
+                                $query->where('sessions.user_id', $request->user_id);
+                            })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
 
         } else if ($request->ip_address != null) {
             $medias = Media::whereHas('sessions', function ($query) use ($request) {
-                            $query->where('sessions.ip_address', $request->ip_address);
-                        })->where(function ($query) use ($for_youth, $type_id) {
-                            $query->where([['for_youth', $for_youth], ['type_id', $type_id]]);
-                        })->orderByDesc('medias.created_at')->get();
+                                $query->where('sessions.ip_address', $request->ip_address);
+                            })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
 
@@ -255,6 +250,37 @@ class MediaController extends BaseController
             $medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->get();
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+        }
+    }
+
+    /**
+     * Vote the media.
+     *
+     * @param  int $user_id
+     * @param  int $media_id
+     * @param  int $status_id
+     * @return \Illuminate\Http\Response
+     */
+    public function setApprobation($user_id, $media_id, $status_id)
+    {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        foreach ($user->medias as $med) {
+            if ($med->pivot->media_id == null) {
+                $user->medias()->attach([$media_id => [
+                    'status_id' => $status_id
+                ]]);
+            }
+
+            if ($med->pivot->media_id != null) {
+                $user->medias()->sync([$media_id => [
+                    'status_id' => $status_id
+                ]]);
+            }
         }
     }
 }

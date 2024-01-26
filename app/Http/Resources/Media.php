@@ -26,6 +26,7 @@ class Media extends JsonResource
             'for_youth' => $this->for_youth,
             'type' => Type::make($this->type),
             'parts' => Part::collection($this->parts),
+            'users_votes' => User::collection($this->users),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ];

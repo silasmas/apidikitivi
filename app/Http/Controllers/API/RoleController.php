@@ -135,18 +135,4 @@ class RoleController extends BaseController
 
         return $this->handleResponse(ResourcesRole::collection($roles), __('notifications.delete_role_success'));
     }
-
-    // ==================================== CUSTOM METHODS ====================================
-    /**
-     * Search a role by its name.
-     *
-     * @param  string $data
-     * @return \Illuminate\Http\Response
-     */
-    public function search($data)
-    {
-        $roles = Role::where('role_name', $data)->get();
-
-        return $this->handleResponse(ResourcesRole::collection($roles), __('notifications.find_all_roles_success'));
-    }
 }

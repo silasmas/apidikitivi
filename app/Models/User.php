@@ -51,6 +51,15 @@ class User extends Authenticatable
     }
 
     /**
+     * MANY-TO-MANY
+     * Several medias for several users
+     */
+    public function medias()
+    {
+        return $this->belongsToMany(Media::class);
+    }
+
+    /**
      * ONE-TO-MANY
      * One country for several users
      */

@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Address;
-use App\Models\Image;
 use App\Models\Notification;
 use App\Models\PasswordReset;
-use App\Models\Role;
-use App\Models\RoleUser;
 use App\Models\Status;
 use App\Models\User;
 use Nette\Utils\Random;
@@ -46,48 +42,34 @@ class UserController extends BaseController
      */
     public function store(Request $request)
     {
+        $status_activated = Status::where('status_name->fr', 'Activé')->first();
+        $status_unread = Status::where('status_name->fr', 'Non lue')->first();
         // Get inputs
         $inputs = [
-            'national_number' => $request->national_number,
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'surname' => $request->surname,
             'gender' => $request->gender,
-            'birth_city' => $request->birth_city,
             'birth_date' => $request->birth_date,
-            'nationality' => $request->nationality,
+            'city' => $request->city,
+            'address_1' => $request->address_1,
+            'address_2' => $request->address_2,
             'p_o_box' => $request->p_o_box,
             'email' => $request->email,
             'phone' => $request->phone,
-            'email_verified_at' => $request->email_verified_at,
+            'username' => $request->username,
             'password' => $request->password,
             'confirm_password' => $request->confirm_password,
-            'remember_token' => $request->remember_token,
+            'belongs_to' => $request->belongs_to,
+            'parental_code' => $request->parental_code,
             'api_token' => $request->api_token,
-            'status_id' => $request->status_id
+            'country_id' => $request->country_id,
+            'status_id' => $status_activated->id
         ];
         $users = User::all();
         $password_resets = PasswordReset::all();
-        // $basic  = new \Vonage\Client\Credentials\Basic('89e3b822', 'cab98aefeaab1434ACR');
-        $basic  = new \Vonage\Client\Credentials\Basic('5a4c014d', 'dhOq17USeZadLgIw');
-        $client = new \Vonage\Client($basic);
-
-        // Validate required fields
-        if ($inputs['email'] == null AND $inputs['phone'] == null) {
-            return $this->handleError(__('validation.custom.email_or_phone.required'));
-        }
-
-        if ($inputs['email'] == ' ' AND $inputs['phone'] == ' ') {
-            return $this->handleError(__('validation.custom.email_or_phone.required'));
-        }
-
-        if ($inputs['email'] == null AND $inputs['phone'] == ' ') {
-            return $this->handleError(__('validation.custom.email_or_phone.required'));
-        }
-
-        if ($inputs['email'] == ' ' AND $inputs['phone'] == null) {
-            return $this->handleError(__('validation.custom.email_or_phone.required'));
-        }
+        // $basic  = new \Vonage\Client\Credentials\Basic('', '');
+        // $client = new \Vonage\Client($basic);
 
         if ($inputs['email'] != null) {
             // Check if user email already exists
@@ -125,14 +107,41 @@ class UserController extends BaseController
             }
         }
 
+        if ($inputs['username'] != null) {
+            // Check if username already exists
+            foreach ($users as $another_user):
+                if ($another_user->username == $inputs['username']) {
+                    return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
+                }
+            endforeach;
+        }
+
+        // If it is a child's account, generate a code for his parent if the code does not exist
+        if ($inputs['belongs_to'] != null) {
+            $random_string = Random::generate(7);
+
+            $parent = User::find($inputs['belongs_to']);
+
+            if (is_null($parent)) {
+                return $this->handleError(__('notifications.find_parent_404'));
+            }
+
+            if ($parent->parental_code == null) {
+                $parent->update([
+                    'parental_code' => $random_string,
+                    'updated_at' => now()
+                ]);
+            }
+        }
+
         if ($inputs['password'] != null) {
             if ($inputs['confirm_password'] != $inputs['password'] OR $inputs['confirm_password'] == null) {
                 return $this->handleError($inputs['confirm_password'], __('notifications.confirm_password_error'), 400);
             }
 
-            if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['password']) == 0) {
-                return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
-            }
+            // if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['password']) == 0) {
+            //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
+            // }
 
             $random_string = (string) random_int(1000000, 9999999);
 
@@ -144,12 +153,12 @@ class UserController extends BaseController
                     'former_password' => $inputs['password']
                 ]);
 
-                try {
-                    $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'ACR', (string) $password_reset->token));
+                // try {
+                //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                } catch (\Throwable $th) {
-                    return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                }
+                // } catch (\Throwable $th) {
+                //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                // }
 
             } else {
                 if ($inputs['email'] != null) {
@@ -167,12 +176,12 @@ class UserController extends BaseController
                         'former_password' => $inputs['password']
                     ]);
 
-                    try {
-                        $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'ACR', (string) $password_reset->token));
+                    // try {
+                    //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                    } catch (\Throwable $th) {
-                        return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                    }
+                    // } catch (\Throwable $th) {
+                    //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                    // }
                 }
             }
         }
@@ -190,12 +199,12 @@ class UserController extends BaseController
 
                 $inputs['password'] = Hash::make($password_reset->former_password);
 
-                try {
-                    $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'ACR', (string) $password_reset->token));
+                // try {
+                //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                } catch (\Throwable $th) {
-                    return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                }
+                // } catch (\Throwable $th) {
+                //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                // }
 
             } else {
                 if ($inputs['email'] != null) {
@@ -217,101 +226,35 @@ class UserController extends BaseController
 
                     $inputs['password'] = Hash::make($password_reset->former_password);
 
-                    try {
-                        $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'ACR', (string) $password_reset->token));
+                    // try {
+                    //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                    } catch (\Throwable $th) {
-                        return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                    }
+                    // } catch (\Throwable $th) {
+                    //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                    // }
                 }
             }
         }
 
         $user = User::create($inputs);
-
-        if ($user->lastname != null AND $user->birth_date != null) {
-            if ($user->national_number == null) {
-                $user->update([
-                    'national_number' => 'ACR-' . Random::generate(4, '0-9') . '-' . strtoupper(substr($user->lastname, 0, 3)) . '-' . explode('-', $user->birth_date)[0] . '.' . explode('-', $user->birth_date)[1] . '.' . explode('-', $user->birth_date)[2] . '-0000',
-                    'updated_at' => now(),
-                ]);
-            }
-        }
+        $token = $user->createToken('auth_token')->plainTextToken;
+        $inputs['api_token'] = $token;
 
         if ($request->role_id != null) {
-            RoleUser::create([
-                'role_id' => $request->role_id, 
-                'user_id' => $user->id
-            ]);
-
-            /*
-                HISTORY AND/OR NOTIFICATION MANAGEMENT
-            */
-            $status_activated = Status::where('status_name', 'Activé')->first();
-            $status_ongoing = Status::where('status_name', 'En attente')->first();
-            $status_unread = Status::where('status_name', 'Non lue')->first();
-            $admin_role = Role::where('role_name', 'Administrateur')->first();
-            $supporting_member_role = Role::where('role_name', 'Membre Sympathisant')->first();
-            $effecive_member_role = Role::where('role_name', 'Membre Effectif')->first();
-            $honorary_member_role = Role::where('role_name', 'Membre d\'Honneur')->first();
-            $current_role = Role::find($request->role_id);
-
-            // If the new user is a member, send notification to 
-            // all managers and a welcome notification to the new user
-            if ($current_role->id == $supporting_member_role->id OR $current_role->id == $effecive_member_role->id OR $current_role->id == $honorary_member_role->id) {
-                $user->update([
-                    'status_id' => $status_ongoing->id,
-                    // 'status_id' => $status_activated->id,
-                ]);
-
-                $manager_role = Role::where('role_name', 'Manager')->first();
-                $role_users = RoleUser::where('role_id', $manager_role->id)->get();
-
-                foreach ($role_users as $executive):
-                    Notification::create([
-                        'notification_url' => 'members/' . $user->id,
-                        'notification_content' => $user->firstname . ' ' . $user->lastname . ' ' . __('notifications.subscribed_to_party'),
-                        'status_id' => $status_unread->id,
-                        'user_id' => $executive->user_id
-                    ]);
-                endforeach;
-
-                Notification::create([
-                    'notification_url' => 'about/terms_of_use',
-                    'notification_content' => __('notifications.welcome_member'),
-                    'status_id' => $status_unread->id,
-                    'user_id' => $user->id,
-                ]);
-            }
-
-            // If the new user is neither a member nor an admin, send a ordinary welcome notification
-            if ($current_role->id != $supporting_member_role->id AND $current_role->id != $effecive_member_role->id AND $current_role->id != $honorary_member_role->id AND $current_role->id != $admin_role->id) {
-                $user->update([
-                    'status_id' => $status_activated->id,
-                ]);
-
-                Notification::create([
-                    'notification_url' => 'about/terms_of_use',
-                    'notification_content' => __('notifications.welcome_user'),
-                    'status_id' => $status_unread->id,
-                    'user_id' => $user->id,
-                ]);
-            }
+            $user->roles()->attach([$request->role_id]);
         }
 
-        // If user want to add address
-        if ($request->address_content != null OR $request->neighborhood != null OR $request->area != null OR $request->city != null) {
-            Address::create([
-                'address_content' => $request->address_content,
-                'address_content_2' => $request->address_content_2,
-                'neighborhood' => $request->neighborhood,
-                'area' => $request->area,
-                'city' => $request->city,
-                'type_id' => $request->type_id,
-                'country_id' => $request->country_id,
-                'user_id' => $user->id
-            ]);
-        }
+        /*
+            HISTORY AND/OR NOTIFICATION MANAGEMENT
+        */
+        Notification::create([
+            'notification_url' => 'about/terms_of_use',
+            'notification_content' => __('notifications.welcome_user'),
+            'icon' => 'person-check',
+            'color' => 'success',
+            'status_id' => $status_unread->id,
+            'user_id' => $user->id
+        ]);
 
         $object = new stdClass();
         $object->password_reset = new ResourcesPasswordReset($password_reset);
@@ -349,82 +292,104 @@ class UserController extends BaseController
         // Get inputs
         $inputs = [
             'id' => $request->id,
-            'national_number' => $request->serial_number,
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'surname' => $request->surname,
             'gender' => $request->gender,
-            'birth_city' => $request->birth_city,
             'birth_date' => $request->birth_date,
-            'nationality' => $request->nationality,
+            'city' => $request->city,
+            'address_1' => $request->address_1,
+            'address_2' => $request->address_2,
             'p_o_box' => $request->p_o_box,
             'email' => $request->email,
             'phone' => $request->phone,
+            'username' => $request->username,
             'password' => $request->password,
-            'confirm_password' => $request->confirm_password
+            'confirm_password' => $request->confirm_password,
+            'belongs_to' => $request->belongs_to,
+            'parental_code' => $request->parental_code,
+            'api_token' => $request->api_token,
+            'country_id' => $request->country_id,
+            'status_id' => $request->status
         ];
-
+        $users = User::all();
         $current_user = User::find($inputs['id']);
 
         if ($inputs['firstname'] != null) {
             $user->update([
-                'firstname' => $request->firstname,
+                'firstname' => $inputs['firstname'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['lastname'] != null) {
             $user->update([
-                'lastname' => $request->lastname,
+                'lastname' => $inputs['lastname'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['surname'] != null) {
             $user->update([
-                'surname' => $request->surname,
+                'surname' => $inputs['surname'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['gender'] != null) {
             $user->update([
-                'gender' => $request->gender,
-                'updated_at' => now(),
-            ]);
-        }
-
-        if ($inputs['birth_city'] != null) {
-            $user->update([
-                'birth_city' => $request->birth_city,
+                'gender' => $inputs['gender'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['birth_date'] != null) {
             $user->update([
-                'birth_date' => $request->birth_date,
+                'birth_date' => $inputs['birth_date'],
                 'updated_at' => now(),
             ]);
         }
 
-        if ($inputs['nationality'] != null) {
+        if ($inputs['city'] != null) {
             $user->update([
-                'nationality' => $request->nationality,
+                'city' => $inputs['city'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['address_1'] != null) {
+            $user->update([
+                'address_1' => $inputs['address_1'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['address_2'] != null) {
+            $user->update([
+                'address_2' => $inputs['address_2'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['p_o_box'] != null) {
             $user->update([
-                'p_o_box' => $request->p_o_box,
+                'p_o_box' => $inputs['p_o_box'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['email'] != null) {
+            // Check if email already exists
+            foreach ($users as $another_user):
+                if ($current_user->email != $inputs['email']) {
+                    if ($another_user->email == $inputs['email']) {
+                        return $this->handleError($inputs['email'], __('validation.custom.email.exists'), 400);
+                    }
+                }
+            endforeach;
+
             $user->update([
-                'email' => $request->email,
+                'email' => $inputs['email'],
                 'updated_at' => now(),
             ]);
 
@@ -448,8 +413,17 @@ class UserController extends BaseController
         }
 
         if ($inputs['phone'] != null) {
+            // Check if phone already exists
+            foreach ($users as $another_user):
+                if ($current_user->phone != $inputs['phone']) {
+                    if ($another_user->phone == $inputs['phone']) {
+                        return $this->handleError($inputs['phone'], __('validation.custom.phone.exists'), 400);
+                    }
+                }
+            endforeach;
+
             $user->update([
-                'phone' => $request->phone,
+                'phone' => $inputs['phone'],
                 'updated_at' => now(),
             ]);
 
@@ -472,14 +446,53 @@ class UserController extends BaseController
             }
         }
 
+        if ($inputs['username'] != null) {
+            // Check if username already exists
+            foreach ($users as $another_user):
+                if ($current_user->username != $inputs['username']) {
+                    if ($another_user->username == $inputs['username']) {
+                        return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
+                    }
+                }
+            endforeach;
+
+            $user->update([
+                'username' => $inputs['username'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        // If it is a child's account, generate a code for his parent if the code does not exist
+        if ($inputs['belongs_to'] != null) {
+            $random_string = Random::generate(7);
+
+            $parent = User::find($inputs['belongs_to']);
+
+            if (is_null($parent)) {
+                return $this->handleError(__('notifications.find_parent_404'));
+            }
+
+            if ($parent->parental_code == null) {
+                $parent->update([
+                    'parental_code' => $random_string,
+                    'updated_at' => now()
+                ]);
+            }
+
+            $user->update([
+                'belongs_to' => $inputs['belongs_to'],
+                'updated_at' => now(),
+            ]);
+        }
+
         if ($inputs['password'] != null) {
             if ($inputs['confirm_password'] != $inputs['password'] OR $inputs['confirm_password'] == null) {
                 return $this->handleError($inputs['confirm_password'], __('notifications.confirm_password_error'), 400);
             }
 
-            if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['password']) == 0) {
-                return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
-            }
+            // if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['password']) == 0) {
+            //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
+            // }
 
             $password_reset_by_email = PasswordReset::where('email', $inputs['email'])->first();
             $password_reset_by_phone = PasswordReset::where('phone', $inputs['phone'])->first();
@@ -542,6 +555,20 @@ class UserController extends BaseController
             ]);
         }
 
+        if ($inputs['country_id'] != null) {
+            $user->update([
+                'country_id' => $inputs['country_id'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['status_id'] != null) {
+            $user->update([
+                'status_id' => $inputs['status_id'],
+                'updated_at' => now(),
+            ]);
+        }
+
         return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
     }
 
@@ -562,14 +589,14 @@ class UserController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
-     * Search a user by his email / phone / national number.
+     * Find by "username"
      *
-     * @param  string $data
+     * @param  string $username
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function profile($username)
     {
-        $user = User::where('email', $data)->orWhere('phone', $data)->orWhere('national_number', $data)->first();
+        $user = User::where('username', $username)->first();
 
         if (is_null($user)) {
             return $this->handleError(__('notifications.find_user_404'));
@@ -581,14 +608,15 @@ class UserController extends BaseController
     /**
      * Search all users having a specific role
      *
+     * @param  string $locale
      * @param  string $role_name
      * @return \Illuminate\Http\Response
      */
-    public function findByRole($role_name)
+    public function findByRole($locale, $role_name)
     {
-        $users = User::whereHas('roles', function ($query) use ($role_name) {
-                                    $query->where('role_name', $role_name);
-                                })->orderByDesc('created_at')->get();
+        $users = User::whereHas('roles', function ($query) use ($locale, $role_name) {
+                                    $query->where('role_name->' . $locale, $role_name);
+                                })->orderByDesc('users.created_at')->get();
 
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));    
     }
@@ -596,14 +624,15 @@ class UserController extends BaseController
     /**
      * Search all users having a role different than the given
      *
+     * @param  string $locale
      * @param  string $role_name
      * @return \Illuminate\Http\Response
      */
-    public function findByNotRole($role_name)
+    public function findByNotRole($locale, $role_name)
     {
-        $users = User::whereDoesntHave('roles', function ($query) use ($role_name) {
-                                    $query->where('role_name', $role_name);
-                                })->orderByDesc('created_at')->get();
+        $users = User::whereDoesntHave('roles', function ($query) use ($locale, $role_name) {
+                                    $query->where('role_name->' . $locale, $role_name);
+                                })->orderByDesc('users.created_at')->get();
 
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));    
     }
@@ -611,7 +640,7 @@ class UserController extends BaseController
     /**
      * Search all users having specific status.
      *
-     * @param  int $status_id
+     * @param  string $status_id
      * @return \Illuminate\Http\Response
      */
     public function findByStatus($status_id)
@@ -654,10 +683,17 @@ class UserController extends BaseController
                 return $this->handleError($inputs['password'], __('auth.password'), 400);
             }
 
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            $user->update([
+                'api_token' => $token,
+                'updated_at' => now(),
+            ]);
+
             return $this->handleResponse(new ResourcesUser($user), __('notifications.find_user_success'));
 
         } else {
-            $user = User::where('email', $inputs['username'])->first();
+            $user = User::where('email', $inputs['username'])->orWhere('username', $inputs['username'])->first();
 
             if (!$user) {
                 return $this->handleError($inputs['username'], __('auth.username'), 400);
@@ -666,6 +702,13 @@ class UserController extends BaseController
             if (!Hash::check($inputs['password'], $user->password)) {
                 return $this->handleError($inputs['password'], __('auth.password'), 400);
             }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            $user->update([
+                'api_token' => $token,
+                'updated_at' => now(),
+            ]);
 
             return $this->handleResponse(new ResourcesUser($user), __('notifications.find_user_success'));
         }
@@ -689,25 +732,29 @@ class UserController extends BaseController
         /*
             HISTORY AND/OR NOTIFICATION MANAGEMENT
         */
-        $status_activated = Status::where('status_name', 'Activé')->first();
-        $status_blocked = Status::where('status_name', 'Bloqué')->first();
-        $status_unread = Status::where('status_name', 'Non lue')->first();
+        $status_activated = Status::where('status_name->fr', 'Activé')->first();
+        $status_blocked = Status::where('status_name->fr', 'Bloqué')->first();
+        $status_unread = Status::where('status_name->fr', 'Non lue')->first();
 
         // If it's a member whose accessing is accepted, send notification
         if ($status_id == $status_activated->id) {
             Notification::create([
                 'notification_url' => 'about/terms_of_use',
-                'notification_content' => __('notifications.member_joined'),
+                'notification_content' => __('notifications.member_activated'),
+                'icon' => 'unlock-fill',
+                'color' => 'info',
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
             ]);
         }
 
-        // If it's a member whose accessing is accepted, send notification
+        // If it's a member whose accessing is blocked, send notification
         if ($status_id == $status_blocked->id) {
             Notification::create([
                 'notification_url' => 'about/terms_of_use',
                 'notification_content' => __('notifications.member_locked'),
+                'icon' => 'lock-fill',
+                'color' => 'danger',
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
             ]);
@@ -733,14 +780,7 @@ class UserController extends BaseController
     {
         $user = User::find($id);
 
-        $role_user = RoleUser::where('user_id', $user->id)->first();
-
-        $role_user->delete();
-
-        RoleUser::create([
-            'role_id' => $request->role_id,
-            'user_id' => $user->id
-        ]);
+        $user->roles()->syncWithoutDetaching([$request->role_id]);
 
         return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
     }
@@ -782,9 +822,9 @@ class UserController extends BaseController
             return $this->handleError($inputs['confirm_new_password'], __('notifications.confirm_new_password'), 400);
         }
 
-        if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['new_password']) == 0) {
-            return $this->handleError($inputs['new_password'], __('validation.custom.new_password.incorrect'), 400);
-        }
+        // if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['new_password']) == 0) {
+        //     return $this->handleError($inputs['new_password'], __('validation.custom.new_password.incorrect'), 400);
+        // }
 
         // Update password reset
         $password_reset_by_email = PasswordReset::where('email', $user->email)->first();
@@ -818,47 +858,6 @@ class UserController extends BaseController
     }
 
     /**
-     * Get user api token in storage.
-     *
-     * @param  $phone
-     * @return \Illuminate\Http\Response
-     */
-    public function getApiToken($phone)
-    {
-        $user = User::where('phone', $phone)->first();
-
-        if (is_null($user)) {
-            return $this->handleError(__('notifications.find_user_404'));
-        }
-
-        return $this->handleResponse($user->api_token, __('notifications.find_api_token_success'));
-    }
-
-    /**
-     * Update user api token in storage.
-     *
-     * @param  $phone
-     * @return \Illuminate\Http\Response
-     */
-    public function updateApiToken($phone)
-    {
-        // find user by given ID
-        $user = User::where('phone', $phone)->first();
-
-        if (is_null($user)) {
-            return $this->handleError(__('notifications.find_user_404'));
-        }
-
-        // update "api_token" column
-        $user->update([
-            'api_token' => Str::random(100),
-            'updated_at' => now()
-        ]);
-
-        return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
-    }
-
-    /**
      * Update user avatar picture in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -880,7 +879,6 @@ class UserController extends BaseController
         // Clean "avatars" directory
         $file = new Filesystem;
         $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/avatar');
-        // $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/avatar');
         // Create image URL
 		$image_url = 'images/users/' . $id . '/avatar/' . Str::random(50) . '.png';
 
@@ -891,153 +889,6 @@ class UserController extends BaseController
 
         $user->update([
             'avatar_url' => $image_url,
-            'updated_at' => now()
-        ]);
-
-        return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
-    }
-
-    /**
-     * Add user image in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function addImage(Request $request, $id)
-    {
-        $inputs = [
-            'user_id' => $request->user_id,
-            'image_name' => $request->image_name,
-            'image_64_recto' => $request->image_64_recto,
-            'image_64_verso' => $request->image_64_verso,
-            'description' => $request->description
-        ];
-
-        $user_identity_data = Image::where('user_id', $inputs['user_id'])->first();
-
-        if ($user_identity_data != null) {
-            if ($inputs['image_64_recto'] != null AND $inputs['image_64_verso'] != null) {
-                // $extension = explode('/', explode(':', substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ';')))[1])[1];
-                $replace_recto = substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ',') + 1);
-                $replace_verso = substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ',') + 1);
-                // Find substring from replace here eg: data:image/png;base64,
-                $image_recto = str_replace($replace_recto, '', $inputs['image_64_recto']);
-                $image_recto = str_replace(' ', '+', $image_recto);
-                $image_verso = str_replace($replace_verso, '', $inputs['image_64_verso']);
-                $image_verso = str_replace(' ', '+', $image_verso);
-
-                // Clean "identity_data" directory
-                $file = new Filesystem;
-                $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
-                // $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/identity_data');
-                // Create image URL
-                $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-                $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-
-                // Upload image
-                Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
-                Storage::url(Storage::disk('public')->put($image_url_verso, base64_decode($image_verso)));
-
-                $user_identity_data->delete();
-
-                Image::create([
-                    'image_name' => $inputs['image_name'],
-                    'url_recto' => $image_url_recto,
-                    'url_verso' => $image_url_verso,
-                    'description' => $inputs['description'],
-                    'user_id' => $inputs['user_id']
-                ]);
-            }
-
-            if ($inputs['image_64_recto'] != null AND $inputs['image_64_verso'] == null) {
-                // $extension = explode('/', explode(':', substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ';')))[1])[1];
-                $replace_recto = substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ',') + 1);
-                // Find substring from replace here eg: data:image/png;base64,
-                $image_recto = str_replace($replace_recto, '', $inputs['image_64_recto']);
-                $image_recto = str_replace(' ', '+', $image_recto);
-
-                // Delete concerning file in "identity_data"
-                if (Storage::exists($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_recto)){
-                    Storage::delete($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_recto);
-                }
-                // if (Storage::exists($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_recto)){
-                //     Storage::delete($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_recto);
-                // }
-
-                // Create image URL
-                $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-
-                // Upload image
-                Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
-
-                $user_identity_data->update([
-                    'url_recto' => $image_url_recto,
-                    'updated_at' => now()
-                ]);
-            }
-
-            if ($inputs['image_64_recto'] == null AND $inputs['image_64_verso'] != null) {
-                // $extension = explode('/', explode(':', substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ';')))[1])[1];
-                $replace_verso = substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ',') + 1);
-                // Find substring from replace here eg: data:image/png;base64,
-                $image_verso = str_replace($replace_verso, '', $inputs['image_64_verso']);
-                $image_verso = str_replace(' ', '+', $image_verso);
-
-                // Delete concerning file in "identity_data"
-                if (Storage::exists($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_verso)){
-                    Storage::delete($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_verso);
-                }
-                // if (Storage::exists($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_verso)){
-                //     Storage::delete($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/identity_data/' . $user_identity_data->url_verso);
-                // }
-
-                // Create image URL
-                $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-
-                // Upload image
-                Storage::url(Storage::disk('public')->put($image_url_verso, base64_decode($image_verso)));
-
-                $user_identity_data->update([
-                    'url_verso' => $image_url_verso,
-                    'updated_at' => now()
-                ]);
-            }
-
-        } else {
-            // $extension = explode('/', explode(':', substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ';')))[1])[1];
-            $replace_recto = substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ',') + 1);
-            $replace_verso = substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ',') + 1);
-            // Find substring from replace here eg: data:image/png;base64,
-            $image_recto = str_replace($replace_recto, '', $inputs['image_64_recto']);
-            $image_recto = str_replace(' ', '+', $image_recto);
-            $image_verso = str_replace($replace_verso, '', $inputs['image_64_verso']);
-            $image_verso = str_replace(' ', '+', $image_verso);
-
-            // Clean "identity_data" directory
-            $file = new Filesystem;
-            $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
-            // $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/storage/images/users/' . $inputs['user_id'] . '/identity_data');
-            // Create image URL
-            $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-            $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-
-            // Upload image
-            Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
-            Storage::url(Storage::disk('public')->put($image_url_verso, base64_decode($image_verso)));
-
-            Image::create([
-                'image_name' => $inputs['image_name'],
-                'url_recto' => $image_url_recto,
-                'url_verso' => $image_url_verso,
-                'description' => $inputs['description'],
-                'user_id' => $inputs['user_id']
-            ]);
-        }
-
-		$user = User::find($id);
-
-        $user->update([
             'updated_at' => now()
         ]);
 

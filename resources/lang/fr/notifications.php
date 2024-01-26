@@ -152,6 +152,7 @@ return [
     'find_user_success' => 'Utilisateur trouvé',
     'find_api_token_success' => 'Jeton d\'API trouvé',
     'find_user_404' => 'Utilisateur non trouvé',
+    'find_parent_404' => 'Parent non trouvé',
     'create_user_success' => 'Utilisateur créé',
     'create_user_SMS_failed' => 'Il y a un problème avec le service des SMS',
     'update_user_success' => 'Utilisateur modifié',
@@ -167,12 +168,12 @@ return [
     'update_password_reset_success' => 'Réinitialisation de mot de passe modifiée',
     'delete_password_reset_success' => 'Réinitialisation de mot de passe supprimée',
     // PersonalAccessToken
-    'find_all_password_resets_success' => 'Jetons personnels trouvés',
-    'find_password_reset_success' => 'Jeton personnel trouvé',
-    'find_password_reset_404' => 'Jeton personnel non trouvé',
-    'create_password_reset_success' => 'Jeton personnel créé',
-    'update_password_reset_success' => 'Jeton personnel modifié',
-    'delete_password_reset_success' => 'Jeton personnel supprimé',
+    'find_all_personal_access_tokens_success' => 'Jetons personnels trouvés',
+    'find_personal_access_token_success' => 'Jeton personnel trouvé',
+    'find_personal_access_token_404' => 'Jeton personnel non trouvé',
+    'create_personal_access_token_success' => 'Jeton personnel créé',
+    'update_personal_access_token_success' => 'Jeton personnel modifié',
+    'delete_personal_access_token_success' => 'Jeton personnel supprimé',
     // Notification
     'find_all_notifications_success' => 'Notifications trouvées',
     'find_notification_success' => 'Notification trouvée',
@@ -193,6 +194,7 @@ return [
     'delete_payment_success' => 'Paiement supprimé',
 
     // ===== PLATFORM NOTIFICATIONS
-    'welcome' => 'Bienvenue sur l\'application DikiTivi ! Veuillez lire nos conditions avant de commencer.',
+    'welcome_user' => 'Bienvenue sur l\'application DikiTivi ! Veuillez lire nos conditions avant de commencer.',
+    'member_activated' => 'Votre compte a été activé. Veuillez lire nos conditions avant de commencer.',
     'member_locked' => 'Votre compte a été bloqué. Si vous avez des questions, contactez-nous via le n° de téléphone affiché sur notre site web.',
 ];

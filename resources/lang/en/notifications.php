@@ -152,6 +152,7 @@ return [
     'find_user_success' => 'User found',
     'find_api_token_success' => 'API token found',
     'find_user_404' => 'User not found',
+    'find_parent_404' => 'Parent not found',
     'create_user_success' => 'User created',
     'create_user_SMS_failed' => 'There is a problem with the SMS service',
     'update_user_success' => 'User updated',
@@ -167,12 +168,12 @@ return [
     'update_password_reset_success' => 'Password reset updated',
     'delete_password_reset_success' => 'Password reset deleted',
     // PersonalAccessToken
-    'find_all_password_resets_success' => 'Personal tokens found',
-    'find_password_reset_success' => 'Personal token found',
-    'find_password_reset_404' => 'Personal token not found',
-    'create_password_reset_success' => 'Personal token created',
-    'update_password_reset_success' => 'Personal token updated',
-    'delete_password_reset_success' => 'Personal token deleted',
+    'find_all_personal_access_tokens_success' => 'Personal tokens found',
+    'find_personal_access_token_success' => 'Personal token found',
+    'find_personal_access_token_404' => 'Personal token not found',
+    'create_personal_access_token_success' => 'Personal token created',
+    'update_personal_access_token_success' => 'Personal token updated',
+    'delete_personal_access_token_success' => 'Personal token deleted',
     // Notification
     'find_all_notifications_success' => 'Notifications found',
     'find_notification_success' => 'Notification found',
@@ -193,6 +194,7 @@ return [
     'delete_payment_success' => 'Payment deleted',
 
     // ===== PLATFORM NOTIFICATIONS
-    'welcome' => 'WWelcome to the DikiTivi app! Please read our terms before you start.',
+    'welcome_user' => 'Welcome to the DikiTivi app! Please read our terms before you start.',
+    'member_activated' => 'Your account has been activated. Please read our terms before you start.',
     'member_locked' => 'Your account has been blocked. If you have any questions, contact us via the telephone number displayed on our website.'
 ];

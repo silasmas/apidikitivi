@@ -203,12 +203,12 @@ class LegalInfoSubjectController extends BaseController
      * Find by subject name.
      *
      * @param  string  $locale
-     * @param  string  $data_subject
+     * @param  string  $data
      * @return \Illuminate\Http\Response
      */
-    public function search($locale, $data_subject)
+    public function search($locale, $data)
     {
-        $legal_info_subject = LegalInfoSubject::where('subject_name->' . $locale, $data_subject)->first();
+        $legal_info_subject = LegalInfoSubject::where('subject_name->' . $locale, $data)->first();
 
         if (is_null($legal_info_subject)) {
             return $this->handleError(__('notifications.find_legal_info_subject_404'));
@@ -220,13 +220,13 @@ class LegalInfoSubjectController extends BaseController
     /**
      * Register data for about / terms_of_use / privacy_policy / faq.
      *
-     * @param  string  $data_subject
+     * @param  string  $subject
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function registerSubject($data_subject, Request $request)
+    public function registerSubject($subject, Request $request)
     {
-        if ($data_subject == 'about') {
+        if ($subject == 'about') {
             $legal_info_subject = LegalInfoSubject::create([
                 'subject_name' => [
                     'en' => 'About us',
@@ -271,7 +271,7 @@ class LegalInfoSubjectController extends BaseController
             return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
 
-        if ($data_subject == 'terms_of_use') {
+        if ($subject == 'terms_of_use') {
             $legal_info_subject = LegalInfoSubject::create([
                 'subject_name' => [
                     'en' => 'Terms of use',
@@ -316,7 +316,7 @@ class LegalInfoSubjectController extends BaseController
             return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
 
-        if ($data_subject == 'privacy_policy') {
+        if ($subject == 'privacy_policy') {
             $legal_info_subject = LegalInfoSubject::create([
                 'subject_name' => [
                     'en' => 'Privacy policy',
@@ -361,7 +361,7 @@ class LegalInfoSubjectController extends BaseController
             return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
 
-        if ($data_subject == 'faq') {
+        if ($subject == 'faq') {
             $legal_info_subject = LegalInfoSubject::create([
                 'subject_name' => [
                     'en' => 'FAQ',
