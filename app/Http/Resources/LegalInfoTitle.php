@@ -20,7 +20,9 @@ class LegalInfoTitle extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'title_en' => $this->title->en,
+            'title_fr' => $this->title->fr,
+            'title_ln' => $this->title->ln,
             'legal_info_contents' => LegalInfoContent::collection($this->legal_info_contents),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),

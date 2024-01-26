@@ -20,8 +20,12 @@ class LegalInfoContent extends JsonResource
     {
         return [
             'id' => $this->id,
-            'subtitle' => $this->subtitle,
-            'content' => $this->content,
+            'subtitle_en' => $this->subtitle->en,
+            'subtitle_fr' => $this->subtitle->fr,
+            'subtitle_ln' => $this->subtitle->ln,
+            'content_en' => $this->content->en,
+            'content_fr' => $this->content->fr,
+            'content_ln' => $this->content->ln,
             'photo_url' => $this->photo_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage/' . $this->photo_url : null,
             // 'photo_url' => $this->photo_url != null ? '/storage/' . $this->photo_url : null,
             'video_url' => $this->video_url,
