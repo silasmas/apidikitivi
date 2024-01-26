@@ -41,6 +41,7 @@ class User extends JsonResource
             'avatar_url' => $this->avatar_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage/' . $this->avatar_url : (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/assets/img/user.png',
             'status' => Status::make($this->status),
             'country' => Country::make($this->country),
+            'medias' => Media::collection($this->medias),
             'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'notifications' => Notification::collection($this->notifications)->sortByDesc('created_at')->toArray(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),

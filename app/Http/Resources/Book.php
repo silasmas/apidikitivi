@@ -26,7 +26,9 @@ class Book extends JsonResource
             'price' => $this->price,
             'for_youth' => $this->for_youth,
             'type' => Type::make($this->type),
+            'created_at_ago' => timeAgo($this->created_at->format('Y-m-d H:i:s')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at_ago' => timeAgo($this->updated_at->format('Y-m-d H:i:s')),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ];
     }

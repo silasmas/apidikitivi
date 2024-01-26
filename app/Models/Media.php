@@ -31,9 +31,9 @@ class Media extends Model
 
     /**
      * MANY-TO-MANY
-     * Several users for several medias
+     * Several user_approbations for several medias
      */
-    public function users()
+    public function user_approbations()
     {
         return $this->belongsToMany(User::class)->withPivot('created_at', 'updated_at', 'status_id');
     }

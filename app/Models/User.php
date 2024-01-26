@@ -52,9 +52,9 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-MANY
-     * Several medias for several users
+     * Several media_approbations for several users
      */
-    public function medias()
+    public function media_approbations()
     {
         return $this->belongsToMany(Media::class);
     }
@@ -79,11 +79,11 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-ONE
-     * Several payments for a user
+     * Several medias for a user
      */
-    public function payments()
+    public function medias()
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Media::class);
     }
 
     /**
@@ -93,6 +93,15 @@ class User extends Authenticatable
     public function carts()
     {
         return $this->hasMany(Cart::class);
+    }
+
+    /**
+     * MANY-TO-ONE
+     * Several payments for a user
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     /**
