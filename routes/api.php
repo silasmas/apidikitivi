@@ -103,7 +103,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::post('legal_info_subject', 'App\Http\Controllers\API\LegalInfoSubjectController@store')->name('legal_info_subject.api.store');
     Route::put('legal_info_subject/{id}', 'App\Http\Controllers\API\LegalInfoSubjectController@update')->name('legal_info_subject.api.update');
     Route::delete('legal_info_subject/{id}', 'App\Http\Controllers\API\LegalInfoSubjectController@destroy')->name('legal_info_subject.api.destroy');
-    Route::post('legal_info_subject/register_subject/{data}', 'App\Http\Controllers\API\LegalInfoSubjectController@registerSubject')->name('legal_info_subject.api.register_subject');
+    Route::post('legal_info_subject/register_subject/{subject}', 'App\Http\Controllers\API\LegalInfoSubjectController@registerSubject')->name('legal_info_subject.api.register_subject');
     // LegalInfoTitle
     Route::post('legal_info_title', 'App\Http\Controllers\API\LegalInfoTitleController@store')->name('legal_info_title.api.store');
     Route::put('legal_info_title/{id}', 'App\Http\Controllers\API\LegalInfoTitleController@update')->name('legal_info_title.api.update');
