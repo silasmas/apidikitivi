@@ -112,7 +112,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::post('legal_info_content', 'App\Http\Controllers\API\LegalInfoContentController@store')->name('legal_info_content.api.store');
     Route::put('legal_info_content/{id}', 'App\Http\Controllers\API\LegalInfoContentController@update')->name('legal_info_content.api.update');
     Route::delete('legal_info_content/{id}', 'App\Http\Controllers\API\LegalInfoContentController@destroy')->name('legal_info_content.api.destroy');
-    Route::put('legal_info_content/add_image/{id}', 'App\Http\Controllers\API\LegalInfoContentController@addImage')->name('legal_info_content.add_image');
+    Route::put('legal_info_content/add_image/{id}', 'App\Http\Controllers\API\LegalInfoContentController@addImage')->name('legal_info_content.api.add_image');
     // Status
     Route::post('status', 'App\Http\Controllers\API\StatusController@store')->name('status.api.store');
     Route::put('status/{id}', 'App\Http\Controllers\API\StatusController@update')->name('status.api.update');
@@ -129,11 +129,13 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::post('book', 'App\Http\Controllers\API\BookController@store')->name('book.api.store');
     Route::put('book/{id}', 'App\Http\Controllers\API\BookController@update')->name('book.api.update');
     Route::delete('book/{id}', 'App\Http\Controllers\API\BookController@destroy')->name('book.api.destroy');
+    Route::put('book/add_image/{id}', 'App\Http\Controllers\API\BookController@addImage')->name('book.api.add_image');
     // Media
     Route::post('media', 'App\Http\Controllers\API\MediaController@store')->name('media.api.store');
     Route::put('media/{id}', 'App\Http\Controllers\API\MediaController@update')->name('media.api.update');
     Route::delete('media/{id}', 'App\Http\Controllers\API\MediaController@destroy')->name('media.api.destroy');
     Route::put('media/set_approbation/{user_id}/{media_id}/{status_id}', 'App\Http\Controllers\API\MediaController@setApprobation')->name('media.api.set_approbation');
+    Route::put('media/add_image/{id}', 'App\Http\Controllers\API\MediaController@addImage')->name('media.api.add_image');
     // Cart
     Route::get('cart', 'App\Http\Controllers\API\CartController@index')->name('cart.api.index');
     Route::post('cart', 'App\Http\Controllers\API\CartController@store')->name('cart.api.store');

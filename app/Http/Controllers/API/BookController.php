@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Book;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Book as ResourcesBook;
 
 /**
@@ -201,4 +204,43 @@ class BookController extends BaseController
 
         return $this->handleResponse(ResourcesBook::collection($books), __('notifications.find_all_books_success'));
     }
+
+    /**
+     * Add book cover in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function addImage(Request $request, $id)
+    {
+        $inputs = [
+            'book_id' => $request->entity_id,
+            'image_64' => $request->base64image
+        ];
+
+        // $extension = explode('/', explode(':', substr($inputs['image_64'], 0, strpos($inputs['image_64'], ';')))[1])[1];
+        $replace = substr($inputs['image_64'], 0, strpos($inputs['image_64'], ',') + 1);
+        // Find substring from replace here eg: data:image/png;base64,
+        $image = str_replace($replace, '', $inputs['image_64']);
+        $image = str_replace(' ', '+', $image);
+
+        // Clean selected "books" directory
+        $file = new Filesystem;
+        $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/books/' . $inputs['book_id']);
+        // Create image URL
+        $image_url = 'images/books/' . $inputs['book_id'] . '/' . Str::random(50) . '.png';
+
+        // Upload image
+        Storage::url(Storage::disk('public')->put($image_url, base64_decode($image)));
+
+		$book = Book::find($id);
+
+        $book->update([
+            'cover_url' => $image_url,
+            'updated_at' => now()
+        ]);
+
+        return $this->handleResponse(new ResourcesBook($book), __('notifications.update_book_success'));
+	}
 }

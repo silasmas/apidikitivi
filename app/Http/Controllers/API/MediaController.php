@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Media;
 use App\Models\Session;
-use Illuminate\Http\Request;
-use App\Http\Resources\Media as ResourcesMedia;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\Media as ResourcesMedia;
 
 class MediaController extends BaseController
 {
@@ -62,7 +65,8 @@ class MediaController extends BaseController
             'author_names' => $request->author_names,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
-            'type_id' => $request->type_id
+            'type_id' => $request->type_id,
+            'user_id' => $request->user_id
         ];
         // Select all medias to check unique constraint
         $medias = Media::all();
@@ -147,7 +151,8 @@ class MediaController extends BaseController
             'author_names' => $request->author_names,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
-            'type_id' => $request->type_id
+            'type_id' => $request->type_id,
+            'user_id' => $request->user_id
         ];
         // Select all medias to check unique constraint
         $medias = Media::all();
@@ -254,7 +259,7 @@ class MediaController extends BaseController
     }
 
     /**
-     * Vote the media.
+     * Approve the media.
      *
      * @param  int $user_id
      * @param  int $media_id
@@ -283,4 +288,43 @@ class MediaController extends BaseController
             }
         }
     }
+
+    /**
+     * Add media cover in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function addImage(Request $request, $id)
+    {
+        $inputs = [
+            'media_id' => $request->entity_id,
+            'image_64' => $request->base64image
+        ];
+
+        // $extension = explode('/', explode(':', substr($inputs['image_64'], 0, strpos($inputs['image_64'], ';')))[1])[1];
+        $replace = substr($inputs['image_64'], 0, strpos($inputs['image_64'], ',') + 1);
+        // Find substring from replace here eg: data:image/png;base64,
+        $image = str_replace($replace, '', $inputs['image_64']);
+        $image = str_replace(' ', '+', $image);
+
+        // Clean selected "medias" directory
+        $file = new Filesystem;
+        $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/medias/' . $inputs['media_id']);
+        // Create image URL
+        $image_url = 'images/medias/' . $inputs['media_id'] . '/' . Str::random(50) . '.png';
+
+        // Upload image
+        Storage::url(Storage::disk('public')->put($image_url, base64_decode($image)));
+
+		$media = Media::find($id);
+
+        $media->update([
+            'cover_url' => $image_url,
+            'updated_at' => now()
+        ]);
+
+        return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
+	}
 }
