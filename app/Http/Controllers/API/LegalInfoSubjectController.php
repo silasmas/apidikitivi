@@ -226,6 +226,9 @@ class LegalInfoSubjectController extends BaseController
      */
     public function registerSubject($subject, Request $request)
     {
+        $legal_info_subject = null;
+        $legal_info_title = null;
+
         if ($subject == 'about') {
             $legal_info_subject = LegalInfoSubject::create([
                 'subject_name' => [
@@ -239,36 +242,6 @@ class LegalInfoSubjectController extends BaseController
                     'ln' => 'DikiTivi, chaîne na yo ya TV chrétienne pona ba émissions nionso oyo oponi.'
                 ]    
             ]);
-
-            foreach ($request->titles_fr as $key_t => $title_fr) {
-                $legal_info_title = LegalInfoTitle::create([
-                    'title' => [
-                        'en' => $title_fr,
-                        'fr' => $request->titles_fr[$key_t],
-                        'ln' => $request->titles_ln[$key_t]
-                    ],
-                    'legal_info_subject_id' => $legal_info_subject->id
-                ]);
-
-                foreach ($request->subtitles_fr as $key_c => $title_fr) {
-                    LegalInfoContent::create([
-                        'subtitle' => [
-                            'en' => $request->subtitles_en[$key_c],
-                            'fr' => $request->subtitles_fr[$key_c],
-                            'ln' => $request->subtitles_ln[$key_c]
-                        ],
-                        'content' => [
-                            'en' => $request->contents_en[$key_c],
-                            'fr' => $request->contents_fr[$key_c],
-                            'ln' => $request->contents_ln[$key_c]
-                        ],
-                        'video_url' => $request->videos_url[$key_c],
-                        'legal_info_title_id' => $legal_info_title->id
-                    ]);
-                }
-            }
-
-            return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
 
         if ($subject == 'terms_of_use') {
@@ -284,36 +257,6 @@ class LegalInfoSubjectController extends BaseController
                     'ln' => 'Na kosalela DikiTivi, ozali kondima mibeko na biso ya kosalela. Yango wana tosengi ete ozwa mwa ntango mpo na kotánga makambo yango, mpamba te ozali pene ya kosala kontra oyo ekokangama.'
                 ]    
             ]);
-
-            foreach ($request->titles_fr as $key_t => $title_fr) {
-                $legal_info_title = LegalInfoTitle::create([
-                    'title' => [
-                        'en' => $title_fr,
-                        'fr' => $request->titles_fr[$key_t],
-                        'ln' => $request->titles_ln[$key_t]
-                    ],
-                    'legal_info_subject_id' => $legal_info_subject->id
-                ]);
-
-                foreach ($request->subtitles_fr as $key_c => $title_fr) {
-                    LegalInfoContent::create([
-                        'subtitle' => [
-                            'en' => $request->subtitles_en[$key_c],
-                            'fr' => $request->subtitles_fr[$key_c],
-                            'ln' => $request->subtitles_ln[$key_c]
-                        ],
-                        'content' => [
-                            'en' => $request->contents_en[$key_c],
-                            'fr' => $request->contents_fr[$key_c],
-                            'ln' => $request->contents_ln[$key_c]
-                        ],
-                        'video_url' => $request->videos_url[$key_c],
-                        'legal_info_title_id' => $legal_info_title->id
-                    ]);
-                }
-            }
-
-            return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
 
         if ($subject == 'privacy_policy') {
@@ -329,36 +272,6 @@ class LegalInfoSubjectController extends BaseController
                     'ln' => 'Tosali ete maloba ya politiki na biso ya kobatela makambo ya moto ye moko ezala pɛtɛɛ, mpo oyeba makambo soki etali kotambwisa makambo na yo.'
                 ]    
             ]);
-
-            foreach ($request->titles_fr as $key_t => $title_fr) {
-                $legal_info_title = LegalInfoTitle::create([
-                    'title' => [
-                        'en' => $title_fr,
-                        'fr' => $request->titles_fr[$key_t],
-                        'ln' => $request->titles_ln[$key_t]
-                    ],
-                    'legal_info_subject_id' => $legal_info_subject->id
-                ]);
-
-                foreach ($request->subtitles_fr as $key_c => $title_fr) {
-                    LegalInfoContent::create([
-                        'subtitle' => [
-                            'en' => $request->subtitles_en[$key_c],
-                            'fr' => $request->subtitles_fr[$key_c],
-                            'ln' => $request->subtitles_ln[$key_c]
-                        ],
-                        'content' => [
-                            'en' => $request->contents_en[$key_c],
-                            'fr' => $request->contents_fr[$key_c],
-                            'ln' => $request->contents_ln[$key_c]
-                        ],
-                        'video_url' => $request->videos_url[$key_c],
-                        'legal_info_title_id' => $legal_info_title->id
-                    ]);
-                }
-            }
-
-            return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
 
         if ($subject == 'faq') {
@@ -374,36 +287,36 @@ class LegalInfoSubjectController extends BaseController
                     'ln' => 'Awa okokuta mituna oyo batunaka mingi epai ya basaleli ya misala na biso mpe biyano oyo okozala na mposa na yango. Soki ozali kozwa biyano na yo te, okoki kotuna motuna yango yo moko, mpe okozwa eyano mwa moke.'
                 ]    
             ]);
-
-            foreach ($request->titles_fr as $key_t => $title_fr) {
-                $legal_info_title = LegalInfoTitle::create([
-                    'title' => [
-                        'en' => $title_fr,
-                        'fr' => $request->titles_fr[$key_t],
-                        'ln' => $request->titles_ln[$key_t]
-                    ],
-                    'legal_info_subject_id' => $legal_info_subject->id
-                ]);
-
-                foreach ($request->subtitles_fr as $key_c => $title_fr) {
-                    LegalInfoContent::create([
-                        'subtitle' => [
-                            'en' => $request->subtitles_en[$key_c],
-                            'fr' => $request->subtitles_fr[$key_c],
-                            'ln' => $request->subtitles_ln[$key_c]
-                        ],
-                        'content' => [
-                            'en' => $request->contents_en[$key_c],
-                            'fr' => $request->contents_fr[$key_c],
-                            'ln' => $request->contents_ln[$key_c]
-                        ],
-                        'video_url' => $request->videos_url[$key_c],
-                        'legal_info_title_id' => $legal_info_title->id
-                    ]);
-                }
-            }
-
-            return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
         }
+
+        foreach ($request->titles_en as $key_t => $title_en) {
+            $legal_info_title = LegalInfoTitle::create([
+                'title' => [
+                    'en' => $title_en,
+                    'fr' => $request->titles_fr[$key_t],
+                    'ln' => $request->titles_ln[$key_t]
+                ],
+                'legal_info_subject_id' => $legal_info_subject->id
+            ]);
+        }
+
+        foreach ($request->subtitles_en as $key_c => $subtitle_en) {
+            LegalInfoContent::create([
+                'subtitle' => [
+                    'en' => $subtitle_en,
+                    'fr' => $request->subtitles_fr[$key_c],
+                    'ln' => $request->subtitles_ln[$key_c]
+                ],
+                'content' => [
+                    'en' => $request->contents_en[$key_c],
+                    'fr' => $request->contents_fr[$key_c],
+                    'ln' => $request->contents_ln[$key_c]
+                ],
+                'video_url' => $request->videos_url[$key_c],
+                'legal_info_title_id' => $legal_info_title->id
+            ]);
+        }
+
+        return $this->handleResponse(new ResourcesLegalInfoSubject($legal_info_subject), __('notifications.create_legal_info_subject_success'));
     }
 }
