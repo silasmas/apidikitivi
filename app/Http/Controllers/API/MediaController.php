@@ -228,6 +228,19 @@ class MediaController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Get all by title.
+     *
+     * @param  string $data
+     * @return \Illuminate\Http\Response
+     */
+    public function search($data)
+    {
+        $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+    }
+
+    /**
      * Get by age and type.
      *
      * @param  \Illuminate\Http\Request  $request

@@ -73,6 +73,8 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     // Media
     Route::get('media/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
     Route::get('media/{id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
+    Route::get('media/search/{data}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
+    Route::get('media/{id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
     // User
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
