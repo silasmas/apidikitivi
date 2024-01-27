@@ -230,12 +230,37 @@ class MediaController extends BaseController
     /**
      * Get all by title.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($data)
+    public function search(Request $request, $data)
     {
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
+
+        if ($request->user_id != null) {
+            $session = Session::where(['user_id', $request->user_id])->first();
+
+            if ($session->medias() == null) {
+                $session->medias()->attach($medias->pluck('id'));
+            }
+
+            if ($session->medias() != null) {
+                $session->medias()->sync($medias->pluck('id'));
+            }
+        }
+
+        if ($request->ip_address != null) {
+            $session = Session::where(['ip_address', $request->ip_address])->first();
+
+            if ($session->medias() == null) {
+                $session->medias()->attach($medias->pluck('id'));
+            }
+
+            if ($session->medias() != null) {
+                $session->medias()->sync($medias->pluck('id'));
+            }
+        }
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
