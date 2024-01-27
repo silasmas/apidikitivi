@@ -40,9 +40,9 @@ class TypeController extends BaseController
                 'fr' => $request->type_name_fr,
                 'ln' => $request->type_name_ln
             ],
+            'type_description' => $request->type_description,
             'icon' => $request->icon,
             'color' => $request->color,
-            'type_description' => $request->type_description,
             'group_id' => $request->group_id
         ];
         // Select all group types to check unique constraint
