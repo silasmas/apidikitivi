@@ -16,7 +16,7 @@ Route::middleware(['auth:sanctum', 'localization'])->group(function () {
     Route::apiResource('order', 'App\Http\Controllers\API\OrderController');
     Route::apiResource('pricing', 'App\Http\Controllers\API\PricingController');
     Route::apiResource('role', 'App\Http\Controllers\API\RoleController');
-    Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController');
+    Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController')->except(['searchByEmail', 'searchByPhone']);
     Route::apiResource('personal_access_token', 'App\Http\Controllers\API\PersonalAccessTokenController');
     Route::apiResource('notification', 'App\Http\Controllers\API\NotificationController');
     Route::apiResource('payment', 'App\Http\Controllers\API\PaymentController');
@@ -74,7 +74,6 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('media/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
     Route::get('media/{id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/search/{data}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
-    Route::get('media/{id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
     // User
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
@@ -86,18 +85,16 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::post('payment/store', 'App\Http\Controllers\API\PaymentController@store')->name('payment.api.store');
 });
 Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function () {
-    Route::resource('legal_info_subject', 'App\Http\Controllers\API\LegalInfoSubjectController');
-    Route::resource('legal_info_title', 'App\Http\Controllers\API\LegalInfoTitleController');
-    Route::resource('legal_info_content', 'App\Http\Controllers\API\LegalInfoContentController');
-    Route::resource('legal_info_title', 'App\Http\Controllers\API\LegalInfoTitleController');
-    Route::resource('legal_info_content', 'App\Http\Controllers\API\LegalInfoContentController');
-    Route::resource('status', 'App\Http\Controllers\API\StatusController');
-    Route::resource('type', 'App\Http\Controllers\API\TypeController');
-    Route::resource('country', 'App\Http\Controllers\API\CountryController');
-    Route::resource('book', 'App\Http\Controllers\API\BookController');
-    Route::resource('media', 'App\Http\Controllers\API\MediaController');
+    Route::resource('legal_info_subject', 'App\Http\Controllers\API\LegalInfoSubjectController')->except(['index', 'show', 'search']);
+    Route::resource('legal_info_title', 'App\Http\Controllers\API\LegalInfoTitleController')->except(['index', 'show', 'search']);
+    Route::resource('legal_info_content', 'App\Http\Controllers\API\LegalInfoContentController')->except(['index', 'show', 'search']);
+    Route::resource('status', 'App\Http\Controllers\API\StatusController')->except(['index', 'show', 'search', 'findByGroup']);
+    Route::resource('type', 'App\Http\Controllers\API\TypeController')->except(['index', 'show', 'search', 'findByGroup']);
+    Route::resource('country', 'App\Http\Controllers\API\CountryController')->except(['index', 'show', 'search']);
+    Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
+    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findAllByAgeType']);
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
-    Route::resource('user', 'App\Http\Controllers\API\UserController');
+    Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');
     Route::resource('payment', 'App\Http\Controllers\API\PaymentController');
 
