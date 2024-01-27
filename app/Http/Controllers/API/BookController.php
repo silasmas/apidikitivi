@@ -178,6 +178,19 @@ class BookController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Get all by title.
+     *
+     * @param  string $data
+     * @return \Illuminate\Http\Response
+     */
+    public function search($data)
+    {
+        $books = Book::where('book_title', 'LIKE', '%' . $data . '%')->get();
+
+        return $this->handleResponse(ResourcesBook::collection($books), __('notifications.find_all_books_success'));
+    }
+
+    /**
      * Get all by age.
      *
      * @param  int $for_youth
