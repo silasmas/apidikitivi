@@ -158,8 +158,8 @@ class CartController extends BaseController
      */
     public function findByType($user_id, $type_id)
     {
-        $cart = Cart::where([['user_id', $user_id], ['type_id', $type_id]])->first();
+        $carts = Cart::where([['user_id', $user_id], ['type_id', $type_id]])->get();
 
-        return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+        return $this->handleResponse(ResourcesCart::collection($carts), __('notifications.find_all_carts_success'));
     }
 }

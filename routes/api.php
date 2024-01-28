@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware(['auth:sanctum', 'localization'])->group(function () {
     Route::apiResource('group', 'App\Http\Controllers\API\GroupController');
-    Route::apiResource('part', 'App\Http\Controllers\API\PartController');
     Route::apiResource('order', 'App\Http\Controllers\API\OrderController');
     Route::apiResource('pricing', 'App\Http\Controllers\API\PricingController');
     Route::apiResource('role', 'App\Http\Controllers\API\RoleController');

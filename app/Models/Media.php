@@ -49,15 +49,6 @@ class Media extends Model
 
     /**
      * MANY-TO-ONE
-     * Several parts for a media
-     */
-    public function parts()
-    {
-        return $this->hasMany(Part::class);
-    }
-
-    /**
-     * MANY-TO-ONE
      * Several orders for a media
      */
     public function orders()
