@@ -37,7 +37,11 @@ class NotificationController extends BaseController
         // Get inputs
         $inputs = [
             'notification_url' => $request->notification_url,
-            'notification_content' => $request->notification_content,
+            'notification_content' => [
+                'en' => $request->notification_content_en,
+                'fr' => $request->notification_content_fr,
+                'ln' => $request->notification_content_ln
+            ],
             'icon' => $request->icon,
             'color' => $request->color,
             'status_id' => $request->status_id,
@@ -89,7 +93,11 @@ class NotificationController extends BaseController
         $inputs = [
             'id' => $request->id,
             'notification_url' => $request->notification_url,
-            'notification_content' => $request->notification_content,
+            'notification_content' => [
+                'en' => $request->notification_content_en,
+                'fr' => $request->notification_content_fr,
+                'ln' => $request->notification_content_ln
+            ],
             'icon' => $request->icon,
             'color' => $request->color,
             'status_id' => $request->status_id,

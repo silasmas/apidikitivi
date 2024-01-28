@@ -192,9 +192,11 @@ return [
     'create_payment_success' => 'Payment created',
     'update_payment_success' => 'Payment updated',
     'delete_payment_success' => 'Payment deleted',
-
-    // ===== PLATFORM NOTIFICATIONS
-    'welcome_user' => 'Welcome to the DikiTivi app! Please read our terms before you start.',
-    'member_activated' => 'Your account has been activated. Please read our terms before you start.',
-    'member_locked' => 'Your account has been blocked. If you have any questions, contact us via the telephone number displayed on our website.'
+    // Donation
+    'find_all_donations_success' => 'Donations found',
+    'find_donation_success' => 'Donation found',
+    'find_donation_404' => 'Donation not found',
+    'create_donation_success' => 'Donation created',
+    'update_donation_success' => 'Donation updated',
+    'delete_donation_success' => 'Donation deleted',
 ];

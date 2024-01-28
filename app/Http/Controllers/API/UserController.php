@@ -249,7 +249,11 @@ class UserController extends BaseController
         */
         Notification::create([
             'notification_url' => 'about/terms_of_use',
-            'notification_content' => __('notifications.welcome_user'),
+            'notification_content' => [
+                'en' => 'Welcome to the DikiTivi app! Please read our terms before you start.',
+                'fr' => 'Bienvenue sur l\'application DikiTivi ! Veuillez lire nos conditions avant de commencer.',
+                'ln' => 'Boyei malamu na application ya DikiTivi! Tosɛngi yo otánga mibeko na biso liboso ya kobanda.',
+            ],
             'icon' => 'person-check',
             'color' => 'success',
             'status_id' => $status_unread->id,
@@ -740,8 +744,12 @@ class UserController extends BaseController
         if ($status_id == $status_activated->id) {
             Notification::create([
                 'notification_url' => 'about/terms_of_use',
-                'notification_content' => __('notifications.member_activated'),
-                'icon' => 'unlock-fill',
+                'notification_content' => [
+                    'en' => 'Your account has been activated. Please read our terms before you start.',
+                    'fr' => 'Votre compte a été activé. Veuillez lire nos conditions avant de commencer.',
+                    'ln' => 'Compte na yo esili ko activer. Tosɛngi yo otánga mibeko na biso liboso ya kobanda.',
+                ],
+                    'icon' => 'unlock-fill',
                 'color' => 'info',
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
@@ -752,7 +760,11 @@ class UserController extends BaseController
         if ($status_id == $status_blocked->id) {
             Notification::create([
                 'notification_url' => 'about/terms_of_use',
-                'notification_content' => __('notifications.member_locked'),
+                'notification_content' => [
+                    'en' => 'Your account has been blocked. If you have any questions, contact us via the telephone number displayed on our website.',
+                    'fr' => 'Votre compte a été bloqué. Si vous avez des questions, contactez-nous via le n° de téléphone affiché sur notre site web.',
+                    'ln' => 'Compte na yo ekangami. Soki ozali na mituna, benga biso na nzela ya nimero ya telefone oyo emonisami na site Internet na biso.',
+                ],
                 'icon' => 'lock-fill',
                 'color' => 'danger',
                 'status_id' => $status_unread->id,
