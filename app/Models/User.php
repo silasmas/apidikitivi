@@ -97,6 +97,15 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-ONE
+     * Several donations for a user
+     */
+    public function donations()
+    {
+        return $this->hasMany(Donation::class);
+    }
+
+    /**
+     * MANY-TO-ONE
      * Several payments for a user
      */
     public function payments()

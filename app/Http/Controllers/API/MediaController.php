@@ -62,9 +62,12 @@ class MediaController extends BaseController
         $inputs = [
             'media_title' => $request->media_title,
             'media_url' => $request->media_url,
-            'author_names' => $request->author_names,
+            'author' => $request->author,
+            'writer' => $request->writer,
+            'director' => $request->director,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
+            'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
         ];
@@ -148,9 +151,12 @@ class MediaController extends BaseController
             'id' => $request->id,
             'media_title' => $request->media_title,
             'media_url' => $request->media_url,
-            'author_names' => $request->author_names,
+            'author' => $request->author,
+            'writer' => $request->writer,
+            'director' => $request->director,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
+            'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
         ];
@@ -180,9 +186,23 @@ class MediaController extends BaseController
             ]);
         }
 
-        if ($inputs['author_names'] != null) {
+        if ($inputs['author'] != null) {
             $media->update([
-                'author_names' => $request->author_names,
+                'author' => $request->author,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['writer'] != null) {
+            $media->update([
+                'writer' => $request->writer,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['director'] != null) {
+            $media->update([
+                'director' => $request->director,
                 'updated_at' => now(),
             ]);
         }
@@ -201,9 +221,23 @@ class MediaController extends BaseController
             ]);
         }
 
+        if ($inputs['belongs_to'] != null) {
+            $media->update([
+                'belongs_to' => $request->belongs_to,
+                'updated_at' => now(),
+            ]);
+        }
+
         if ($inputs['type_id'] != null) {
             $media->update([
                 'type_id' => $request->type_id,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['user_id'] != null) {
+            $media->update([
+                'user_id' => $request->user_id,
                 'updated_at' => now(),
             ]);
         }

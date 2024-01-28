@@ -894,4 +894,109 @@ class UserController extends BaseController
 
         return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
     }
+
+    /**
+     * Add user image in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function addImage(Request $request, $id)
+    {
+        $inputs = [
+            'user_id' => $request->user_id,
+            'image_name' => $request->image_name,
+            'image_64_recto' => $request->image_64_recto,
+            'image_64_verso' => $request->image_64_verso
+        ];
+
+        if ($inputs['image_64_recto'] != null AND $inputs['image_64_verso'] != null) {
+            // $extension = explode('/', explode(':', substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ';')))[1])[1];
+            $replace_recto = substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ',') + 1);
+            $replace_verso = substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ',') + 1);
+            // Find substring from replace here eg: data:image/png;base64,
+            $image_recto = str_replace($replace_recto, '', $inputs['image_64_recto']);
+            $image_recto = str_replace(' ', '+', $image_recto);
+            $image_verso = str_replace($replace_verso, '', $inputs['image_64_verso']);
+            $image_verso = str_replace(' ', '+', $image_verso);
+
+            // Clean "identity_data" directory
+            $file = new Filesystem;
+            $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
+            // Create image URL
+            $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+            $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+
+            // Upload image
+            Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
+            Storage::url(Storage::disk('public')->put($image_url_verso, base64_decode($image_verso)));
+
+            $user = User::find($id);
+
+            $user->update([
+                'id_card_type' => $inputs['image_name'],
+                'id_card_recto' => $image_url_recto,
+                'id_card_verso' => $image_url_verso,
+                'updated_at' => now(),
+            ]);
+
+            return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
+
+        } else {
+            if ($inputs['image_64_recto'] != null AND $inputs['image_64_verso'] == null) {
+                // $extension = explode('/', explode(':', substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ';')))[1])[1];
+                $replace_recto = substr($inputs['image_64_recto'], 0, strpos($inputs['image_64_recto'], ',') + 1);
+                // Find substring from replace here eg: data:image/png;base64,
+                $image_recto = str_replace($replace_recto, '', $inputs['image_64_recto']);
+                $image_recto = str_replace(' ', '+', $image_recto);
+
+                // Clean "identity_data" directory
+                $file = new Filesystem;
+                $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
+                // Create image URL
+                $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+
+                // Upload image
+                Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
+
+                $user = User::find($id);
+
+                $user->update([
+                    'id_card_type' => $inputs['image_name'],
+                    'id_card_recto' => $image_url_recto,
+                    'updated_at' => now(),
+                ]);
+
+                return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
+            }
+
+            if ($inputs['image_64_recto'] == null AND $inputs['image_64_verso'] != null) {
+                // $extension = explode('/', explode(':', substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ';')))[1])[1];
+                $replace_verso = substr($inputs['image_64_verso'], 0, strpos($inputs['image_64_verso'], ',') + 1);
+                // Find substring from replace here eg: data:image/png;base64,
+                $image_verso = str_replace($replace_verso, '', $inputs['image_64_verso']);
+                $image_verso = str_replace(' ', '+', $image_verso);
+
+                // Clean "identity_data" directory
+                $file = new Filesystem;
+                $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
+                // Create image URL
+                $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+
+                // Upload image
+                Storage::url(Storage::disk('public')->put($image_url_verso, base64_decode($image_verso)));
+
+                $user = User::find($id);
+
+                $user->update([
+                    'id_card_type' => $inputs['image_name'],
+                    'id_card_verso' => $image_url_verso,
+                    'updated_at' => now(),
+                ]);
+
+                return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
+            }
+        }
+    }
 }

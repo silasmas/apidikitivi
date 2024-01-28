@@ -33,6 +33,7 @@ class Payment extends JsonResource
             'status' => Status::make($this->status),
             'created_at' => timeAgo($this->created_at->format('Y-m-d H:i:s')),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'donation_id' => $this->donation_id,
             'user_id' => $this->user_id
         ];
     }

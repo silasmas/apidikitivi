@@ -18,6 +18,7 @@ Route::middleware(['auth:sanctum', 'localization'])->group(function () {
     Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController')->except(['searchByEmail', 'searchByPhone']);
     Route::apiResource('personal_access_token', 'App\Http\Controllers\API\PersonalAccessTokenController');
     Route::apiResource('notification', 'App\Http\Controllers\API\NotificationController');
+    Route::apiResource('donation', 'App\Http\Controllers\API\DonationController');
     Route::apiResource('payment', 'App\Http\Controllers\API\PaymentController');
 });
 /*

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @author Xanders
  * @see https://www.linkedin.com/in/xanders-samoth-b2770737/
  */
-class Pricing extends Model
+class Donation extends Model
 {
     use HasFactory;
 
@@ -21,20 +21,29 @@ class Pricing extends Model
     protected $guarded = [];
 
     /**
-     * MANY-TO-ONE
-     * Several orders for a pricing
+     * ONE-TO-MANY
+     * One pricing for several donations
      */
-    public function orders()
+    public function pricing()
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsTo(Pricing::class);
+    }
+
+    /**
+     * ONE-TO-MANY
+     * One user for several donations
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
      * MANY-TO-ONE
-     * Several donations for a pricing
+     * Several payments for a donation
      */
-    public function donations()
+    public function payments()
     {
-        return $this->hasMany(Donation::class);
+        return $this->hasMany(Payment::class);
     }
 }

@@ -39,7 +39,8 @@ class BookController extends BaseController
         $inputs = [
             'book_title' => $request->book_title,
             'book_url' => $request->book_url,
-            'author_names' => $request->author_names,
+            'author' => $request->author,
+            'editor' => $request->editor,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'type_id' => $request->type_id

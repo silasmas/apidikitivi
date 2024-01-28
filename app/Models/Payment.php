@@ -49,6 +49,15 @@ class Payment extends Model
 
     /**
      * ONE-TO-MANY
+     * One donation for several payments
+     */
+    public function donation()
+    {
+        return $this->belongsTo(Donation::class);
+    }
+
+    /**
+     * ONE-TO-MANY
      * One user for several payments
      */
     public function user()
