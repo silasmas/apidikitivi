@@ -155,6 +155,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::put('user/update_role/{id}', 'App\Http\Controllers\API\UserController@updateRole')->name('user.api.update_role');
     Route::put('user/update_password/{id}', 'App\Http\Controllers\API\UserController@updatePassword')->name('user.api.update_password');
     Route::put('user/update_avatar_picture/{id}', 'App\Http\Controllers\API\UserController@updateAvatarPicture')->name('user.api.update_avatar_picture');
+    Route::put('user/add_image/{id}', 'App\Http\Controllers\API\UserController@addImage')->name('user.api.add_image');
     // Notification
     Route::get('notification', 'App\Http\Controllers\API\NotificationController@index')->name('notification.api.index');
     Route::post('notification/store', 'App\Http\Controllers\API\NotificationController@store')->name('notification.api.store');
