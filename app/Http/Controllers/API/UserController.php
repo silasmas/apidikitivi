@@ -237,7 +237,11 @@ class UserController extends BaseController
 
         $user = User::create($inputs);
         $token = $user->createToken('auth_token')->plainTextToken;
-        $inputs['api_token'] = $token;
+
+        $user->update([
+            'api_token' => $token,
+            'updated_at' => now()
+        ]);
 
         if ($request->role_id != null) {
             $user->roles()->attach([$request->role_id]);
@@ -255,7 +259,7 @@ class UserController extends BaseController
             ],
             'icon' => 'person-check',
             'color' => 'success',
-            'status_id' => $status_unread->id,
+            'status_id' => is_null($status_unread) ? null : $status_unread->id,
             'user_id' => $user->id
         ]);
 
