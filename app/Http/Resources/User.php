@@ -44,7 +44,7 @@ class User extends JsonResource
             'id_card_verso' => $this->id_card_verso != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage/' . $this->id_card_verso : null,
             'status' => Status::make($this->status),
             'country' => Country::make($this->country),
-            'medias' => Media::collection($this->medias),
+            'medias' => Media::collection($this->medias)->sortByDesc('created_at')->toArray(),
             'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'notifications' => Notification::collection($this->notifications)->sortByDesc('created_at')->toArray(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
