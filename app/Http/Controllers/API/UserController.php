@@ -59,7 +59,6 @@ class UserController extends BaseController
             'phone' => $request->phone,
             'username' => $request->username,
             'password' => $request->password,
-            'confirm_password' => $request->confirm_password,
             'belongs_to' => $request->belongs_to,
             'parental_code' => $request->parental_code,
             'api_token' => $request->api_token,
@@ -135,8 +134,8 @@ class UserController extends BaseController
         }
 
         if ($inputs['password'] != null) {
-            if ($inputs['confirm_password'] != $inputs['password'] OR $inputs['confirm_password'] == null) {
-                return $this->handleError($inputs['confirm_password'], __('notifications.confirm_password_error'), 400);
+            if ($request->confirm_password != $inputs['password'] OR $request->confirm_password == null) {
+                return $this->handleError($request->confirm_password, __('notifications.confirm_password_error'), 400);
             }
 
             // if (preg_match('#^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$#', $inputs['password']) == 0) {
