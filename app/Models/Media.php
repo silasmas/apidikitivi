@@ -48,6 +48,15 @@ class Media extends Model
     }
 
     /**
+     * ONE-TO-MANY
+     * One user for several medias
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * MANY-TO-ONE
      * Several orders for a media
      */
