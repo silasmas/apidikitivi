@@ -45,7 +45,7 @@ class PricingController extends BaseController
         $pricings = Pricing::all();
 
         // Validate required fields
-        if (trim($inputs['deadline']['en']) == null AND trim($inputs['deadline']['fr']) == null AND trim($inputs['deadline']['ln']) == null) {
+        if (trim($inputs['deadline']) == null) {
             return $this->handleError($inputs['deadline'], __('validation.required'), 400);
         }
 
@@ -101,51 +101,19 @@ class PricingController extends BaseController
         $pricings = Pricing::all();
         $current_pricing = Pricing::find($inputs['id']);
 
-        if ($inputs['deadline']['en'] != null) {
+        if ($inputs['deadline'] != null) {
             foreach ($pricings as $another_pricing):
-                if ($current_pricing->deadline->en != $inputs['deadline']['en']) {
-                    if ($another_pricing->deadline->en == $inputs['deadline']['en']) {
-                        return $this->handleError($inputs['deadline']['en'], __('validation.custom.deadline.exists'), 400);
+                if ($current_pricing->deadline != $inputs['deadline']) {
+                    if ($another_pricing->deadline == $inputs['deadline']) {
+                        return $this->handleError($inputs['deadline'], __('validation.custom.deadline.exists'), 400);
                     }
                 }
             endforeach;
 
             $pricing->update([
                 'deadline' => [
-                    'en' => $request->deadline_en
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['deadline']['fr'] != null) {
-            foreach ($pricings as $another_pricing):
-                if ($current_pricing->deadline->fr != $inputs['deadline']['fr']) {
-                    if ($another_pricing->deadline->fr == $inputs['deadline']['fr']) {
-                        return $this->handleError($inputs['deadline']['fr'], __('validation.custom.deadline.exists'), 400);
-                    }
-                }
-            endforeach;
-
-            $pricing->update([
-                'deadline' => [
-                    'fr' => $request->deadline_fr
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['deadline']['ln'] != null) {
-            foreach ($pricings as $another_pricing):
-                if ($current_pricing->deadline->ln != $inputs['deadline']['ln']) {
-                    if ($another_pricing->deadline->ln == $inputs['deadline']['ln']) {
-                        return $this->handleError($inputs['deadline']['ln'], __('validation.custom.deadline.exists'), 400);
-                    }
-                }
-            endforeach;
-
-            $pricing->update([
-                'deadline' => [
+                    'en' => $request->deadline_en,
+                    'fr' => $request->deadline_fr,
                     'ln' => $request->deadline_ln
                 ],
                 'updated_at' => now()

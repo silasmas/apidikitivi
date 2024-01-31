@@ -49,7 +49,7 @@ class TypeController extends BaseController
         $types = Type::where('group_id', $inputs['group_id'])->get();
 
         // Validate required fields
-        if (trim($inputs['type_name']['en']) == null AND trim($inputs['type_name']['fr']) == null AND trim($inputs['type_name']['ln']) == null) {
+        if (trim($inputs['type_name']) == null) {
             return $this->handleError($inputs['type_name'], __('validation.required'), 400);
         }
 
@@ -112,51 +112,19 @@ class TypeController extends BaseController
         $types = Type::where('group_id', $inputs['group_id'])->get();
         $current_type = Type::find($inputs['id']);
 
-        if ($inputs['type_name']['en'] != null) {
+        if ($inputs['type_name'] != null) {
             foreach ($types as $another_type):
-                if ($current_type->type_name->en != $inputs['type_name']['en']) {
-                    if ($another_type->type_name->en == $inputs['type_name']['en']) {
-                        return $this->handleError($inputs['type_name']['en'], __('validation.custom.type_name.exists'), 400);
+                if ($current_type->type_name != $inputs['type_name']) {
+                    if ($another_type->type_name == $inputs['type_name']) {
+                        return $this->handleError($inputs['type_name'], __('validation.custom.type_name.exists'), 400);
                     }
                 }
             endforeach;
 
             $type->update([
                 'type_name' => [
-                    'en' => $request->type_name_en
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['type_name']['fr'] != null) {
-            foreach ($types as $another_type):
-                if ($current_type->type_name->fr != $inputs['type_name']['fr']) {
-                    if ($another_type->type_name->fr == $inputs['type_name']['fr']) {
-                        return $this->handleError($inputs['type_name']['fr'], __('validation.custom.type_name.exists'), 400);
-                    }
-                }
-            endforeach;
-
-            $type->update([
-                'type_name' => [
-                    'fr' => $request->type_name_fr
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['type_name']['ln'] != null) {
-            foreach ($types as $another_type):
-                if ($current_type->type_name->ln != $inputs['type_name']['ln']) {
-                    if ($another_type->type_name->ln == $inputs['type_name']['ln']) {
-                        return $this->handleError($inputs['type_name']['ln'], __('validation.custom.type_name.exists'), 400);
-                    }
-                }
-            endforeach;
-
-            $type->update([
-                'type_name' => [
+                    'en' => $request->type_name_en,
+                    'fr' => $request->type_name_fr,
                     'ln' => $request->type_name_ln
                 ],
                 'updated_at' => now()
