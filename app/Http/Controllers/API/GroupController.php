@@ -45,7 +45,7 @@ class GroupController extends BaseController
         $groups = Group::all();
 
         // Validate required fields
-        if (trim($inputs['group_name']) == null) {
+        if ($inputs['group_name'] == null) {
             return $this->handleError($inputs['group_name'], __('validation.required'), 400);
         }
 

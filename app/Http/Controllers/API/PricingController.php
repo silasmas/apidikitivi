@@ -45,7 +45,7 @@ class PricingController extends BaseController
         $pricings = Pricing::all();
 
         // Validate required fields
-        if (trim($inputs['deadline']) == null) {
+        if ($inputs['deadline'] == null) {
             return $this->handleError($inputs['deadline'], __('validation.required'), 400);
         }
 

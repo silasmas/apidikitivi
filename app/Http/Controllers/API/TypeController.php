@@ -49,7 +49,7 @@ class TypeController extends BaseController
         $types = Type::where('group_id', $inputs['group_id'])->get();
 
         // Validate required fields
-        if (trim($inputs['type_name']) == null) {
+        if ($inputs['type_name'] == null) {
             return $this->handleError($inputs['type_name'], __('validation.required'), 400);
         }
 

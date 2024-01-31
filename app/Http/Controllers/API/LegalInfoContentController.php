@@ -114,58 +114,26 @@ class LegalInfoContentController extends BaseController
         ];
 
         // Validate required fields
-        if ($inputs['legal_info_title_id'] == null OR $inputs['legal_info_title_id'] == ' ') {
+        if ($inputs['legal_info_title_id'] == null) {
             return $this->handleError($inputs['legal_info_title_id'], __('validation.required'), 400);
         }
 
-        if ($inputs['subtitle']['en'] != null) {
+        if ($inputs['subtitle'] != null) {
             $legal_info_content->update([
                 'subtitle' => [
-                    'en' => $request->subtitle_en
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['subtitle']['fr'] != null) {
-            $legal_info_content->update([
-                'subtitle' => [
-                    'fr' => $request->subtitle_fr
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['subtitle']['ln'] != null) {
-            $legal_info_content->update([
-                'subtitle' => [
+                    'en' => $request->subtitle_en,
+                    'fr' => $request->subtitle_fr,
                     'ln' => $request->subtitle_ln
                 ],
                 'updated_at' => now()
             ]);
         }
 
-        if ($inputs['content']['en'] != null) {
+        if ($inputs['content'] != null) {
             $legal_info_content->update([
                 'content' => [
-                    'en' => $request->content_en
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['content']['fr'] != null) {
-            $legal_info_content->update([
-                'content' => [
-                    'fr' => $request->content_fr
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['content']['ln'] != null) {
-            $legal_info_content->update([
-                'content' => [
+                    'en' => $request->content_en,
+                    'fr' => $request->content_fr,
                     'ln' => $request->content_ln
                 ],
                 'updated_at' => now()

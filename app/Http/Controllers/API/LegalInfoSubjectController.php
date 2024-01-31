@@ -49,7 +49,7 @@ class LegalInfoSubjectController extends BaseController
         ];
 
         // Validate required fields
-        if (trim($inputs['subject_name']['en']) == null AND trim($inputs['subject_name']['fr']) == null AND trim($inputs['subject_name']['ln']) == null) {
+        if ($inputs['subject_name'] == null) {
             return $this->handleError($inputs['subject_name'], __('validation.required'), 400);
         }
 
@@ -102,78 +102,30 @@ class LegalInfoSubjectController extends BaseController
         $legal_info_subjects = LegalInfoSubject::all();
         $current_legal_info_subject = LegalInfoSubject::find($inputs['id']);
 
-        if ($inputs['subject_name']['en'] != null) {
+        if ($inputs['subject_name'] != null) {
             foreach ($legal_info_subjects as $another_legal_info_subject):
-                if ($current_legal_info_subject->subject_name->en != $inputs['subject_name']['en']) {
-                    if ($another_legal_info_subject->subject_name->en == $inputs['subject_name']['en']) {
-                        return $this->handleError($inputs['subject_name']['en'], __('validation.custom.subject.exists'), 400);
+                if ($current_legal_info_subject->subject_name != $inputs['subject_name']) {
+                    if ($another_legal_info_subject->subject_name == $inputs['subject_name']) {
+                        return $this->handleError($inputs['subject_name'], __('validation.custom.subject.exists'), 400);
                     }
                 }
             endforeach;
-    
-            $legal_info_subject->update([
-                'subject_name' => [
-                    'en' => $request->subject_name_en
-                ],
-                'updated_at' => now()
-            ]);
-        }
 
-        if ($inputs['subject_name']['fr'] != null) {
-            foreach ($legal_info_subjects as $another_legal_info_subject):
-                if ($current_legal_info_subject->subject_name->fr != $inputs['subject_name']['fr']) {
-                    if ($another_legal_info_subject->subject_name->fr == $inputs['subject_name']['fr']) {
-                        return $this->handleError($inputs['subject_name']['fr'], __('validation.custom.subject.exists'), 400);
-                    }
-                }
-            endforeach;
-    
             $legal_info_subject->update([
                 'subject_name' => [
-                    'fr' => $request->subject_name_fr
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['subject_name']['ln'] != null) {
-            foreach ($legal_info_subjects as $another_legal_info_subject):
-                if ($current_legal_info_subject->subject_name->ln != $inputs['subject_name']['ln']) {
-                    if ($another_legal_info_subject->subject_name->ln == $inputs['subject_name']['ln']) {
-                        return $this->handleError($inputs['subject_name']['ln'], __('validation.custom.subject.exists'), 400);
-                    }
-                }
-            endforeach;
-    
-            $legal_info_subject->update([
-                'subject_name' => [
+                    'en' => $request->subject_name_en,
+                    'fr' => $request->subject_name_fr,
                     'ln' => $request->subject_name_ln
                 ],
                 'updated_at' => now()
             ]);
         }
 
-        if ($inputs['subject_description']['en'] != null) {
+        if ($inputs['subject_description'] != null) {
             $legal_info_subject->update([
                 'subject_description' => [
-                    'en' => $request->subject_description_en
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['subject_description']['fr'] != null) {
-            $legal_info_subject->update([
-                'subject_description' => [
-                    'fr' => $request->subject_description_fr
-                ],
-                'updated_at' => now()
-            ]);
-        }
-
-        if ($inputs['subject_description']['ln'] != null) {
-            $legal_info_subject->update([
-                'subject_description' => [
+                    'en' => $request->subject_description_en,
+                    'fr' => $request->subject_description_fr,
                     'ln' => $request->subject_description_ln
                 ],
                 'updated_at' => now()
