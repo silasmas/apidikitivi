@@ -42,7 +42,7 @@ class UserController extends BaseController
      */
     public function store(Request $request)
     {
-        $status_activated = Status::where('status_name->fr', 'Activé')->first();
+        $status_intermediate = Status::where('status_name->fr', 'Intermédiaire')->first();
         $status_unread = Status::where('status_name->fr', 'Non lue')->first();
         // Get inputs
         $inputs = [
@@ -64,7 +64,7 @@ class UserController extends BaseController
             'parental_code' => $request->parental_code,
             'api_token' => $request->api_token,
             'country_id' => $request->country_id,
-            'status_id' => $status_activated->id
+            'status_id' => is_null($status_intermediate) ? null : $status_intermediate->id
         ];
         $users = User::all();
         $password_resets = PasswordReset::all();
@@ -737,11 +737,12 @@ class UserController extends BaseController
             HISTORY AND/OR NOTIFICATION MANAGEMENT
         */
         $status_activated = Status::where('status_name->fr', 'Activé')->first();
+        $status_intermediate = Status::where('status_name->fr', 'Intermédiaire')->first();
         $status_blocked = Status::where('status_name->fr', 'Bloqué')->first();
         $status_unread = Status::where('status_name->fr', 'Non lue')->first();
 
         // If it's a member whose accessing is accepted, send notification
-        if ($status_id == $status_activated->id) {
+        if ($status_id == $status_activated->id OR $status_id == $status_intermediate->id) {
             Notification::create([
                 'notification_url' => 'about/terms_of_use',
                 'notification_content' => [
@@ -754,6 +755,21 @@ class UserController extends BaseController
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
             ]);
+
+            if ($user->id_card_recto == null AND $user->id_card_verso == null) {
+                // update "status_id" column
+                $user->update([
+                    'status_id' => $status_intermediate->id,
+                    'updated_at' => now()
+                ]);
+
+            } else {
+                // update "status_id" column
+                $user->update([
+                    'status_id' => $status_activated->id,
+                    'updated_at' => now()
+                ]);
+            }
         }
 
         // If it's a member whose accessing is blocked, send notification
@@ -770,13 +786,13 @@ class UserController extends BaseController
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
             ]);
-        }
 
-        // update "status_id" column
-        $user->update([
-            'status_id' => $status_id,
-            'updated_at' => now()
-        ]);
+            // update "status_id" column
+            $user->update([
+                'status_id' => $status_blocked->id,
+                'updated_at' => now()
+            ]);
+        }
 
         return $this->handleResponse(new ResourcesUser($user), __('notifications.update_user_success'));
     }
