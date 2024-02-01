@@ -24,7 +24,7 @@ class Pricing extends Model
     /**
      * Translatable properties.
      */
-    protected $translatable = ['status_name'];
+    protected $translatable = ['deadline'];
 
     /**
      * MANY-TO-ONE
