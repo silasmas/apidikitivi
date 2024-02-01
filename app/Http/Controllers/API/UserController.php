@@ -183,8 +183,6 @@ class UserController extends BaseController
                     // }
                 }
             }
-
-            $inputs['password'] =;
         }
 
         if ($inputs['password'] == null) {
