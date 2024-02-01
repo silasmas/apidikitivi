@@ -134,7 +134,7 @@ class UserController extends BaseController
         }
 
         if ($inputs['password'] != null) {
-            if ($request->confirm_password != $inputs['password'] OR $request->confirm_password == null) {
+            if ($request->confirm_password != $request->password OR $request->confirm_password == null) {
                 return $this->handleError($request->confirm_password, __('notifications.confirm_password_error'), 400);
             }
 
