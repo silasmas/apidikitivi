@@ -58,7 +58,7 @@ class UserController extends BaseController
             'email' => $request->email,
             'phone' => $request->phone,
             'username' => $request->username,
-            'password' => $request->password,
+            'password' => empty($request->password) ? null : Hash::make($request->password),
             'belongs_to' => $request->belongs_to,
             'parental_code' => $request->parental_code,
             'api_token' => $request->api_token,
@@ -183,6 +183,8 @@ class UserController extends BaseController
                     // }
                 }
             }
+
+            $inputs['password'] =;
         }
 
         if ($inputs['password'] == null) {
