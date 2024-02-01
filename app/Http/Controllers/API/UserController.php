@@ -258,7 +258,7 @@ class UserController extends BaseController
                 'ln' => 'Boyei malamu na application ya DikiTivi! Tosɛngi yo otánga mibeko na biso liboso ya kobanda.',
             ],
             'icon' => 'bi bi-person-check',
-            'color' => 'success',
+            'color' => 'text-success',
             'status_id' => is_null($status_unread) ? null : $status_unread->id,
             'user_id' => $user->id
         ]);
@@ -754,7 +754,7 @@ class UserController extends BaseController
                     'ln' => 'Compte na yo esili ko activer. Tosɛngi yo otánga mibeko na biso liboso ya kobanda.',
                 ],
                     'icon' => 'bi bi-unlock-fill',
-                'color' => 'info',
+                'color' => 'text-info',
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
             ]);
@@ -785,7 +785,7 @@ class UserController extends BaseController
                     'ln' => 'Compte na yo ekangami. Soki ozali na mituna, benga biso na nzela ya nimero ya telefone oyo emonisami na site Internet na biso.',
                 ],
                 'icon' => 'bi bi-lock-fill',
-                'color' => 'danger',
+                'color' => 'text-danger',
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,
             ]);
