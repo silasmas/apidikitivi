@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'localization'])->group(function () {
     Route::apiResource('group', 'App\Http\Controllers\API\GroupController');
     Route::apiResource('order', 'App\Http\Controllers\API\OrderController');
-    Route::apiResource('pricing', 'App\Http\Controllers\API\PricingController');
+    Route::apiResource('pricing', 'App\Http\Controllers\API\PricingController')->except(['index']);
     Route::apiResource('role', 'App\Http\Controllers\API\RoleController');
     Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController')->except(['searchByEmail', 'searchByPhone']);
     Route::apiResource('personal_access_token', 'App\Http\Controllers\API\PersonalAccessTokenController');
@@ -34,6 +34,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::resource('country', 'App\Http\Controllers\API\CountryController');
     Route::resource('book', 'App\Http\Controllers\API\BookController');
     Route::resource('media', 'App\Http\Controllers\API\MediaController');
+    Route::resource('pricing', 'App\Http\Controllers\API\PricingController');
     Route::resource('user', 'App\Http\Controllers\API\UserController');
     Route::resource('password_reset', 'App\Http\Controllers\API\PasswordResetController');
     Route::resource('payment', 'App\Http\Controllers\API\PaymentController');
@@ -75,6 +76,8 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('media/{id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/search/{data}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
+    // pricing
+    Route::get('pricing', 'App\Http\Controllers\API\PricingController@index')->name('pricing.api.index');
     // User
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
     Route::post('user/login', 'App\Http\Controllers\API\UserController@login')->name('user.api.login');
