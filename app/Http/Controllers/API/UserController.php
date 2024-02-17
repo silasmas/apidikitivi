@@ -113,6 +113,11 @@ class UserController extends BaseController
                     return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
                 }
             endforeach;
+
+            // Check correct username
+            if (preg_match('#^[\w]+$#', $inputs['username']) == 0) {
+                return $this->handleError($inputs['username'], __('miscellaneous.username.error'), 400);
+            }
         }
 
         // If it is a child's account, generate a code for his parent if the code does not exist
@@ -462,6 +467,11 @@ class UserController extends BaseController
                     }
                 }
             endforeach;
+
+            // Check correct username
+            if (preg_match('#^[\w]+$#', $inputs['username']) == 0) {
+                return $this->handleError($inputs['username'], __('miscellaneous.username.error'), 400);
+            }
 
             $user->update([
                 'username' => $inputs['username'],
