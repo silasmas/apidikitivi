@@ -113,11 +113,6 @@ class UserController extends BaseController
                     return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
                 }
             endforeach;
-
-            // Check correct username
-            if (preg_match('#^[\w]+$#', $inputs['username']) == 0) {
-                return $this->handleError($inputs['username'], __('miscellaneous.username.error'), 400);
-            }
         }
 
         // If it is a child's account, generate a code for his parent if the code does not exist
@@ -247,6 +242,26 @@ class UserController extends BaseController
             'api_token' => $token,
             'updated_at' => now()
         ]);
+
+        // If it is a child's account, give to the child the same password as the parent
+        if ($inputs['belongs_to'] != null) {
+            $parent = User::find($inputs['belongs_to']);
+            $parent_password_reset = PasswordReset::where('email', $parent->email)->orWhere('phone', $parent->phone)->first();
+
+            if (is_null($parent)) {
+                return $this->handleError(__('notifications.find_parent_404'));
+            }
+
+            $user->update([
+                'password' => $parent->password,
+                'updated_at' => now()
+            ]);
+
+            $password_reset->update([
+                'former_password' => $parent_password_reset->former_password,
+                'updated_at' => now()
+            ]);
+        }
 
         if ($request->role_id != null) {
             $user->roles()->attach([$request->role_id]);
@@ -468,11 +483,6 @@ class UserController extends BaseController
                 }
             endforeach;
 
-            // Check correct username
-            if (preg_match('#^[\w]+$#', $inputs['username']) == 0) {
-                return $this->handleError($inputs['username'], __('miscellaneous.username.error'), 400);
-            }
-
             $user->update([
                 'username' => $inputs['username'],
                 'updated_at' => now(),
@@ -570,6 +580,25 @@ class UserController extends BaseController
                 'password' => $inputs['password'],
                 'updated_at' => now(),
             ]);
+
+            // If the user is a parent, change its children's password according to its own
+            if ($user->parental_code != null) {
+                $children = User::where('belongs_to', $user->id)->get();
+
+                foreach ($children as $child):
+                    $child->update([
+                        'password' => $user->password,
+                        'updated_at' => now(),
+                    ]);
+
+                    $child_password_reset = PasswordReset::where('email', $child->email)->orWhere('phone', $child->phone)->first();
+
+                    $child_password_reset->update([
+                        'former_password' => $inputs['password'],
+                        'updated_at' => now(),
+                    ]);
+                endforeach;
+            }
         }
 
         if ($inputs['country_id'] != null) {
@@ -732,6 +761,54 @@ class UserController extends BaseController
     }
 
     /**
+     * Search a user by a parental code.
+     *
+     * @param  string $parental_code
+     * @param  int $user_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findByParentalCode($parental_code, $user_id)
+    {
+        $status_unread = Status::where('status_name->fr', 'Non lue')->first();
+        $parent = User::where('parental_code', $parental_code)->first();
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        if (is_null($parent)) {
+            return $this->handleError(__('notifications.find_parent_404'));
+        }
+
+        if ($user->belongs_to != $parent->id) {
+            return $this->handleError(__('notifications.parental_code_error'));
+        }
+
+        /*
+            HISTORY AND/OR NOTIFICATION MANAGEMENT
+        */
+        Notification::create([
+            'notification_url' => 'account/children/' . $user->id,
+            'notification_content' => [
+                'en' => $user->firstname . ' is logged in using your parental code.',
+                'fr' => $user->firstname . ' s\'est connecté en utilisant votre code parental.',
+                'ln' => $user->firstname . ' a se connecter na kosalela code na yo ya moboti.',
+            ],
+            'icon' => 'bi bi-shield-lock',
+            'color' => 'text-primary',
+            'status_id' => $status_unread->id,
+            'user_id' => $parent->id
+        ]);
+
+        $object = new stdClass();
+        $object->parent = new ResourcesUser($parent);
+        $object->user = new ResourcesUser($user);
+
+        return $this->handleResponse($object, __('notifications.find_user_success'));
+    }
+
+    /**
      * Switch between user statuses.
      *
      * @param  $id
@@ -874,7 +951,7 @@ class UserController extends BaseController
         if ($password_reset_by_email != null) {
             // Update password reset in the case user want to reset his password
             $password_reset_by_email->update([
-                'code' => random_int(1000000, 9999999),
+                'token' => random_int(1000000, 9999999),
                 'former_password' => $inputs['new_password'],
                 'updated_at' => now(),
             ]);
@@ -883,7 +960,7 @@ class UserController extends BaseController
         if ($password_reset_by_phone != null) {
             // Update password reset in the case user want to reset his password
             $password_reset_by_phone->update([
-                'code' => random_int(1000000, 9999999),
+                'token' => random_int(1000000, 9999999),
                 'former_password' => $inputs['new_password'],
                 'updated_at' => now(),
             ]);
@@ -894,6 +971,25 @@ class UserController extends BaseController
             'password' => Hash::make($inputs['new_password']),
             'updated_at' => now()
         ]);
+
+        // If the user is a parent, change its children's password according to its own
+        if ($user->parental_code != null) {
+            $children = User::where('belongs_to', $user->id)->get();
+
+            foreach ($children as $child):
+                $child->update([
+                    'password' => $user->password,
+                    'updated_at' => now(),
+                ]);
+
+                $child_password_reset = PasswordReset::where('email', $child->email)->orWhere('phone', $child->phone)->first();
+
+                $child_password_reset->update([
+                    'former_password' => $inputs['password'],
+                    'updated_at' => now(),
+                ]);
+            endforeach;
+        }
 
         return $this->handleResponse(new ResourcesUser($user), __('notifications.update_password_success'));
     }

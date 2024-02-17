@@ -153,6 +153,7 @@ return [
     'find_api_token_success' => 'API token found',
     'find_user_404' => 'User not found',
     'find_parent_404' => 'Parent not found',
+    'parental_code_error' => 'Parental code error',
     'create_user_success' => 'User created',
     'create_user_SMS_failed' => 'There is a problem with the SMS service',
     'update_user_success' => 'User updated',
