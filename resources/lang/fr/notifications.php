@@ -168,6 +168,7 @@ return [
     'create_password_reset_success' => 'Réinitialisation de mot de passe créée',
     'update_password_reset_success' => 'Réinitialisation de mot de passe modifiée',
     'delete_password_reset_success' => 'Réinitialisation de mot de passe supprimée',
+    'unverified_token' => 'Le jeton n\'est pas encore vérifié',
     // PersonalAccessToken
     'find_all_personal_access_tokens_success' => 'Jetons personnels trouvés',
     'find_personal_access_token_success' => 'Jeton personnel trouvé',

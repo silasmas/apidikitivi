@@ -335,7 +335,8 @@ class UserController extends BaseController
             'confirm_password' => $request->confirm_password,
             'belongs_to' => $request->belongs_to,
             'parental_code' => $request->parental_code,
-            'api_token' => $request->api_token,
+            'email_verified_at' => $request->email_verified_at,
+            'phone_verified_at' => $request->phone_verified_at,
             'country_id' => $request->country_id,
             'status_id' => $request->status
         ];
@@ -508,6 +509,27 @@ class UserController extends BaseController
 
             $user->update([
                 'belongs_to' => $inputs['belongs_to'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['parental_code'] != null) {
+            $user->update([
+                'parental_code' => $inputs['parental_code'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['email_verified_at'] != null) {
+            $user->update([
+                'email_verified_at' => $inputs['email_verified_at'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['phone_verified_at'] != null) {
+            $user->update([
+                'phone_verified_at' => $inputs['phone_verified_at'],
                 'updated_at' => now(),
             ]);
         }
@@ -729,6 +751,12 @@ class UserController extends BaseController
                 return $this->handleError($inputs['password'], __('auth.password'), 400);
             }
 
+            $password_reset = PasswordReset::where('phone', $user->phone)->first();
+
+            if ($user->phone_verified_at == null) {
+                return $this->handleError(new ResourcesPasswordReset($password_reset), __('notifications.unverified_token'), 400);
+            }
+
             $token = $user->createToken('auth_token')->plainTextToken;
 
             $user->update([
@@ -747,6 +775,12 @@ class UserController extends BaseController
 
             if (!Hash::check($inputs['password'], $user->password)) {
                 return $this->handleError($inputs['password'], __('auth.password'), 400);
+            }
+
+            $password_reset = PasswordReset::where('email', $user->email)->first();
+
+            if ($user->email_verified_at == null) {
+                return $this->handleError(new ResourcesPasswordReset($password_reset), __('notifications.unverified_token'), 400);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
