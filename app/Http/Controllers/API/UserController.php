@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
+use App\Models\PersonalAccessToken;
 
 /**
  * @author Xanders
@@ -658,7 +659,29 @@ class UserController extends BaseController
      */
     public function destroy(User $user)
     {
+        $password_reset = PasswordReset::where('email', $user->email)->orWhere('phone', $user->phone)->first();
+        $personal_access_tokens = PersonalAccessToken::where('tokenable_id', $user->id)->get();
+        $notifications = Notification::where('user_id', $user->id)->get();
+        $directory = $_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $user->id;
+
         $user->delete();
+        $password_reset->delete();
+
+        if (!is_null($personal_access_tokens)) {
+            foreach ($personal_access_tokens as $personal_access_token):
+                $personal_access_token->delete();
+            endforeach;
+        }
+
+        if (!is_null($notifications)) {
+            foreach ($notifications as $notification):
+                $notification->delete();
+            endforeach;
+        }
+
+        if (Storage::exists($directory)) {
+            Storage::deleteDirectory($directory);
+        }
 
         $users = User::orderByDesc('created_at')->get();
 
