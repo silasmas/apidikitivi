@@ -169,6 +169,8 @@ return [
     'update_password_reset_success' => 'Password reset updated',
     'delete_password_reset_success' => 'Password reset deleted',
     'unverified_token' => 'The OTP code is not yet verified',
+    'bad_token' => 'The OTP code does not match',
+    'token_label' => 'Your OTP code:',
     // PersonalAccessToken
     'find_all_personal_access_tokens_success' => 'Personal tokens found',
     'find_personal_access_token_success' => 'Personal token found',

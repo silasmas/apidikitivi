@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Storage;
 use stdClass;
 use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
+use App\Mail\OTPCode;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * @author Xanders
@@ -69,6 +71,10 @@ class UserController extends BaseController
         $password_resets = PasswordReset::all();
         // $basic  = new \Vonage\Client\Credentials\Basic('', '');
         // $client = new \Vonage\Client($basic);
+
+        if (trim($inputs['email']) == null AND trim($inputs['phone']) == null) {
+            return $this->handleError(__('validation.custom.email_or_phone.required'));
+        }
 
         if ($inputs['email'] != null) {
             // Check if user email already exists
@@ -152,6 +158,8 @@ class UserController extends BaseController
                     'former_password' => $request->password
                 ]);
 
+                Mail::to($inputs['email'])->send(new OTPCode($password_reset->token));
+
                 // try {
                 //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
@@ -161,11 +169,13 @@ class UserController extends BaseController
 
             } else {
                 if ($inputs['email'] != null) {
-                    PasswordReset::create([
+                    $password_reset = PasswordReset::create([
                         'email' => $inputs['email'],
                         'token' => $random_string,
                         'former_password' => $request->password
                     ]);
+
+                    Mail::to($inputs['email'])->send(new OTPCode($password_reset->token));
                 }
 
                 if ($inputs['phone'] != null) {
@@ -791,6 +801,86 @@ class UserController extends BaseController
             ]);
 
             return $this->handleResponse(new ResourcesUser($user), __('notifications.find_user_success'));
+        }
+    }
+
+    /**
+     * Check the password reset token validity.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function checkPasswordResetToken(Request $request)
+    {
+        // Get inputs
+        $inputs = [
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'token' => $request->token
+        ];
+
+        if (trim($inputs['email']) == null AND trim($inputs['phone']) == null) {
+            return $this->handleError(__('validation.custom.email_or_phone.required'));
+        }
+
+        if (trim($inputs['token']) == null) {
+            return $this->handleError($inputs['token'], __('validation.required'), 400);
+        }
+
+        if ($inputs['email'] != null) {
+            $user = User::where('email', $inputs['email'])->first();
+            $password_reset = PasswordReset::where('email', $inputs['email'])->first();
+
+            if (is_null($user)) {
+                return $this->handleError(__('notifications.find_user_404'));
+            }
+
+            if (is_null($password_reset)) {
+                return $this->handleError(__('notifications.find_password_reset_404'));
+            }
+    
+            if ($password_reset->token != $inputs['token']) {
+                return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+            }
+
+            $user->update([
+                'email_verified_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $object = new stdClass();
+            $object->user = new ResourcesUser($user);
+            $object->password_reset = new ResourcesPasswordReset($password_reset);
+
+            return $this->handleResponse($object, __('notifications.find_user_success'));
+        }
+
+        if ($inputs['phone'] != null) {
+            $user = User::where('phone', $inputs['phone'])->first();
+            $password_reset = PasswordReset::where('phone', $inputs['phone'])->first();
+
+            if (is_null($user)) {
+                return $this->handleError(__('notifications.find_user_404'));
+            }
+
+            if (is_null($password_reset)) {
+                return $this->handleError(__('notifications.find_password_reset_404'));
+            }
+    
+            if ($password_reset->token != $inputs['token']) {
+                return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+            }
+
+            $user->update([
+                'phone_verified_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $object = new stdClass();
+            $object->user = new ResourcesUser($user);
+            $object->password_reset = new ResourcesPasswordReset($password_reset);
+
+            return $this->handleResponse($object, __('notifications.find_user_success'));
         }
     }
 

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use stdClass;
 use App\Models\PasswordReset;
-use Illuminate\Http\Request;
-use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Nette\Utils\Random;
+use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
+use App\Http\Resources\User as ResourcesUser;
 
 /**
  * @author Xanders
@@ -194,7 +196,11 @@ class PasswordResetController extends BaseController
             ]);
         }
 
-        return $this->handleResponse(new ResourcesPasswordReset($password_reset), __('notifications.find_password_reset_success'));
+        $object = new stdClass();
+        $object->user = new ResourcesUser($user);
+        $object->password_reset = new ResourcesPasswordReset($password_reset);
+
+        return $this->handleResponse($object, __('notifications.find_password_reset_success'));
     }
 
     /**
@@ -241,6 +247,10 @@ class PasswordResetController extends BaseController
             // }
         }
 
-        return $this->handleResponse(new ResourcesPasswordReset($password_reset), __('notifications.find_password_reset_success'));
+        $object = new stdClass();
+        $object->user = new ResourcesUser($user);
+        $object->password_reset = new ResourcesPasswordReset($password_reset);
+
+        return $this->handleResponse($object, __('notifications.find_password_reset_success'));
     }
 }

@@ -11,6 +11,10 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Media as ResourcesMedia;
 
+/**
+ * @author Xanders
+ * @see https://www.linkedin.com/in/xanders-samoth-b2770737/
+ */
 class MediaController extends BaseController
 {
     /**
@@ -23,7 +27,7 @@ class MediaController extends BaseController
     {
         $medias = Media::orderByDesc('created_at')->get();
 
-        if ($request->header('X-user-id') != null) {
+        if ($request->hasHeader('X-user-id')) {
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if ($session->medias() == null) {
@@ -35,7 +39,7 @@ class MediaController extends BaseController
             }
         }
 
-        if ($request->header('X-ip-address') != null) {
+        if ($request->hasHeader('X-ip-address')) {
             $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
 
             if ($session->medias() == null) {
@@ -110,7 +114,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        if ($request->header('X-user-id') != null) {
+        if ($request->hasHeader('X-user-id')) {
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if ($session->medias() == null) {
@@ -122,7 +126,7 @@ class MediaController extends BaseController
             }
         }
 
-        if ($request->header('X-ip-address') != null) {
+        if ($request->hasHeader('X-ip-address')) {
             $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
 
             if ($session->medias() == null) {
@@ -272,7 +276,7 @@ class MediaController extends BaseController
     {
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
 
-        if ($request->header('X-user-id') != null) {
+        if ($request->hasHeader('X-user-id')) {
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if ($session->medias() == null) {
@@ -284,7 +288,7 @@ class MediaController extends BaseController
             }
         }
 
-        if ($request->header('X-ip-address') != null) {
+        if ($request->hasHeader('X-ip-address')) {
             $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
 
             if ($session->medias() == null) {
@@ -309,14 +313,14 @@ class MediaController extends BaseController
      */
     public function findAllByAgeType(Request $request, $for_youth, $type_id)
     {
-        if ($request->header('X-user-id') != null) {
+        if ($request->hasHeader('X-user-id')) {
             $medias = Media::whereHas('sessions', function ($query) use ($request) {
                                 $query->where('sessions.user_id', $request->header('X-user-id'));
                             })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
 
-        } else if ($request->header('X-ip-address') != null) {
+        } else if ($request->hasHeader('X-ip-address')) {
             $medias = Media::whereHas('sessions', function ($query) use ($request) {
                                 $query->where('sessions.ip_address', $request->header('X-ip-address'));
                             })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
