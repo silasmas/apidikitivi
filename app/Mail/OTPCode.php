@@ -41,7 +41,7 @@ class OTPCode extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.otp-code', with: ['token' => $this->token]
+            view: 'otp-code', with: ['token' => $this->token]
         );
     }
 
