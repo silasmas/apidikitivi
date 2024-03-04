@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
+use stdClass;
+use App\Mail\OTPCode;
 use App\Models\Notification;
 use App\Models\PasswordReset;
 use App\Models\Status;
 use App\Models\User;
 use Nette\Utils\Random;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use stdClass;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
-use App\Mail\OTPCode;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * @author Xanders
@@ -801,86 +801,6 @@ class UserController extends BaseController
             ]);
 
             return $this->handleResponse(new ResourcesUser($user), __('notifications.find_user_success'));
-        }
-    }
-
-    /**
-     * Check the password reset token validity.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function checkPasswordResetToken(Request $request)
-    {
-        // Get inputs
-        $inputs = [
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'token' => $request->token
-        ];
-
-        if (trim($inputs['email']) == null AND trim($inputs['phone']) == null) {
-            return $this->handleError(__('validation.custom.email_or_phone.required'));
-        }
-
-        if (trim($inputs['token']) == null) {
-            return $this->handleError($inputs['token'], __('validation.required'), 400);
-        }
-
-        if ($inputs['email'] != null) {
-            $user = User::where('email', $inputs['email'])->first();
-            $password_reset = PasswordReset::where('email', $inputs['email'])->first();
-
-            if (is_null($user)) {
-                return $this->handleError(__('notifications.find_user_404'));
-            }
-
-            if (is_null($password_reset)) {
-                return $this->handleError(__('notifications.find_password_reset_404'));
-            }
-    
-            if ($password_reset->token != $inputs['token']) {
-                return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
-            }
-
-            $user->update([
-                'email_verified_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $object = new stdClass();
-            $object->user = new ResourcesUser($user);
-            $object->password_reset = new ResourcesPasswordReset($password_reset);
-
-            return $this->handleResponse($object, __('notifications.find_user_success'));
-        }
-
-        if ($inputs['phone'] != null) {
-            $user = User::where('phone', $inputs['phone'])->first();
-            $password_reset = PasswordReset::where('phone', $inputs['phone'])->first();
-
-            if (is_null($user)) {
-                return $this->handleError(__('notifications.find_user_404'));
-            }
-
-            if (is_null($password_reset)) {
-                return $this->handleError(__('notifications.find_password_reset_404'));
-            }
-    
-            if ($password_reset->token != $inputs['token']) {
-                return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
-            }
-
-            $user->update([
-                'phone_verified_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $object = new stdClass();
-            $object->user = new ResourcesUser($user);
-            $object->password_reset = new ResourcesPasswordReset($password_reset);
-
-            return $this->handleResponse($object, __('notifications.find_user_success'));
         }
     }
 
