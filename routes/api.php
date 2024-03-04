@@ -72,10 +72,10 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('book/find_all_by_age/{for_youth}', 'App\Http\Controllers\API\BookController@findAllByAge')->name('book.api.find_all_by_age');
     Route::get('book/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\BookController@findAllByAgeType')->name('book.api.find_all_by_age_type');
     // Media
-    Route::get('media/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
-    Route::get('media/{id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
-    Route::get('media/search/{data}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
-    Route::get('media/find_all_by_age_type/{for_youth}/{type_id}/?user_id={user_id}&ip_address={ip_address}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
+    Route::get('media', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
+    Route::get('media/{id}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
+    Route::get('media/search/{data}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
+    Route::get('media/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
     // pricing
     Route::get('pricing', 'App\Http\Controllers\API\PricingController@index')->name('pricing.api.index');
     // User
