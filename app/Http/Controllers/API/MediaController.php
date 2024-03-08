@@ -66,9 +66,11 @@ class MediaController extends BaseController
         $inputs = [
             'media_title' => $request->media_title,
             'media_url' => $request->media_url,
-            'author' => $request->author,
+            'teaser_url' => $request->teaser_url,
+            'author_names' => $request->author_names,
             'writer' => $request->writer,
             'director' => $request->director,
+            'cover_url' => $request->cover_url,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'belongs_to' => $request->belongs_to,
@@ -76,7 +78,7 @@ class MediaController extends BaseController
             'user_id' => $request->user_id
         ];
         // Select all medias to check unique constraint
-        $medias = Media::all();
+        $medias = Media::where('user_id', $inputs['user_id'])->get();
 
         // Validate required fields
         if (trim($inputs['media_title']) == null) {
@@ -155,20 +157,23 @@ class MediaController extends BaseController
             'id' => $request->id,
             'media_title' => $request->media_title,
             'media_url' => $request->media_url,
-            'author' => $request->author,
+            'teaser_url' => $request->teaser_url,
+            'author_names' => $request->author_names,
             'writer' => $request->writer,
             'director' => $request->director,
+            'cover_url' => $request->cover_url,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
         ];
-        // Select all medias to check unique constraint
-        $medias = Media::all();
-        $current_media = Media::find($inputs['id']);
 
         if ($inputs['media_title'] != null) {
+            // Select all user medias to check unique constraint
+            $medias = Media::where('user_id', $inputs['user_id'])->get();
+            $current_media = Media::find($inputs['id']);
+
             foreach ($medias as $another_media):
                 if ($current_media->media_title != $inputs['media_title']) {
                     if ($another_media->media_title == $inputs['media_title']) {
@@ -178,35 +183,49 @@ class MediaController extends BaseController
             endforeach;
 
             $media->update([
-                'media_title' => $request->media_title,
+                'media_title' => $inputs['media_title'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['media_url'] != null) {
             $media->update([
-                'media_url' => $request->media_url,
+                'media_url' => $inputs['media_url'],
                 'updated_at' => now(),
             ]);
         }
 
-        if ($inputs['author'] != null) {
+        if ($inputs['teaser_url'] != null) {
             $media->update([
-                'author' => $request->author,
+                'teaser_url' => $inputs['teaser_url'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['author_names'] != null) {
+            $media->update([
+                'author_names' => $inputs['author_names'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['writer'] != null) {
             $media->update([
-                'writer' => $request->writer,
+                'writer' => $inputs['writer'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['director'] != null) {
             $media->update([
-                'director' => $request->director,
+                'director' => $inputs['director'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['cover_url'] != null) {
+            $media->update([
+                'cover_url' => $inputs['cover_url'],
                 'updated_at' => now(),
             ]);
         }
