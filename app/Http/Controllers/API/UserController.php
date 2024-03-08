@@ -65,6 +65,7 @@ class UserController extends BaseController
             'belongs_to' => $request->belongs_to,
             'parental_code' => $request->parental_code,
             'api_token' => $request->api_token,
+            'prefered_theme' => $request->prefered_theme,
             'country_id' => $request->country_id,
             'status_id' => is_null($status_intermediate) ? null : $status_intermediate->id
         ];
@@ -348,6 +349,7 @@ class UserController extends BaseController
             'parental_code' => $request->parental_code,
             'email_verified_at' => $request->email_verified_at,
             'phone_verified_at' => $request->phone_verified_at,
+            'prefered_theme' => $request->prefered_theme,
             'country_id' => $request->country_id,
             'status_id' => $request->status
         ];
@@ -632,6 +634,13 @@ class UserController extends BaseController
                     ]);
                 endforeach;
             }
+        }
+
+        if ($inputs['prefered_theme'] != null) {
+            $user->update([
+                'prefered_theme' => $inputs['prefered_theme'],
+                'updated_at' => now(),
+            ]);
         }
 
         if ($inputs['country_id'] != null) {
