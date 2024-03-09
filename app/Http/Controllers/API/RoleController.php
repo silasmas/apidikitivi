@@ -140,13 +140,12 @@ class RoleController extends BaseController
     /**
      * Search a role by its name.
      *
-     * @param  string $locale
      * @param  string $data
      * @return \Illuminate\Http\Response
      */
-    public function search($locale, $data)
+    public function search($data)
     {
-        $role = Role::where('role_name->' . $locale, $data)->first();
+        $role = Role::where('role_name', $data)->first();
 
         if (is_null($role)) {
             return $this->handleError(__('notifications.find_role_404'));

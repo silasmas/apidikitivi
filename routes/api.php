@@ -80,7 +80,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     // Pricing
     Route::get('pricing', 'App\Http\Controllers\API\PricingController@index')->name('pricing.api.index');
     // Role
-    Route::get('role/search/{locale}/{data}', 'App\Http\Controllers\API\RoleController@search')->name('role.api.search');
+    Route::get('role/search/{data}', 'App\Http\Controllers\API\RoleController@search')->name('role.api.search');
     // User
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
     Route::post('user/login', 'App\Http\Controllers\API\UserController@login')->name('user.api.login');
