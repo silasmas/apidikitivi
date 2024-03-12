@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Youtube;
+use Dawson\Youtube\Facades\Youtube;
 
 /**
  * @author Xanders
