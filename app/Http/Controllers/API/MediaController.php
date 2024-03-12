@@ -86,9 +86,9 @@ class MediaController extends BaseController
             return $this->handleError($inputs['media_title'], __('validation.required'), 400);
         }
 
-        if (trim($inputs['media_url']) == null) {
-            return $this->handleError($inputs['media_url'], __('validation.required'), 400);
-        }
+        // if (trim($inputs['media_url']) == null) {
+        //     return $this->handleError($inputs['media_url'], __('validation.required'), 400);
+        // }
 
         // Check if media title already exists
         foreach ($medias as $another_media):
