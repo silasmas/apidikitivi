@@ -27,4 +27,14 @@ class YouTubeController extends Controller
 
         return $video->getVideoId();
     }
+
+    /**
+     * Remove the specified resource from YouTube.
+     *
+     * @param  $videoID
+     */
+    public static function destroy($videoID)
+    {
+        Youtube::delete($videoID);
+    }
 }

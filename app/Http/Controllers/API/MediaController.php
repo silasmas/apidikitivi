@@ -290,6 +290,14 @@ class MediaController extends BaseController
      */
     public function destroy(Media $media)
     {
+        if (str_starts_with('https://www.youtube.com', $media->media_url)) {
+            preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $media->media_url, $match);
+
+            $youtube_id = $match[1];
+
+            YouTubeController::destroy($youtube_id);
+        }
+
         $media->delete();
 
         $medias = Media::all();
