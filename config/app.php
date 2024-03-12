@@ -182,6 +182,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Dawson\Youtube\YoutubeServiceProvider::class, // Dawson YouTube
     ])->toArray(),
 
     /*
@@ -197,6 +198,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        'Youtube' => Dawson\Youtube\Facades\Youtube::class, // Dawson YouTube
     ])->toArray(),
 
 ];
