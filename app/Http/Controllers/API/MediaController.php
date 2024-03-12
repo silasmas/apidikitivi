@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Media as ResourcesMedia;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @author Xanders
@@ -71,7 +72,7 @@ class MediaController extends BaseController
             'author_names' => $request->author_names,
             'writer' => $request->writer,
             'director' => $request->director,
-            'cover_url' => $request->cover_url,
+            'cover_url' => $request->file('cover_url'),
             'price' => $request->price,
             'for_youth' => !empty($request->for_youth) ? $request->for_youth : 1,
             'belongs_to' => $request->belongs_to,
@@ -86,9 +87,16 @@ class MediaController extends BaseController
             return $this->handleError($inputs['media_title'], __('validation.required'), 400);
         }
 
-        // if (trim($inputs['media_url']) == null) {
-        //     return $this->handleError($inputs['media_url'], __('validation.required'), 400);
-        // }
+        if (trim($inputs['cover_url']) != null) {
+            // Validate file mime type
+            $validator = Validator::make($inputs, [
+                'video' => 'required|mimes:jpg,jpeg,png,gif'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->handleError($validator->errors());       
+            }
+        }
 
         // Check if media title already exists
         foreach ($medias as $another_media):
@@ -98,6 +106,10 @@ class MediaController extends BaseController
         endforeach;
 
         $media = Media::create($inputs);
+        $cover_url = 'images/medias/' . $media->id . '/' . Str::random(50) . '.' . $request->file('cover_url')->extension();
+
+        // Upload image
+        Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
 
         if ($request->file('youtube_video') != null) {
             $youtubeID = YouTubeController::store(
@@ -111,6 +123,8 @@ class MediaController extends BaseController
                 'updated_at' => now()
             ]);
         }
+
+        dd($request->file('youtube_video')->getPathName());
 
         return $this->handleResponse(new ResourcesMedia($media), __('notifications.create_media_success'));
     }
