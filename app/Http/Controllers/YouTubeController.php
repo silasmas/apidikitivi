@@ -2,33 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Google_Client;
-use Google_Service;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Youtube;
 
+/**
+ * @author Xanders
+ * @see https://www.linkedin.com/in/xanders-samoth-b2770737/
+ */
 class YouTubeController extends Controller
 {
     /**
      * Get the playlist content
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $result
-     * @param  $msg
-     * @return \Illuminate\Http\JsonResponse
+     * @param  $file
+     * @param  $title
+     * @param  $thumbnail
+     * @return string
      */
-    public static function upload(Request $request, $playlist, $title, ): JsonResponse
+    public static function store($file, $title, $thumbnail = null, $description = null): string
     {
-        $part = 'snippet';
-        $type = 'video';
-        $api_key = config('services.youtube.api_key');
-        $api_url = config('services.youtube.api_url');
-        $client_id = config('services.youtube.client_id');
-        $client_secret = config('services.youtube.client_secret');
-        $client = new Google_Client();
+        $video = Youtube::upload($file, [
+            'title' => $title,
+            'description' => $description
+        ])->withThumbnail($thumbnail);
 
-        $res = null;
-
-        return response()->json($res, 200);
+        return $video->getVideoId();
     }
 }

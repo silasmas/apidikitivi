@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\YouTubeController;
 use App\Models\Media;
 use App\Models\Session;
 use App\Models\User;
@@ -97,6 +98,19 @@ class MediaController extends BaseController
         endforeach;
 
         $media = Media::create($inputs);
+
+        if ($request->file('youtube_video') != null) {
+            $youtubeID = YouTubeController::store(
+                $request->file('youtube_video')->getPathName(), 
+                $inputs['media_title'], 
+                $inputs['cover_url'], 
+                $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
+
+            $media->update([
+                'media_url' => 'https://www.youtube.com/watch?v=' . $youtubeID,
+                'updated_at' => now()
+            ]);
+        }
 
         return $this->handleResponse(new ResourcesMedia($media), __('notifications.create_media_success'));
     }
