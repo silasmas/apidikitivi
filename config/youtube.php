@@ -39,7 +39,7 @@ return [
     /**
      * Developer key.
      */
-    'developer_key' => env('GOOGLE_DEVELOPER_KEY', null),
+    'developer_key' => env('GOOGLE_API_KEY', null),
 
     /**
      * Route URI's
