@@ -73,7 +73,7 @@ class MediaController extends BaseController
             'director' => $request->director,
             'cover_url' => $request->cover_url,
             'price' => $request->price,
-            'for_youth' => $request->for_youth,
+            'for_youth' => !empty($request->for_youth) ? $request->for_youth : 1,
             'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
