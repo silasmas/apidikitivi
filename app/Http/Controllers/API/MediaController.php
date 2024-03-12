@@ -124,8 +124,6 @@ class MediaController extends BaseController
             ]);
         }
 
-        dd($request->file('youtube_video')->getPathName());
-
         return $this->handleResponse(new ResourcesMedia($media), __('notifications.create_media_success'));
     }
 
