@@ -98,8 +98,6 @@ class MediaController extends BaseController
             }
         }
 
-        dd($request->file('youtube_video'));
-
         // Check if media title already exists
         foreach ($medias as $another_media):
             if ($another_media->media_title == $inputs['media_title']) {
