@@ -90,7 +90,7 @@ class MediaController extends BaseController
         if (trim($inputs['cover_url']) != null) {
             // Validate file mime type
             $validator = Validator::make($inputs, [
-                'video' => 'required|mimes:jpg,jpeg,png,gif'
+                'cover_url' => 'mimes:jpg,jpeg,png,gif'
             ]);
 
             if ($validator->fails()) {
