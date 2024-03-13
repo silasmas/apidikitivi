@@ -95,7 +95,7 @@ class MediaController extends BaseController
         endforeach;
 
         $media = Media::create($inputs);
-        $cover_url = 'images/medias/' . $media->id . '/' . Str::random(50) . '.' . $request->file('cover_url')->extension();
+        $cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
         // Upload image
         Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
