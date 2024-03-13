@@ -87,17 +87,6 @@ class MediaController extends BaseController
             return $this->handleError($inputs['media_title'], __('validation.required'), 400);
         }
 
-        if (trim($inputs['cover_url']) != null) {
-            // Validate file mime type
-            $validator = Validator::make($inputs, [
-                'cover_url' => 'mimes:jpg,jpeg,png,gif'
-            ]);
-
-            if ($validator->fails()) {
-                return $this->handleError($validator->errors());       
-            }
-        }
-
         // Check if media title already exists
         foreach ($medias as $another_media):
             if ($another_media->media_title == $inputs['media_title']) {
