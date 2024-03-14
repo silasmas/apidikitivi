@@ -76,6 +76,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('media', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
     Route::get('media/{id}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/search/{data}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
+    Route::get('media/find_all_by_type/{locale}/{type_name}', 'App\Http\Controllers\API\MediaController@findAllByType')->name('media.api.find_all_by_type');
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
     // Pricing
     Route::get('pricing', 'App\Http\Controllers\API\PricingController@index')->name('pricing.api.index');
@@ -99,7 +100,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('type', 'App\Http\Controllers\API\TypeController')->except(['index', 'show', 'search', 'findByGroup']);
     Route::resource('country', 'App\Http\Controllers\API\CountryController')->except(['index', 'show', 'search']);
     Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
-    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findAllByAgeType']);
+    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findAllByType', 'findAllByAgeType']);
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
     Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');

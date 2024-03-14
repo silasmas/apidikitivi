@@ -354,6 +354,27 @@ class MediaController extends BaseController
     }
 
     /**
+     * Get by type.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $locale
+     * @param  int $type_name
+     * @return \Illuminate\Http\Response
+     */
+    public function findAllByType($locale, $type_name)
+    {
+        $type = Type::where('type_name->' . $locale, $type_name)->first();
+
+        if (is_null($type)) {
+            return $this->handleError(__('notifications.find_type_404'));
+        }
+
+        $medias = Media::where('type_id', $type->id)->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+    }
+
+    /**
      * Get by age and type.
      *
      * @param  \Illuminate\Http\Request  $request
