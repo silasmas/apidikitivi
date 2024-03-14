@@ -95,10 +95,18 @@ class MediaController extends BaseController
         endforeach;
 
         $media = Media::create($inputs);
-        $cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
-        // Upload image
-        Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
+		if ($request->file('cover_url') != null) {
+			$cover_url = '/images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+
+			// Upload image
+			Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
+
+            $media->update([
+                'cover_url' => $cover_url,
+                'updated_at' => now()
+            ]);
+        }
 
         if ($request->file('youtube_video') != null) {
             $youtubeID = YouTubeController::store(
