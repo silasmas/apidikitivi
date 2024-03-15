@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\YouTubeController;
 use App\Models\Media;
 use App\Models\Session;
+use App\Models\Type;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
