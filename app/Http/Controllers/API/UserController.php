@@ -916,7 +916,7 @@ class UserController extends BaseController
                     'fr' => 'Votre compte a été activé. Veuillez lire nos conditions avant de commencer.',
                     'ln' => 'Compte na yo esili ko activer. Tosɛngi yo otánga mibeko na biso liboso ya kobanda.',
                 ],
-                    'icon' => 'bi bi-unlock-fill',
+                'icon' => 'bi bi-unlock-fill',
                 'color' => 'text-info',
                 'status_id' => $status_unread->id,
                 'user_id' => $user->id,

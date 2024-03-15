@@ -76,6 +76,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('media', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
     Route::get('media/{id}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/search/{data}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
+    Route::get('media/find_live/{for_youth}', 'App\Http\Controllers\API\MediaController@findLive')->name('media.api.find_live');
     Route::get('media/find_all_by_type/{locale}/{type_name}', 'App\Http\Controllers\API\MediaController@findAllByType')->name('media.api.find_all_by_type');
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
     // Pricing

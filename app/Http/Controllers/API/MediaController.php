@@ -357,8 +357,28 @@ class MediaController extends BaseController
      * Get by type.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int $locale
-     * @param  int $type_name
+     * @param  int $for_youth
+     * @return \Illuminate\Http\Response
+     */
+    public function findLive($for_youth)
+    {
+        $type = Type::where('type_name->fr', 'Programme TV')->first();
+
+        if (is_null($type)) {
+            return $this->handleError(__('notifications.find_type_404'));
+        }
+
+        $medias = Media::where([['for_youth', $for_youth], ['is_live', 1], ['type_id', $type->id]])->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+    }
+
+    /**
+     * Get by type.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string $locale
+     * @param  string $type_name
      * @return \Illuminate\Http\Response
      */
     public function findAllByType($locale, $type_name)
