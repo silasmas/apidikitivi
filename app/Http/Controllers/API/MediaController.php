@@ -76,6 +76,7 @@ class MediaController extends BaseController
             'cover_url' => $request->file('cover_url'),
             'price' => $request->price,
             'for_youth' => !empty($request->for_youth) ? $request->for_youth : 1,
+            'is_live' => !empty($request->is_live) ? $request->is_live : 0,
             'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
@@ -205,6 +206,7 @@ class MediaController extends BaseController
             'cover_url' => $request->cover_url,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
+            'is_live' => $request->is_live,
             'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
@@ -281,6 +283,13 @@ class MediaController extends BaseController
         if ($inputs['for_youth'] != null) {
             $media->update([
                 'for_youth' => $request->for_youth,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['is_live'] != null) {
+            $media->update([
+                'is_live' => $request->is_live,
                 'updated_at' => now(),
             ]);
         }
