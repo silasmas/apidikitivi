@@ -69,7 +69,7 @@ class MediaController extends BaseController
         $inputs = [
             'media_title' => $request->media_title,
             'media_url' => $request->media_url,
-            'teaser_url' => $request->teaser_url,
+            'teaser_url' => $request->file('teaser_url'),
             'author_names' => $request->author_names,
             'writer' => $request->writer,
             'director' => $request->director,
@@ -84,8 +84,13 @@ class MediaController extends BaseController
         $medias = Media::where('user_id', $inputs['user_id'])->get();
 
         // Validate required fields
+        if ($inputs['type_id'] == null) {
+            return $this->handleError(__('validation.custom.type.required'), __('validation.required'), 400);
+        }
+
+        // Validate required fields
         if (trim($inputs['media_title']) == null) {
-            return $this->handleError($inputs['media_title'], __('validation.required'), 400);
+            return $this->handleError(__('validation.custom.title.required'), __('validation.required'), 400);
         }
 
         // Check if media title already exists
@@ -97,10 +102,22 @@ class MediaController extends BaseController
 
         $media = Media::create($inputs);
 
+		if ($request->file('teaser_url') != null) {
+			$teaser_url = '/images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+
+			// Upload teaser
+			Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+
+            $media->update([
+                'teaser_url' => $teaser_url,
+                'updated_at' => now()
+            ]);
+        }
+
 		if ($request->file('cover_url') != null) {
 			$cover_url = '/images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
-			// Upload image
+			// Upload cover
 			Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
 
             $media->update([

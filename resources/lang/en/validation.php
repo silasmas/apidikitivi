@@ -181,6 +181,7 @@ return [
             'exists' => 'This subject already exists'
         ],
         'title' => [
+            'required' => 'Please put the title',
             'exists' => 'This title already exists'
         ],
         'subtitle' => [
@@ -197,6 +198,9 @@ return [
         ],
         'owner' => [
             'required' => 'What entity does it belong to?'
+        ],
+        'type' => [
+            'required' => 'The type is required'
         ],
         'type_name' => [
             'exists' => 'This type name already exists'
