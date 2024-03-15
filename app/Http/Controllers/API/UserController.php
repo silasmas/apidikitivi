@@ -6,6 +6,7 @@ use stdClass;
 use App\Mail\OTPCode;
 use App\Models\Notification;
 use App\Models\PasswordReset;
+use App\Models\PersonalAccessToken;
 use App\Models\Status;
 use App\Models\User;
 use Nette\Utils\Random;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
-use App\Models\PersonalAccessToken;
 
 /**
  * @author Xanders
