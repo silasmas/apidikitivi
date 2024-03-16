@@ -153,6 +153,7 @@ return [
     'find_api_token_success' => 'Jeton d\'API trouvé',
     'find_user_404' => 'Utilisateur non trouvé',
     'find_parent_404' => 'Parent non trouvé',
+    'find_visitor_404' => 'Visiteur non trouvé',
     'parental_code_error' => 'Erreur de code parental',
     'create_user_success' => 'Utilisateur créé',
     'create_user_SMS_failed' => 'Il y a un problème avec le service des SMS',

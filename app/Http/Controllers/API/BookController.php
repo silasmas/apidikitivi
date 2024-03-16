@@ -41,6 +41,7 @@ class BookController extends BaseController
             'book_url' => $request->book_url,
             'author' => $request->author,
             'editor' => $request->editor,
+            'cover_url' => $request->file('cover_url'),
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'type_id' => $request->type_id
@@ -49,8 +50,12 @@ class BookController extends BaseController
         $books = Book::where('author_names', $inputs['author_names'])->get();
 
         // Validate required fields
+        if ($inputs['type_id'] == null) {
+            return $this->handleError(__('validation.custom.type.required'), __('validation.required'), 400);
+        }
+
         if (trim($inputs['book_title']) == null) {
-            return $this->handleError($inputs['book_title'], __('validation.required'), 400);
+            return $this->handleError(__('validation.custom.title.required'), __('validation.required'), 400);
         }
 
         if (trim($inputs['book_url']) == null) {
@@ -65,6 +70,18 @@ class BookController extends BaseController
         endforeach;
 
         $book = Book::create($inputs);
+
+		if ($request->file('cover_url') != null) {
+			$cover_url = 'images/books/' . $book->id . '/cover.' . $request->file('cover_url')->extension();
+
+			// Upload cover
+			Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
+
+            $book->update([
+                'cover_url' => $cover_url,
+                'updated_at' => now()
+            ]);
+        }
 
         return $this->handleResponse(new ResourcesBook($book), __('notifications.create_book_success'));
     }

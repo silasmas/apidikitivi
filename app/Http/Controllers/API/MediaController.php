@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\YouTubeController;
 use App\Models\Media;
+use App\Models\Notification;
 use App\Models\Session;
+use App\Models\Status;
 use App\Models\Type;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Resources\Media as ResourcesMedia;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\YouTubeController;
+use App\Http\Resources\Media as ResourcesMedia;
 
 /**
  * @author Xanders
@@ -31,6 +33,12 @@ class MediaController extends BaseController
         $medias = Media::orderByDesc('created_at')->get();
 
         if ($request->hasHeader('X-user-id')) {
+			$visitor = User::find($request->header('X-user-id'));
+
+			if (is_null($visitor)) {
+				return $this->handleError(__('notifications.find_visitor_404'));
+			}
+
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if ($session->medias() == null) {
@@ -89,7 +97,6 @@ class MediaController extends BaseController
             return $this->handleError(__('validation.custom.type.required'), __('validation.required'), 400);
         }
 
-        // Validate required fields
         if (trim($inputs['media_title']) == null) {
             return $this->handleError(__('validation.custom.title.required'), __('validation.required'), 400);
         }
@@ -104,7 +111,7 @@ class MediaController extends BaseController
         $media = Media::create($inputs);
 
 		if ($request->file('teaser_url') != null) {
-			$teaser_url = '/images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
 
 			// Upload teaser
 			Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
@@ -116,7 +123,7 @@ class MediaController extends BaseController
         }
 
 		if ($request->file('cover_url') != null) {
-			$cover_url = '/images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
 			// Upload cover
 			Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
@@ -159,6 +166,12 @@ class MediaController extends BaseController
         }
 
         if ($request->hasHeader('X-user-id')) {
+			$visitor = User::find($request->header('X-user-id'));
+
+			if (is_null($visitor)) {
+				return $this->handleError(__('notifications.find_visitor_404'));
+			}
+
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if ($session->medias() == null) {
@@ -167,6 +180,26 @@ class MediaController extends BaseController
 
             if ($session->medias() != null) {
                 $session->medias()->syncWithoutDetaching([$media->id]);
+            }
+
+            if ($media->user_id != null) {
+				$status_unread = Status::where('status_name->fr', 'Non lue')->first();
+
+				/*
+					HISTORY AND/OR NOTIFICATION MANAGEMENT
+				*/
+				Notification::create([
+					'notification_url' => 'members/' . $visitor->id,
+					'notification_content' => [
+						'en' => $visitor->firstname . ' watched your video.',
+						'fr' => $visitor->firstname . ' a regardé votre vidéo.',
+						'ln' => $visitor->firstname . ' atali video na yo.',
+					],
+					'icon' => 'bi bi-eye',
+					'color' => 'text-warning',
+					'status_id' => $status_unread->id,
+					'user_id' => $visitor->id
+				]);
             }
         }
 
@@ -354,6 +387,12 @@ class MediaController extends BaseController
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
 
         if ($request->hasHeader('X-user-id')) {
+			$visitor = User::find($request->header('X-user-id'));
+
+			if (is_null($visitor)) {
+				return $this->handleError(__('notifications.find_visitor_404'));
+			}
+
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if ($session->medias() == null) {
@@ -432,6 +471,12 @@ class MediaController extends BaseController
     public function findAllByAgeType(Request $request, $for_youth, $type_id)
     {
         if ($request->hasHeader('X-user-id')) {
+			$visitor = User::find($request->header('X-user-id'));
+
+			if (is_null($visitor)) {
+				return $this->handleError(__('notifications.find_visitor_404'));
+			}
+
             $medias = Media::whereHas('sessions', function ($query) use ($request) {
                                 $query->where('sessions.user_id', $request->header('X-user-id'));
                             })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
