@@ -72,10 +72,9 @@ class BookController extends BaseController
         $book = Book::create($inputs);
 
 		if ($request->file('cover_url') != null) {
-			$cover_url = 'images/books/' . $book->id . '/cover.' . $request->file('cover_url')->extension();
+			$request->cover_url->storeAs('images/books/' . $book->id, 'cover.' . $request->file('cover_url')->extension());
 
-			// Upload cover
-			Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
+			$cover_url = 'images/books/' . $book->id . '/cover.' . $request->file('cover_url')->extension();
 
             $book->update([
                 'cover_url' => $cover_url,
