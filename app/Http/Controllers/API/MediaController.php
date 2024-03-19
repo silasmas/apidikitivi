@@ -47,7 +47,7 @@ class MediaController extends BaseController
         }
 
         if ($request->hasHeader('X-ip-address')) {
-            $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
+            $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
 
             if (!empty($session)) {
                 if ($session->medias() == null) {
@@ -200,7 +200,7 @@ class MediaController extends BaseController
         }
 
         if ($request->hasHeader('X-ip-address')) {
-            $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
+            $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
 
             if (!empty($session)) {
                 if ($session->medias() == null) {
@@ -386,7 +386,7 @@ class MediaController extends BaseController
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
 
         if ($request->hasHeader('X-user-id')) {
-            $session = Session::where(['user_id', $request->header('X-user-id')])->first();
+            $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
                 if ($session->medias() == null) {
@@ -400,7 +400,7 @@ class MediaController extends BaseController
         }
 
         if ($request->hasHeader('X-ip-address')) {
-            $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
+            $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
 
             if (!empty($session)) {
                 if ($session->medias() == null) {
