@@ -32,13 +32,7 @@ class MediaController extends BaseController
         $medias = Media::orderByDesc('created_at')->get();
 
         if ($request->hasHeader('X-user-id')) {
-			$visitor = User::find($request->header('X-user-id'));
-
-			if (is_null($visitor)) {
-				return $this->handleError(__('notifications.find_visitor_404'));
-			}
-
-            $session = Session::where(['user_id', $request->header('X-user-id')])->first();
+            $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
                 if ($session->medias() == null) {
@@ -171,13 +165,7 @@ class MediaController extends BaseController
         }
 
         if ($request->hasHeader('X-user-id')) {
-			$visitor = User::find($request->header('X-user-id'));
-
-			if (is_null($visitor)) {
-				return $this->handleError(__('notifications.find_visitor_404'));
-			}
-
-            $session = Session::where(['user_id', $request->header('X-user-id')])->first();
+            $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
                 if ($session->medias() == null) {
@@ -398,12 +386,6 @@ class MediaController extends BaseController
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
 
         if ($request->hasHeader('X-user-id')) {
-			$visitor = User::find($request->header('X-user-id'));
-
-			if (is_null($visitor)) {
-				return $this->handleError(__('notifications.find_visitor_404'));
-			}
-
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
             if (!empty($session)) {
