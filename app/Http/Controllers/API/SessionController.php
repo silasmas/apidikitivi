@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use App\Http\Resources\Session as ResourcesSession;
 
 /**
@@ -35,7 +36,7 @@ class SessionController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'id' => $request->id,
+            'id' => empty($request->id) ? Str::random(255) : $request->id,
             'ip_address' => $request->ip_address,
             'user_agent' => $request->user_agent,
             'payload' => $request->payload,
@@ -44,11 +45,7 @@ class SessionController extends BaseController
         ];
 
         $validator = Validator::make($inputs, [
-            'id' => ['required'],
-            'ip_address' => ['required'],
-            'user_agent' => ['required'],
-            'payload' => ['required'],
-            'last_activity' => ['required']
+            'ip_address' => ['required']
         ]);
 
         if ($validator->fails()) {
@@ -88,19 +85,12 @@ class SessionController extends BaseController
     {
         // Get inputs
         $inputs = [
-            'id' => $request->id,
             'ip_address' => $request->ip_address,
             'user_agent' => $request->user_agent,
             'payload' => $request->payload,
             'last_activity' => $request->last_activity,
             'user_id' => $request->user_id
         ];
-
-        if ($inputs['id'] != null) {
-            $session->update([
-                'id' => $request->id
-            ]);
-        }
 
         if ($inputs['ip_address'] != null) {
             $session->update([
@@ -140,11 +130,17 @@ class SessionController extends BaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Session  $session
+     * @param  string $ip_address
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Session $session)
+    public function destroy($ip_address)
     {
+        $session = Session::where('ip_address', $ip_address)->first();
+
+        if (is_null($session)) {
+            return $this->handleError(__('notifications.find_session_404'));
+        }
+
         $session->delete();
 
         $sessions = Session::all();

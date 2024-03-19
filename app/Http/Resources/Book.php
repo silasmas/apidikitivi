@@ -22,7 +22,7 @@ class Book extends JsonResource
             'id' => $this->id,
             'book_title' => $this->book_title,
             'book_url' => $this->book_url,
-            'author' => $this->author,
+            'author_names' => $this->author_names,
             'editor' => $this->editor,
             'cover_url' => $this->cover_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage/' . $this->cover_url : null,
             'price' => $this->price,

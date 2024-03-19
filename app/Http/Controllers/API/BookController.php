@@ -39,7 +39,7 @@ class BookController extends BaseController
         $inputs = [
             'book_title' => $request->book_title,
             'book_url' => $request->book_url,
-            'author' => $request->author,
+            'author_names' => $request->author_names,
             'editor' => $request->editor,
             'cover_url' => $request->file('cover_url'),
             'price' => $request->price,
@@ -117,6 +117,7 @@ class BookController extends BaseController
             'book_title' => $request->book_title,
             'book_url' => $request->book_url,
             'author_names' => $request->author_names,
+            'editor' => $request->editor,
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'type_id' => $request->type_id
@@ -135,42 +136,49 @@ class BookController extends BaseController
             endforeach;
 
             $book->update([
-                'book_title' => $request->book_title,
+                'book_title' => $inputs['book_title'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['book_url'] != null) {
             $book->update([
-                'book_url' => $request->book_url,
+                'book_url' => $inputs['book_url'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['author_names'] != null) {
             $book->update([
-                'author_names' => $request->author_names,
+                'author_names' => $inputs['author_names'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['editor'] != null) {
+            $book->update([
+                'editor' => $inputs['editor'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['price'] != null) {
             $book->update([
-                'price' => $request->price,
+                'price' => $inputs['price'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['for_youth'] != null) {
             $book->update([
-                'for_youth' => $request->for_youth,
+                'for_youth' => $inputs['for_youth'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['type_id'] != null) {
             $book->update([
-                'type_id' => $request->type_id,
+                'type_id' => $inputs['type_id'],
                 'updated_at' => now(),
             ]);
         }
