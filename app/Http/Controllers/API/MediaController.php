@@ -12,7 +12,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\YouTubeController;
 use App\Http\Resources\Media as ResourcesMedia;
 
@@ -41,24 +40,30 @@ class MediaController extends BaseController
 
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
-            if ($session->medias() == null) {
-                $session->medias()->attach($medias->pluck('id'));
-            }
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach($medias->pluck('id'));
+                }
 
-            if ($session->medias() != null) {
-                $session->medias()->sync($medias->pluck('id'));
+                if ($session->medias() != null) {
+                    $session->medias()->sync($medias->pluck('id'));
+                }
+
             }
         }
 
         if ($request->hasHeader('X-ip-address')) {
             $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
 
-            if ($session->medias() == null) {
-                $session->medias()->attach($medias->pluck('id'));
-            }
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach($medias->pluck('id'));
+                }
 
-            if ($session->medias() != null) {
-                $session->medias()->sync($medias->pluck('id'));
+                if ($session->medias() != null) {
+                    $session->medias()->sync($medias->pluck('id'));
+                }
+
             }
         }
 
@@ -174,12 +179,15 @@ class MediaController extends BaseController
 
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
-            if ($session->medias() == null) {
-                $session->medias()->attach([$media->id]);
-            }
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach([$media->id]);
+                }
 
-            if ($session->medias() != null) {
-                $session->medias()->syncWithoutDetaching([$media->id]);
+                if ($session->medias() != null) {
+                    $session->medias()->sync([$media->id]);
+                }
+
             }
 
             if ($media->user_id != null) {
@@ -198,7 +206,7 @@ class MediaController extends BaseController
 					'icon' => 'bi bi-eye',
 					'color' => 'text-warning',
 					'status_id' => $status_unread->id,
-					'user_id' => $visitor->id
+					'user_id' => $media->user_id
 				]);
             }
         }
@@ -206,12 +214,15 @@ class MediaController extends BaseController
         if ($request->hasHeader('X-ip-address')) {
             $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
 
-            if ($session->medias() == null) {
-                $session->medias()->attach([$media->id]);
-            }
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach([$media->id]);
+                }
 
-            if ($session->medias() != null) {
-                $session->medias()->syncWithoutDetaching([$media->id]);
+                if ($session->medias() != null) {
+                    $session->medias()->sync([$media->id]);
+                }
+
             }
         }
 
@@ -395,24 +406,28 @@ class MediaController extends BaseController
 
             $session = Session::where(['user_id', $request->header('X-user-id')])->first();
 
-            if ($session->medias() == null) {
-                $session->medias()->attach($medias->pluck('id'));
-            }
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach($medias->pluck('id'));
+                }
 
-            if ($session->medias() != null) {
-                $session->medias()->sync($medias->pluck('id'));
+                if ($session->medias() != null) {
+                    $session->medias()->sync($medias->pluck('id'));
+                }
             }
         }
 
         if ($request->hasHeader('X-ip-address')) {
             $session = Session::where(['ip_address', $request->header('X-ip-address')])->first();
 
-            if ($session->medias() == null) {
-                $session->medias()->attach($medias->pluck('id'));
-            }
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach($medias->pluck('id'));
+                }
 
-            if ($session->medias() != null) {
-                $session->medias()->sync($medias->pluck('id'));
+                if ($session->medias() != null) {
+                    $session->medias()->sync($medias->pluck('id'));
+                }
             }
         }
 
@@ -471,24 +486,36 @@ class MediaController extends BaseController
     public function findAllByAgeType(Request $request, $for_youth, $type_id)
     {
         if ($request->hasHeader('X-user-id')) {
-			$visitor = User::find($request->header('X-user-id'));
+			$sessions = Session::where('user_id', $request->header('X-user-id'))->get();
 
-			if (is_null($visitor)) {
-				return $this->handleError(__('notifications.find_visitor_404'));
-			}
+			if ($sessions == null) {
+				$medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->get();
 
-            $medias = Media::whereHas('sessions', function ($query) use ($request) {
-                                $query->where('sessions.user_id', $request->header('X-user-id'));
-                            })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
 
-            return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+            } else {
+                $medias = Media::whereHas('sessions', function ($query) use ($request) {
+                                    $query->where('sessions.user_id', $request->header('X-user-id'));
+                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
+
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+            }
 
         } else if ($request->hasHeader('X-ip-address')) {
-            $medias = Media::whereHas('sessions', function ($query) use ($request) {
-                                $query->where('sessions.ip_address', $request->header('X-ip-address'));
-                            })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
+			$sessions = Session::where('ip_address', $request->header('X-ip-address'))->get();
 
-            return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+			if ($sessions == null) {
+				$medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->get();
+
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+
+            } else {
+                $medias = Media::whereHas('sessions', function ($query) use ($request) {
+                                    $query->where('sessions.ip_address', $request->header('X-ip-address'));
+                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
+
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+            }
 
         } else {
             $medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->get();
