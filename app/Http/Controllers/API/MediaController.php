@@ -42,7 +42,6 @@ class MediaController extends BaseController
                 if ($session->medias() != null) {
                     $session->medias()->sync($medias->pluck('id'));
                 }
-
             }
         }
 
