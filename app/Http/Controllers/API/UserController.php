@@ -991,22 +991,23 @@ class UserController extends BaseController
         // }
 
         // Update password reset
-        $password_reset_by_email = PasswordReset::where('email', $user->email)->first();
-        $password_reset_by_phone = PasswordReset::where('phone', $user->phone)->first();
+        $password_reset = PasswordReset::where('email', $user->email)->orWhere('phone', $user->phone)->first();
+        $random_string = (string) random_int(1000000, 9999999);
 
-        if ($password_reset_by_email != null) {
-            // Update password reset in the case user want to reset his password
-            $password_reset_by_email->update([
-                'token' => random_int(1000000, 9999999),
+        // If password_reset doesn't exist, create it.
+        if ($password_reset == null) {
+            PasswordReset::create([
+                'email' => $inputs['email'],
+                'phone' => $inputs['phone'],
+                'token' => $random_string,
                 'former_password' => $inputs['new_password'],
-                'updated_at' => now(),
             ]);
         }
 
-        if ($password_reset_by_phone != null) {
-            // Update password reset in the case user want to reset his password
-            $password_reset_by_phone->update([
-                'token' => random_int(1000000, 9999999),
+        // If password_reset exists, update it
+        if ($password_reset != null) {
+            $password_reset->update([
+                'token' => $random_string,
                 'former_password' => $inputs['new_password'],
                 'updated_at' => now(),
             ]);
