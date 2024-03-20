@@ -556,57 +556,27 @@ class UserController extends BaseController
             //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
             // }
 
-            $password_reset_by_email = PasswordReset::where('email', $inputs['email'])->first();
-            $password_reset_by_phone = PasswordReset::where('phone', $inputs['phone'])->first();
+            $password_reset = PasswordReset::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
             $random_string = (string) random_int(1000000, 9999999);
 
             // If password_reset doesn't exist, create it.
-            if ($password_reset_by_email == null AND $password_reset_by_phone == null) {
-                if ($inputs['email'] != null AND $inputs['phone'] != null) {
-                    PasswordReset::create([
-                        'email' => $inputs['email'],
-                        'phone' => $inputs['phone'],
-                        'token' => $random_string,
-                        'former_password' => $inputs['password'],
-                    ]);
+            if ($password_reset == null) {
+                PasswordReset::create([
+                    'email' => $inputs['email'],
+                    'phone' => $inputs['phone'],
+                    'token' => $random_string,
+                    'former_password' => $inputs['password'],
+                ]);
 
-                } else {
-                    if ($inputs['email'] != null) {
-                        PasswordReset::create([
-                            'email' => $inputs['email'],
-                            'token' => $random_string,
-                            'former_password' => $inputs['password']
-                        ]);
-                    }
+            }
 
-                    if ($inputs['phone'] != null) {
-                        PasswordReset::create([
-                            'phone' => $inputs['phone'],
-                            'token' => $random_string,
-                            'former_password' => $inputs['password']
-                        ]);
-                    }
-                }
-
-            // Otherwise, update it.
-            } else {
-                if ($password_reset_by_email != null) {
-                    // Update password reset
-                    $password_reset_by_email->update([
-                        'token' => $random_string,
-                        'former_password' => $inputs['password'],
-                        'updated_at' => now(),
-                    ]);
-                }
-
-                if ($password_reset_by_phone != null) {
-                    // Update password reset
-                    $password_reset_by_phone->update([
-                        'token' => $random_string,
-                        'former_password' => $inputs['password'],
-                        'updated_at' => now(),
-                    ]);
-                }
+            // If password_reset exists, update it
+            if ($password_reset != null) {
+                $password_reset->update([
+                    'token' => $random_string,
+                    'former_password' => $inputs['password'],
+                    'updated_at' => now(),
+                ]);
             }
 
             $inputs['password'] = Hash::make($inputs['password']);
