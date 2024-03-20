@@ -15,7 +15,7 @@ Route::middleware(['auth:sanctum', 'localization'])->group(function () {
     Route::apiResource('order', 'App\Http\Controllers\API\OrderController');
     Route::apiResource('pricing', 'App\Http\Controllers\API\PricingController')->except(['index']);
     Route::apiResource('role', 'App\Http\Controllers\API\RoleController')->except(['search']);
-    Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController')->except(['searchByEmail', 'searchByPhone']);
+    Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController')->except(['searchByEmailOrPhone', 'searchByEmail', 'searchByPhone', 'checkToken']);
     Route::apiResource('personal_access_token', 'App\Http\Controllers\API\PersonalAccessTokenController');
     Route::apiResource('notification', 'App\Http\Controllers\API\NotificationController');
     Route::apiResource('donation', 'App\Http\Controllers\API\DonationController');
@@ -87,6 +87,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
     Route::post('user/login', 'App\Http\Controllers\API\UserController@login')->name('user.api.login');
     // PasswordReset
+    Route::get('password_reset/search_by_email_or_phone/{data}', 'App\Http\Controllers\API\PasswordResetController@searchByEmailOrPhone')->name('password_reset.api.search_by_email_or_phone');
     Route::get('password_reset/search_by_email/{data}', 'App\Http\Controllers\API\PasswordResetController@searchByEmail')->name('password_reset.api.search_by_email');
     Route::get('password_reset/search_by_phone/{data}', 'App\Http\Controllers\API\PasswordResetController@searchByPhone')->name('password_reset.api.search_by_phone');
     Route::post('password_reset/check_token', 'App\Http\Controllers\API\PasswordResetController@checkToken')->name('password_reset.api.check_token');

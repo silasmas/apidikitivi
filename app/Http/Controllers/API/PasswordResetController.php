@@ -163,6 +163,47 @@ class PasswordResetController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Search a password reset by e-mail or phone number
+     *
+     * @param  string $data
+     * @return \Illuminate\Http\Response
+     */
+    public function searchByEmailOrPhone($data)
+    {
+        $password_reset = PasswordReset::where('email', $data)->orWhere('phone', $data)->first();
+        $user = User::where('email', $data)->orWhere('phone', $data)->first();
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        if (is_null($password_reset)) {
+            return $this->handleError(__('notifications.find_password_reset_404'));
+        }
+
+        if ($password_reset->email != null OR $password_reset->phone != null) {
+            $random_string = (string) random_int(1000000, 9999999);
+
+            $password_reset->update([
+                'former_password' => Random::generate(7),
+                'token' => $random_string,
+                'updated_at' => now()
+            ]);
+
+            $user->update([
+                'password' => Hash::make($password_reset->former_password),
+                'updated_at' => now()
+            ]);
+        }
+
+        $object = new stdClass();
+        $object->user = new ResourcesUser($user);
+        $object->password_reset = new ResourcesPasswordReset($password_reset);
+
+        return $this->handleResponse($object, __('notifications.find_password_reset_success'));
+    }
+
+    /**
      * Search a password reset by e-mail
      *
      * @param  string $data
