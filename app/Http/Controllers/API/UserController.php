@@ -490,7 +490,7 @@ class UserController extends BaseController
         if ($inputs['username'] != null) {
             // Check if username already exists
             foreach ($users as $another_user):
-                if ($current_user->username != $inputs['username']) {
+                if (!empty($current_user->username) AND $current_user->username != $inputs['username']) {
                     if ($another_user->username == $inputs['username']) {
                         return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
                     }
