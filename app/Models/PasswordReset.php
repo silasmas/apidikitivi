@@ -13,6 +13,8 @@ class PasswordReset extends Model
 {
     use HasFactory;
 
+    protected $table = 'password_resets';
+
     /**
      * The attributes that are mass assignable.
      *
