@@ -31,6 +31,7 @@ class User extends JsonResource
             'p_o_box' => $this->p_o_box,
             'email' => $this->email,
             'phone' => $this->phone,
+            'username' => $this->username,
             'password' => $this->password,
             'belongs_to' => $this->belongs_to,
             'parental_code' => $this->parental_code,
