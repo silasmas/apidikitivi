@@ -47,7 +47,7 @@ return [
     'digits_between' => ':attribute doivent être entre :min et :max digits.',
     'dimensions' => ':attribute a des dimensions d\'image invalides.',
     'distinct' => 'Ce champ a une valeur dupliquée.',
-    'email' => 'Ce champ doit être une adresse e-mail valide.',
+    'email' => 'Ce champ doit être une adresse email valide.',
     'ends_with' => 'Ce champ doit terminer avec l\'une des valeurs suivantes : :values.',
     'exists' => 'Le champ sélectionné est invalide.',
     'file' => 'Ce champ doit être un fichier.',
@@ -144,8 +144,8 @@ return [
 
     'custom' => [
         'email' => [
-            'incorrect' => 'Ecrivez une adresse e-mail valide s\'il vous plait',
-            'exists' => 'L\'adresse e-mail fournie existe déjà',
+            'incorrect' => 'Ecrivez une adresse email valide s\'il vous plait',
+            'exists' => 'L\'adresse email fournie existe déjà',
         ],
         'phone' => [
             'incorrect' => 'Ecrivez un n° de téléphone valide s\'il vous plait',
@@ -160,7 +160,7 @@ return [
             'incorrect' => 'Le nouveau mot de passe doit respecter nos conditions',
         ],
         'email_or_phone' => [
-            'required' => 'L\'adresse e-mail ou le n° de téléphone doit être défini'
+            'required' => 'L\'adresse email ou le n° de téléphone doit être défini'
         ],
         'group_name' => [
             'exists' => 'Ce nom de groupe already exists'

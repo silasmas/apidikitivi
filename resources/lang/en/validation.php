@@ -144,8 +144,8 @@ return [
 
     'custom' => [
         'email' => [
-            'incorrect' => 'Write a valid e-mail address please',
-            'exists' => 'The provided e-mail address already exists',
+            'incorrect' => 'Write a valid email address please',
+            'exists' => 'The provided email address already exists',
         ],
         'phone' => [
             'incorrect' => 'Write a valid phone number please',
