@@ -170,7 +170,7 @@ class UserController extends BaseController
                 // }
 
             } else {
-                if ($inputs['email'] != null) {
+                if ($inputs['email'] != null AND $inputs['phone'] == null) {
                     $password_reset = PasswordReset::create([
                         'email' => $inputs['email'],
                         'token' => $random_string,
@@ -180,7 +180,7 @@ class UserController extends BaseController
                     Mail::to($inputs['email'])->send(new OTPCode($password_reset->token));
                 }
 
-                if ($inputs['phone'] != null) {
+                if ($inputs['email'] == null AND $inputs['phone'] != null) {
                     $password_reset = PasswordReset::create([
                         'phone' => $inputs['phone'],
                         'token' => $random_string,
@@ -218,24 +218,24 @@ class UserController extends BaseController
                 // }
 
             } else {
-                if ($inputs['email'] != null) {
+                if ($inputs['email'] != null AND $inputs['phone'] == null) {
                     $password_reset = PasswordReset::create([
                         'email' => $inputs['email'],
                         'token' => $random_string,
-                        'former_password' => Random::generate(10, 'a-zA-Z'),
+                        'former_password' => Random::generate(10, 'a-zA-Z')
                     ]);
+
+                    Mail::to($inputs['email'])->send(new OTPCode($password_reset->token));
 
                     $inputs['password'] = Hash::make($password_reset->former_password);
                 }
 
-                if ($inputs['phone'] != null) {
+                if ($inputs['email'] == null AND $inputs['phone'] != null) {
                     $password_reset = PasswordReset::create([
                         'phone' => $inputs['phone'],
                         'token' => $random_string,
-                        'former_password' => Random::generate(10, 'a-zA-Z'),
+                        'former_password' => Random::generate(10, 'a-zA-Z')
                     ]);
-
-                    $inputs['password'] = Hash::make($password_reset->former_password);
 
                     // try {
                     //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
@@ -243,6 +243,8 @@ class UserController extends BaseController
                     // } catch (\Throwable $th) {
                     //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
                     // }
+
+                    $inputs['password'] = Hash::make($password_reset->former_password);
                 }
             }
         }
@@ -355,6 +357,7 @@ class UserController extends BaseController
         ];
         $users = User::all();
         $current_user = User::find($inputs['id']);
+        $password_resets = PasswordReset::all();
 
         if ($inputs['firstname'] != null) {
             $user->update([
@@ -559,30 +562,18 @@ class UserController extends BaseController
             $password_reset = PasswordReset::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
             $random_string = (string) random_int(1000000, 9999999);
 
-            // If password_reset doesn't exist, create it.
-            if ($password_reset == null) {
-                PasswordReset::create([
-                    'email' => $inputs['email'],
-                    'phone' => $inputs['phone'],
-                    'token' => $random_string,
-                    'former_password' => $inputs['password'],
-                ]);
-
+            foreach ($password_resets as $pass_res) {
+                if ($pass_res->id != $password_reset->id) {
+					$password_reset->update([
+						'token' => $random_string,
+						'former_password' => $inputs['password'],
+						'updated_at' => now(),
+					]);
+                }
             }
-
-            // If password_reset exists, update it
-            if ($password_reset != null) {
-                $password_reset->update([
-                    'token' => $random_string,
-                    'former_password' => $inputs['password'],
-                    'updated_at' => now(),
-                ]);
-            }
-
-            $inputs['password'] = Hash::make($inputs['password']);
 
             $user->update([
-                'password' => $inputs['password'],
+                'password' => Hash::make($inputs['password']),
                 'updated_at' => now(),
             ]);
 
