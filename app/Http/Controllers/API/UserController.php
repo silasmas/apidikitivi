@@ -766,7 +766,12 @@ class UserController extends BaseController
             $password_reset = PasswordReset::where('phone', $user->phone)->first();
 
             if ($user->phone_verified_at == null) {
-                return $this->handleError(new ResourcesPasswordReset($password_reset), __('notifications.unverified_token'), 400);
+				$object = new stdClass();
+
+				$object->password_reset = new ResourcesPasswordReset($password_reset);
+				$object->user = new ResourcesUser($user);
+
+                return $this->handleError($object, __('notifications.unverified_token'), 400);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -792,7 +797,12 @@ class UserController extends BaseController
             $password_reset = PasswordReset::where('email', $user->email)->first();
 
             if ($user->email_verified_at == null) {
-                return $this->handleError(new ResourcesPasswordReset($password_reset), __('notifications.unverified_token'), 400);
+				$object = new stdClass();
+
+				$object->password_reset = new ResourcesPasswordReset($password_reset);
+				$object->user = new ResourcesUser($user);
+
+                return $this->handleError($object, __('notifications.unverified_token'), 400);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
