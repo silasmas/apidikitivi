@@ -357,7 +357,6 @@ class UserController extends BaseController
         ];
         $users = User::all();
         $current_user = User::find($inputs['id']);
-        $password_resets = PasswordReset::all();
 
         if ($inputs['firstname'] != null) {
             $user->update([
@@ -559,17 +558,27 @@ class UserController extends BaseController
             //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
             // }
 
-            $password_reset = PasswordReset::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
+            $password_reset = PasswordReset::where('email', $current_user->email)->orWhere('phone', $current_user->phone)->first();
             $random_string = (string) random_int(1000000, 9999999);
 
-            foreach ($password_resets as $pass_res) {
-                if ($pass_res->id != $password_reset->id) {
-					$password_reset->update([
-						'token' => $random_string,
-						'former_password' => $inputs['password'],
-						'updated_at' => now(),
-					]);
-                }
+            // If password_reset doesn't exist, create it.
+            if ($password_reset == null) {
+                PasswordReset::create([
+                    'email' => $inputs['email'],
+                    'phone' => $inputs['phone'],
+                    'token' => $random_string,
+                    'former_password' => $inputs['password'],
+                ]);
+
+            }
+
+            // If password_reset exists, update it
+            if ($password_reset != null) {
+                $password_reset->update([
+                    'token' => $random_string,
+                    'former_password' => $inputs['password'],
+                    'updated_at' => now(),
+                ]);
             }
 
             $user->update([
