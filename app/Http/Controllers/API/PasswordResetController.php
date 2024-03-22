@@ -318,60 +318,120 @@ class PasswordResetController extends BaseController
             return $this->handleError($inputs['token'], __('validation.required'), 400);
         }
 
-        if ($inputs['email'] != null) {
-            $user = User::where('email', $inputs['email'])->first();
-            $password_reset = PasswordReset::where('email', $inputs['email'])->first();
+        if ($inputs['email'] != null AND $inputs['phone'] != null) {
+            $user = User::where('email', $inputs['email'])->where('phone', $inputs['phone'])->first();
+            $password_reset = PasswordReset::where('email', $inputs['email'])->where('phone', $inputs['phone'])->first();
 
             if (is_null($user)) {
-                return $this->handleError(__('notifications.find_user_404'));
-            }
+				$user = User::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
+				$password_reset = PasswordReset::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
 
-            if (is_null($password_reset)) {
-                return $this->handleError(__('notifications.find_password_reset_404'));
-            }
-    
-            if ($password_reset->token != $inputs['token']) {
-                return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
-            }
+				if (is_null($user)) {
+					return $this->handleError(__('notifications.find_user_404'));
+				}
 
-            $user->update([
-                'email_verified_at' => now(),
-                'updated_at' => now(),
-            ]);
+				if (is_null($password_reset)) {
+					return $this->handleError(__('notifications.find_password_reset_404'));
+				}
 
-            $object = new stdClass();
-            $object->user = new ResourcesUser($user);
-            $object->password_reset = new ResourcesPasswordReset($password_reset);
+				if ($password_reset->token != $inputs['token']) {
+					return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+				}
 
-            return $this->handleResponse($object, __('notifications.find_user_success'));
-        }
+				if (!empty($user->email)) {
+					$user->update([
+						'email_verified_at' => now(),
+						'updated_at' => now(),
+					]);
+				}
 
-        if ($inputs['phone'] != null) {
-            $user = User::where('phone', $inputs['phone'])->first();
-            $password_reset = PasswordReset::where('phone', $inputs['phone'])->first();
+				if (!empty($user->phone)) {
+					$user->update([
+						'phone_verified_at' => now(),
+						'updated_at' => now(),
+					]);
+				}
 
-            if (is_null($user)) {
-                return $this->handleError(__('notifications.find_user_404'));
-            }
+				$object = new stdClass();
+				$object->user = new ResourcesUser($user);
+				$object->password_reset = new ResourcesPasswordReset($password_reset);
 
-            if (is_null($password_reset)) {
-                return $this->handleError(__('notifications.find_password_reset_404'));
-            }
-    
-            if ($password_reset->token != $inputs['token']) {
-                return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
-            }
+				return $this->handleResponse($object, __('notifications.update_user_success'));
 
-            $user->update([
-                'phone_verified_at' => now(),
-                'updated_at' => now(),
-            ]);
+            } else {
+				if ($password_reset->token != $inputs['token']) {
+					return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+				}
 
-            $object = new stdClass();
-            $object->user = new ResourcesUser($user);
-            $object->password_reset = new ResourcesPasswordReset($password_reset);
+				$user->update([
+					'email_verified_at' => now(),
+					'phone_verified_at' => now(),
+					'updated_at' => now(),
+				]);
 
-            return $this->handleResponse($object, __('notifications.find_user_success'));
-        }
+				$object = new stdClass();
+				$object->user = new ResourcesUser($user);
+				$object->password_reset = new ResourcesPasswordReset($password_reset);
+
+				return $this->handleResponse($object, __('notifications.update_user_success'));
+			}
+
+        } else {
+			if ($inputs['email'] != null) {
+				$user = User::where('email', $inputs['email'])->first();
+				$password_reset = PasswordReset::where('email', $inputs['email'])->first();
+
+				if (is_null($user)) {
+					return $this->handleError(__('notifications.find_user_404'));
+				}
+
+				if (is_null($password_reset)) {
+					return $this->handleError(__('notifications.find_password_reset_404'));
+				}
+		
+				if ($password_reset->token != $inputs['token']) {
+					return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+				}
+
+				$user->update([
+					'email_verified_at' => now(),
+					'updated_at' => now(),
+				]);
+
+				$object = new stdClass();
+				$object->user = new ResourcesUser($user);
+				$object->password_reset = new ResourcesPasswordReset($password_reset);
+
+				return $this->handleResponse($object, __('notifications.update_user_success'));
+			}
+
+			if ($inputs['phone'] != null) {
+				$user = User::where('phone', $inputs['phone'])->first();
+				$password_reset = PasswordReset::where('phone', $inputs['phone'])->first();
+
+				if (is_null($user)) {
+					return $this->handleError(__('notifications.find_user_404'));
+				}
+
+				if (is_null($password_reset)) {
+					return $this->handleError(__('notifications.find_password_reset_404'));
+				}
+		
+				if ($password_reset->token != $inputs['token']) {
+					return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+				}
+
+				$user->update([
+					'phone_verified_at' => now(),
+					'updated_at' => now(),
+				]);
+
+				$object = new stdClass();
+				$object->user = new ResourcesUser($user);
+				$object->password_reset = new ResourcesPasswordReset($password_reset);
+
+				return $this->handleResponse($object, __('notifications.update_user_success'));
+			}
+		}
     }
 }
