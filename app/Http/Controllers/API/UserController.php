@@ -558,7 +558,7 @@ class UserController extends BaseController
             //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
             // }
 
-            $password_reset = PasswordReset::where('email', (!empty($user->email) ? $user->email : null))->orWhere('phone', (!empty($user->phone) ? $user->phone : null))->first();
+            $password_reset = PasswordReset::where('email', $user->email)->orWhere('phone', $user->phone)->first();
             $random_string = (string) random_int(1000000, 9999999);
 
             // If password_reset doesn't exist, create it.
