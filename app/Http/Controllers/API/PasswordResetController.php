@@ -348,62 +348,46 @@ class PasswordResetController extends BaseController
         }
 
         if ($inputs['email'] != null AND $inputs['phone'] != null) {
-            $user = User::where('email', $inputs['email'])->where('phone', $inputs['phone'])->first();
-            $password_reset = PasswordReset::where('email', $inputs['email'])->where('phone', $inputs['phone'])->first();
+            $user_by_email = User::where('email', 'email')->first();
+            $user_by_phone = User::where('phone', 'phone')->first();
+            $password_reset_by_email = PasswordReset::where('email', 'email')->first();
+            $password_reset_by_phone = PasswordReset::where('phone', 'phone')->first();
 
-            if (is_null($user)) {
-				$user = User::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
-				$password_reset = PasswordReset::where('email', $inputs['email'])->orWhere('phone', $inputs['phone'])->first();
+            if ($user_by_email != null) {
+                if (is_null($password_reset_by_email)) {
+                    return $this->handleResponse(__('notifications.find_password_reset_404'));
+                }
 
-				if (is_null($user)) {
-					return $this->handleError(__('notifications.find_user_404'));
-				}
+                if ($password_reset_by_email->token != $inputs['token']) {
+                    return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+                }
 
-				if (is_null($password_reset)) {
-					return $this->handleError(__('notifications.find_password_reset_404'));
-				}
+                $user_by_email->update([
+                    'email_verified_at' => now(),
+                    'updated_at' => now(),
+                ]);    
+            }
 
-				if ($password_reset->token != $inputs['token']) {
-					return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
-				}
+            if ($user_by_phone != null) {
+                if (is_null($password_reset_by_phone)) {
+                    return $this->handleResponse(__('notifications.find_password_reset_404'));
+                }
 
-				if (!empty($user->email)) {
-					$user->update([
-						'email_verified_at' => now(),
-						'updated_at' => now(),
-					]);
-				}
+                if ($password_reset_by_phone->token != $inputs['token']) {
+                    return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
+                }
 
-				if (!empty($user->phone)) {
-					$user->update([
-						'phone_verified_at' => now(),
-						'updated_at' => now(),
-					]);
-				}
+                $user_by_phone->update([
+                    'phone_verified_at' => now(),
+                    'updated_at' => now(),
+                ]);    
+            }
 
-				$object = new stdClass();
-				$object->user = new ResourcesUser($user);
-				$object->password_reset = new ResourcesPasswordReset($password_reset);
+            $object = new stdClass();
+            $object->user = new ResourcesUser(($user_by_phone != null ? $user_by_phone : $user_by_email));
+            $object->password_reset = new ResourcesPasswordReset(($password_reset_by_phone != null ? $password_reset_by_phone : $password_reset_by_email));
 
-				return $this->handleResponse($object, __('notifications.update_user_success'));
-
-            } else {
-				if ($password_reset->token != $inputs['token']) {
-					return $this->handleError($inputs['token'], __('notifications.bad_token'), 400);
-				}
-
-				$user->update([
-					'email_verified_at' => now(),
-					'phone_verified_at' => now(),
-					'updated_at' => now(),
-				]);
-
-				$object = new stdClass();
-				$object->user = new ResourcesUser($user);
-				$object->password_reset = new ResourcesPasswordReset($password_reset);
-
-				return $this->handleResponse($object, __('notifications.update_user_success'));
-			}
+            return $this->handleResponse($object, __('notifications.update_user_success'));
 
         } else {
 			if ($inputs['email'] != null) {
