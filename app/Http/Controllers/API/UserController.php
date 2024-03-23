@@ -561,7 +561,7 @@ class UserController extends BaseController
             $password_reset = PasswordReset::where('email', $current_user->email)->orWhere('phone', $current_user->phone)->first();
             $random_string = (string) random_int(1000000, 9999999);
 
-            dd($password_reset);
+            dd($current_user);
             // If password_reset doesn't exist, create it.
             if ($password_reset == null) {
                 PasswordReset::create([
