@@ -42,6 +42,15 @@ class Media extends Model
 
     /**
      * ONE-TO-MANY
+     * One category for several medias
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * ONE-TO-MANY
      * One type for several medias
      */
     public function type()

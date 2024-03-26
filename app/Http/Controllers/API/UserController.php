@@ -10,6 +10,7 @@ use App\Models\PersonalAccessToken;
 use App\Models\Status;
 use App\Models\User;
 use Nette\Utils\Random;
+use Vonage\Laravel\Facade\Vonage;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -71,8 +72,6 @@ class UserController extends BaseController
         ];
         $users = User::all();
         $password_resets = PasswordReset::all();
-        // $basic  = new \Vonage\Client\Credentials\Basic('', '');
-        // $client = new \Vonage\Client($basic);
 
         if (trim($inputs['email']) == null AND trim($inputs['phone']) == null) {
             return $this->handleError(__('validation.custom.email_or_phone.required'));
@@ -162,12 +161,12 @@ class UserController extends BaseController
 
                 Mail::to($inputs['email'])->send(new OTPCode($password_reset->token));
 
-                // try {
-                //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
+                try {
+                    Vonage::sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                // } catch (\Throwable $th) {
-                //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                // }
+                } catch (\Throwable $th) {
+                    return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                }
 
             } else {
                 if ($inputs['email'] != null AND $inputs['phone'] == null) {
@@ -187,12 +186,12 @@ class UserController extends BaseController
                         'former_password' => $request->password
                     ]);
 
-                    // try {
-                    //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
+                    try {
+                        Vonage::sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                    // } catch (\Throwable $th) {
-                    //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                    // }
+                    } catch (\Throwable $th) {
+                        return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                    }
                 }
             }
         }
@@ -210,12 +209,12 @@ class UserController extends BaseController
 
                 $inputs['password'] = Hash::make($password_reset->former_password);
 
-                // try {
-                //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
+                try {
+                    Vonage::sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                // } catch (\Throwable $th) {
-                //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                // }
+                } catch (\Throwable $th) {
+                    return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                }
 
             } else {
                 if ($inputs['email'] != null AND $inputs['phone'] == null) {
@@ -237,12 +236,12 @@ class UserController extends BaseController
                         'former_password' => Random::generate(10, 'a-zA-Z')
                     ]);
 
-                    // try {
-                    //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
+                    try {
+                        Vonage::sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-                    // } catch (\Throwable $th) {
-                    //     return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
-                    // }
+                    } catch (\Throwable $th) {
+                        return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                    }
 
                     $inputs['password'] = Hash::make($password_reset->former_password);
                 }

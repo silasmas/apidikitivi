@@ -74,16 +74,20 @@ class MediaController extends BaseController
         // Get inputs
         $inputs = [
             'media_title' => $request->media_title,
+            'media_description' => $request->media_description,
             'media_url' => $request->media_url,
             'teaser_url' => $request->file('teaser_url'),
             'author_names' => $request->author_names,
+            'artist_names' => $request->artist_names,
             'writer' => $request->writer,
             'director' => $request->director,
+            'published_date' => $request->published_date,
             'cover_url' => $request->file('cover_url'),
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'is_live' => $request->is_live,
             'belongs_to' => $request->belongs_to,
+            'category_id' => $request->category_id,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
         ];
@@ -179,22 +183,25 @@ class MediaController extends BaseController
 
             if ($media->user_id != null) {
 				$status_unread = Status::where('status_name->fr', 'Non lue')->first();
+				$visitor = User::find($request->header('X-user-id'));
 
 				/*
 					HISTORY AND/OR NOTIFICATION MANAGEMENT
 				*/
-				Notification::create([
-					'notification_url' => 'members/' . $visitor->id,
-					'notification_content' => [
-						'en' => $visitor->firstname . ' watched your video.',
-						'fr' => $visitor->firstname . ' a regardé votre vidéo.',
-						'ln' => $visitor->firstname . ' atali video na yo.',
-					],
-					'icon' => 'bi bi-eye',
-					'color' => 'text-warning',
-					'status_id' => $status_unread->id,
-					'user_id' => $media->user_id
-				]);
+                if (!empty($visitor)) {
+                    Notification::create([
+                        'notification_url' => 'members/' . $visitor->id,
+                        'notification_content' => [
+                            'en' => $visitor->firstname . ' watched your video.',
+                            'fr' => $visitor->firstname . ' a regardé votre vidéo.',
+                            'ln' => $visitor->firstname . ' atali video na yo.',
+                        ],
+                        'icon' => 'bi bi-eye',
+                        'color' => 'text-warning',
+                        'status_id' => $status_unread->id,
+                        'user_id' => $media->user_id
+                    ]);
+                }
             }
         }
 
@@ -229,16 +236,20 @@ class MediaController extends BaseController
         $inputs = [
             'id' => $request->id,
             'media_title' => $request->media_title,
+            'media_description' => $request->media_description,
             'media_url' => $request->media_url,
-            'teaser_url' => $request->teaser_url,
+            'teaser_url' => $request->file('teaser_url'),
             'author_names' => $request->author_names,
+            'artist_names' => $request->artist_names,
             'writer' => $request->writer,
             'director' => $request->director,
-            'cover_url' => $request->cover_url,
+            'published_date' => $request->published_date,
+            'cover_url' => $request->file('cover_url'),
             'price' => $request->price,
             'for_youth' => $request->for_youth,
             'is_live' => $request->is_live,
             'belongs_to' => $request->belongs_to,
+            'category_id' => $request->category_id,
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
         ];
@@ -262,6 +273,13 @@ class MediaController extends BaseController
             ]);
         }
 
+        if ($inputs['media_description'] != null) {
+            $media->update([
+                'media_description' => $inputs['media_description'],
+                'updated_at' => now(),
+            ]);
+        }
+
         if ($inputs['media_url'] != null) {
             $media->update([
                 'media_url' => $inputs['media_url'],
@@ -269,9 +287,14 @@ class MediaController extends BaseController
             ]);
         }
 
-        if ($inputs['teaser_url'] != null) {
+		if ($request->file('teaser_url') != null) {
+			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+
+			// Upload teaser
+			Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+
             $media->update([
-                'teaser_url' => $inputs['teaser_url'],
+                'teaser_url' => $teaser_url,
                 'updated_at' => now(),
             ]);
         }
@@ -279,6 +302,13 @@ class MediaController extends BaseController
         if ($inputs['author_names'] != null) {
             $media->update([
                 'author_names' => $inputs['author_names'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['artist_names'] != null) {
+            $media->update([
+                'artist_names' => $inputs['artist_names'],
                 'updated_at' => now(),
             ]);
         }
@@ -297,9 +327,21 @@ class MediaController extends BaseController
             ]);
         }
 
-        if ($inputs['cover_url'] != null) {
+        if ($inputs['published_date'] != null) {
             $media->update([
-                'cover_url' => $inputs['cover_url'],
+                'published_date' => $inputs['published_date'],
+                'updated_at' => now(),
+            ]);
+        }
+
+		if ($request->file('cover_url') != null) {
+			// Upload cover
+			$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
+
+			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+
+            $media->update([
+                'cover_url' => $cover_url,
                 'updated_at' => now(),
             ]);
         }
@@ -313,35 +355,42 @@ class MediaController extends BaseController
 
         if ($inputs['for_youth'] != null) {
             $media->update([
-                'for_youth' => $request->for_youth,
+                'for_youth' => $inputs['for_youth'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['is_live'] != null) {
             $media->update([
-                'is_live' => $request->is_live,
+                'is_live' => $inputs['is_live'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['belongs_to'] != null) {
             $media->update([
-                'belongs_to' => $request->belongs_to,
+                'belongs_to' => $inputs['belongs_to'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['type_id'] != null) {
             $media->update([
-                'type_id' => $request->type_id,
+                'type_id' => $inputs['type_id'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['category_id'] != null) {
+            $media->update([
+                'category_id' => $inputs['category_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['user_id'] != null) {
             $media->update([
-                'user_id' => $request->user_id,
+                'user_id' => $inputs['user_id'],
                 'updated_at' => now(),
             ]);
         }
@@ -418,7 +467,6 @@ class MediaController extends BaseController
     /**
      * Get by type.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int $for_youth
      * @return \Illuminate\Http\Response
      */
@@ -438,7 +486,6 @@ class MediaController extends BaseController
     /**
      * Get by type.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string $locale
      * @param  string $type_name
      * @return \Illuminate\Http\Response
@@ -503,6 +550,21 @@ class MediaController extends BaseController
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
         }
+    }
+
+    /**
+     * Filter medias by categories.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function filterByCategories(Request $request)
+    {
+        $medias = Media::whereHas('categories', function($query) use($request) {
+                            $query->whereIn('categories.id', $request->categories_ids);
+                        })->orderByDesc('medias.created_at')->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
 
     /**

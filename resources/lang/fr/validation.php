@@ -205,6 +205,18 @@ return [
         'type_name' => [
             'exists' => 'Ce nom de type existe déjà'
         ],
+        'status' => [
+            'required' => 'L\'état est obligatoire'
+        ],
+        'status_name' => [
+            'exists' => 'Ce nom d\'état existe déjà'
+        ],
+        'category' => [
+            'required' => 'La catégorie est obligatoire'
+        ],
+        'category_name' => [
+            'exists' => 'Ce nom de catégorie existe déjà'
+        ],
     ],
 
     /*

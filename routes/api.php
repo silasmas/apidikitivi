@@ -31,6 +31,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::resource('legal_info_title', 'App\Http\Controllers\API\LegalInfoTitleController');
     Route::resource('status', 'App\Http\Controllers\API\StatusController');
     Route::resource('type', 'App\Http\Controllers\API\TypeController');
+    Route::resource('category', 'App\Http\Controllers\API\CategoryController');
     Route::resource('country', 'App\Http\Controllers\API\CountryController');
     Route::resource('book', 'App\Http\Controllers\API\BookController');
     Route::resource('media', 'App\Http\Controllers\API\MediaController');
@@ -62,6 +63,10 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('type/{id}', 'App\Http\Controllers\API\TypeController@show')->name('type.api.show');
     Route::get('type/search/{locale}/{data}', 'App\Http\Controllers\API\TypeController@search')->name('type.api.search');
     Route::get('type/find_by_group/{locale}/{group_name}', 'App\Http\Controllers\API\TypeController@findByGroup')->name('type.api.find_by_group');
+    // Category
+    Route::get('category', 'App\Http\Controllers\API\CategoryController@index')->name('category.api.index');
+    Route::get('category/{id}', 'App\Http\Controllers\API\CategoryController@show')->name('category.api.show');
+    Route::get('category/search/{locale}/{data}', 'App\Http\Controllers\API\CategoryController@search')->name('category.api.search');
     // Country
     Route::get('country', 'App\Http\Controllers\API\CountryController@index')->name('country.api.index');
     Route::get('country/{id}', 'App\Http\Controllers\API\CountryController@show')->name('country.api.show');
@@ -100,9 +105,10 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('legal_info_content', 'App\Http\Controllers\API\LegalInfoContentController')->except(['index', 'show', 'search']);
     Route::resource('status', 'App\Http\Controllers\API\StatusController')->except(['index', 'show', 'search', 'findByGroup']);
     Route::resource('type', 'App\Http\Controllers\API\TypeController')->except(['index', 'show', 'search', 'findByGroup']);
+    Route::resource('category', 'App\Http\Controllers\API\CategoryController')->except(['index', 'show', 'search']);
     Route::resource('country', 'App\Http\Controllers\API\CountryController')->except(['index', 'show', 'search']);
     Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
-    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findAllByType', 'findAllByAgeType']);
+    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findLive', 'filterByCategories', 'findAllByType', 'findAllByAgeType']);
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
     Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');
@@ -130,6 +136,10 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::post('type', 'App\Http\Controllers\API\TypeController@store')->name('type.api.store');
     Route::put('type/{id}', 'App\Http\Controllers\API\TypeController@update')->name('type.api.update');
     Route::delete('type/{id}', 'App\Http\Controllers\API\TypeController@destroy')->name('type.api.destroy');
+    // Category
+    Route::post('category', 'App\Http\Controllers\API\CategoryController@store')->name('category.api.store');
+    Route::put('category/{id}', 'App\Http\Controllers\API\CategoryController@update')->name('category.api.update');
+    Route::delete('category/{id}', 'App\Http\Controllers\API\CategoryController@destroy')->name('category.api.destroy');
     // Country
     Route::post('country', 'App\Http\Controllers\API\CountryController@store')->name('country.api.store');
     Route::put('country/{id}', 'App\Http\Controllers\API\CountryController@update')->name('country.api.update');
@@ -143,6 +153,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::post('media', 'App\Http\Controllers\API\MediaController@store')->name('media.api.store');
     Route::put('media/{id}', 'App\Http\Controllers\API\MediaController@update')->name('media.api.update');
     Route::delete('media/{id}', 'App\Http\Controllers\API\MediaController@destroy')->name('media.api.destroy');
+    Route::post('media/filter_by_categories', 'App\Http\Controllers\API\MediaController@filterByCategories')->name('media.api.filter_by_categories');
     Route::put('media/set_approbation/{user_id}/{media_id}/{status_id}', 'App\Http\Controllers\API\MediaController@setApprobation')->name('media.api.set_approbation');
     Route::put('media/add_image/{id}', 'App\Http\Controllers\API\MediaController@addImage')->name('media.api.add_image');
     // Cart

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use stdClass;
+use App\Mail\OTPCode;
 use App\Models\PasswordReset;
 use App\Models\User;
+use Nette\Utils\Random;
+use Vonage\Laravel\Facade\Vonage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Nette\Utils\Random;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
 use App\Http\Resources\User as ResourcesUser;
 
@@ -264,6 +267,8 @@ class PasswordResetController extends BaseController
                 'password' => Hash::make($password_reset->former_password),
                 'updated_at' => now()
             ]);
+
+            Mail::to($password_reset->email)->send(new OTPCode($password_reset->token));
         }
 
         $object = new stdClass();
@@ -281,8 +286,6 @@ class PasswordResetController extends BaseController
      */
     public function searchByPhone($data)
     {
-        // $basic  = new \Vonage\Client\Credentials\Basic('5a4c014d', 'dhOq17USeZadLgIw');
-        // $client = new \Vonage\Client($basic);
         $password_reset = PasswordReset::where('phone', $data)->first();
         $user = User::where('phone', $data)->first();
 
@@ -307,14 +310,14 @@ class PasswordResetController extends BaseController
                 'updated_at' => now()
             ]);
 
-            // try {
-            //     $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
+            try {
+                Vonage::sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
-            // } catch (\Throwable $th) {
-            //     $response_error = json_decode($th->getMessage(), false);
+            } catch (\Throwable $th) {
+                $response_error = json_decode($th->getMessage(), false);
 
-            //     return $this->handleError($response_error, __('notifications.create_user_SMS_failed'), 500);
-            // }
+                return $this->handleError($response_error, __('notifications.create_user_SMS_failed'), 500);
+            }
         }
 
         $object = new stdClass();
@@ -355,7 +358,7 @@ class PasswordResetController extends BaseController
 
             if ($user_by_email != null) {
                 if (is_null($password_reset_by_email)) {
-                    return $this->handleResponse(__('notifications.find_password_reset_404'));
+                    return $this->handleError(__('notifications.find_password_reset_404'));
                 }
 
                 if ($password_reset_by_email->token != $inputs['token']) {
@@ -370,7 +373,7 @@ class PasswordResetController extends BaseController
 
             if ($user_by_phone != null) {
                 if (is_null($password_reset_by_phone)) {
-                    return $this->handleResponse(__('notifications.find_password_reset_404'));
+                    return $this->handleError(__('notifications.find_password_reset_404'));
                 }
 
                 if ($password_reset_by_phone->token != $inputs['token']) {

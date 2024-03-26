@@ -91,6 +91,13 @@ return [
     'create_type_success' => 'Type created',
     'update_type_success' => 'Type updated',
     'delete_type_success' => 'Type deleted',
+    // Category
+    'find_all_categories_success' => 'Categories found',
+    'find_category_success' => 'Category found',
+    'find_category_404' => 'Category not found',
+    'create_category_success' => 'Category created',
+    'update_category_success' => 'Category updated',
+    'delete_category_success' => 'Category deleted',
     // Country
     'find_all_countries_success' => 'Countries found',
     'find_country_success' => 'Country found',
