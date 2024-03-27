@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\YouTubeController;
 use App\Http\Resources\Media as ResourcesMedia;
 use App\Http\Resources\User as ResourcesUser;
+use App\Http\Resources\Session as ResourcesSession;
 
 /**
  * @author Xanders
@@ -531,6 +532,21 @@ class MediaController extends BaseController
     }
 
     /**
+     * Find current trends.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function currentTrends()
+    {
+        $medias = Media::whereHas('sessions', function($query) {
+                            $query->whereMonth('created_at', '>=', date('m'))
+                                    ->whereYear('created_at', '=', date('Y'));
+                        })->distinct()->orderByDesc('media_session.created_at')->limit(5)->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+    }
+
+    /**
      * Find media views.
      *
      * @param  int  $media_id
@@ -544,11 +560,11 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $users = User::whereHas('medias', function($query) {
-                            $query->where('media_user.is_viewed', 1);
-                        })->orderByDesc('media_user.created_at')->get();
+        $sessions = Session::whereHas('medias', function($query) {
+                            $query->where('media_session.is_viewed', 1);
+                        })->orderByDesc('media_session.created_at')->get();
 
-        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+        return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'));
     }
 
     /**
