@@ -7,7 +7,6 @@ use App\Mail\OTPCode;
 use App\Models\PasswordReset;
 use App\Models\User;
 use Nette\Utils\Random;
-use Vonage\Laravel\Facade\Vonage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -288,6 +287,8 @@ class PasswordResetController extends BaseController
     {
         $password_reset = PasswordReset::where('phone', $data)->first();
         $user = User::where('phone', $data)->first();
+        $basic  = new \Vonage\Client\Credentials\Basic(config('vonage.api_key'), config('vonage.api_secret'));
+        $client = new \Vonage\Client($basic);
 
         if (is_null($user)) {
             return $this->handleError(__('notifications.find_user_404'));
@@ -311,7 +312,7 @@ class PasswordResetController extends BaseController
             ]);
 
             try {
-                Vonage::sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
+                $client->sms()->send(new \Vonage\SMS\Message\SMS($password_reset->phone, 'DikiTivi', (string) $password_reset->token));
 
             } catch (\Throwable $th) {
                 $response_error = json_decode($th->getMessage(), false);
