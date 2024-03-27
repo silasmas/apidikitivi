@@ -28,7 +28,7 @@ class Media extends Model
      */
     public function sessions()
     {
-        return $this->belongsToMany(Session::class);
+        return $this->belongsToMany(Session::class)->withPivot('is_viewed');
     }
 
     /**
@@ -37,7 +37,7 @@ class Media extends Model
      */
     public function user_notices()
     {
-        return $this->belongsToMany(User::class)->withPivot(['is_viewed', 'is_liked', 'status_id']);
+        return $this->belongsToMany(User::class)->withPivot(['is_liked', 'status_id']);
     }
 
     /**

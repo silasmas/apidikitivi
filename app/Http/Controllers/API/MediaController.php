@@ -32,7 +32,7 @@ class MediaController extends BaseController
     {
         $medias = Media::orderByDesc('created_at')->get();
 
-        if ($request->hasHeader('X-user-id')) {
+        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -168,7 +168,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        if ($request->hasHeader('X-user-id')) {
+        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -411,7 +411,7 @@ class MediaController extends BaseController
     {
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->get();
 
-        if ($request->hasHeader('X-user-id')) {
+        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -491,7 +491,7 @@ class MediaController extends BaseController
      */
     public function findAllByAgeType(Request $request, $for_youth, $type_id)
     {
-        if ($request->hasHeader('X-user-id')) {
+        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
 			$sessions = Session::where('user_id', $request->header('X-user-id'))->get();
 
 			if ($sessions == null) {
@@ -590,54 +590,70 @@ class MediaController extends BaseController
     /**
      * Switch the media view.
      *
-     * @param  int $user_id
+     * @param  \Illuminate\Http\Request  $request
      * @param  int $media_id
-     * @param  int $status_id
      * @return \Illuminate\Http\Response
      */
-    public function switchView($user_id, $media_id)
+    public function switchView(Request $request, $media_id)
     {
-        $user = User::find($user_id);
         $media = Media::find($media_id);
-
-        if (is_null($user)) {
-            return $this->handleError(__('notifications.find_user_404'));
-        }
 
         if (is_null($media)) {
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        foreach ($user->medias as $med) {
-            if ($med->pivot->media_id == null) {
-                $user->medias()->attach([$media->id => ['is_viewed' => 1]]);
-            }
+        if (!empty($request->user_id) AND !empty($request->ip_address) OR !empty($request->user_id) AND empty($request->ip_address)) {
+            $session = Session::where('user_id', $request->user_id)->first();
 
-            if ($med->pivot->media_id != null) {
-                $user->medias()->updateExistingPivot([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach([$media->id => ['is_viewed' => 1]]);
+                }
+
+                if ($session->medias() != null) {
+                    foreach ($session->medias as $med) {
+                        $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
+                    }
+                }
+
+                if ($media->user_id != null) {
+                    $status_unread = Status::where('status_name->fr', 'Non lue')->first();
+                    $visitor = User::find($request->user_id);
+    
+                    /*
+                        HISTORY AND/OR NOTIFICATION MANAGEMENT
+                    */
+                    if (!empty($visitor)) {
+                        Notification::create([
+                            'notification_url' => 'members/' . $visitor->id,
+                            'notification_content' => [
+                                'en' => $visitor->firstname . ' watched your ' . $media->type->type_name->en . '.',
+                                'fr' => $visitor->firstname . ' a regardé votre ' . $media->type->type_name->fr . '.',
+                                'ln' => $visitor->firstname . ' atali ' . $media->type->type_name->ln . ' na yo.',
+                            ],
+                            'icon' => 'bi bi-eye',
+                            'color' => 'text-warning',
+                            'status_id' => $status_unread->id,
+                            'user_id' => $media->user_id
+                        ]);
+                    }
+                }
             }
         }
 
-        if ($media->user_id != null) {
-            $status_unread = Status::where('status_name->fr', 'Non lue')->first();
-            $visitor = User::find($request->header('X-user-id'));
+        if (empty($request->user_id) AND !empty($request->ip_address)) {
+            $session = Session::where('ip_address', $request->ip_address)->first();
 
-            /*
-                HISTORY AND/OR NOTIFICATION MANAGEMENT
-            */
-            if (!empty($visitor)) {
-                Notification::create([
-                    'notification_url' => 'members/' . $visitor->id,
-                    'notification_content' => [
-                        'en' => $visitor->firstname . ' watched your ' . $media->type->type_name->en . '.',
-                        'fr' => $visitor->firstname . ' a regardé votre ' . $media->type->type_name->fr . '.',
-                        'ln' => $visitor->firstname . ' atali ' . $media->type->type_name->ln . ' na yo.',
-                    ],
-                    'icon' => 'bi bi-eye',
-                    'color' => 'text-warning',
-                    'status_id' => $status_unread->id,
-                    'user_id' => $media->user_id
-                ]);
+            if (!empty($session)) {
+                if ($session->medias() == null) {
+                    $session->medias()->attach([$media->id => ['is_viewed' => 1]]);
+                }
+
+                if ($session->medias() != null) {
+                    foreach ($session->medias as $med) {
+                        $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
+                    }
+                }
             }
         }
     }
@@ -647,7 +663,6 @@ class MediaController extends BaseController
      *
      * @param  int $user_id
      * @param  int $media_id
-     * @param  int $status_id
      * @return \Illuminate\Http\Response
      */
     public function switchLike($user_id, $media_id)

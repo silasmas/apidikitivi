@@ -58,7 +58,7 @@ class User extends Authenticatable
      */
     public function media_notices()
     {
-        return $this->belongsToMany(Media::class)->withPivot(['is_viewed', 'is_liked', 'status_id']);
+        return $this->belongsToMany(Media::class)->withPivot(['is_liked', 'status_id']);
     }
 
     /**

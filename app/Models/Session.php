@@ -26,7 +26,7 @@ class Session extends Model
      */
     public function medias()
     {
-        return $this->belongsToMany(Media::class);
+        return $this->belongsToMany(Media::class)->withPivot('is_viewed');
     }
 
     /**
