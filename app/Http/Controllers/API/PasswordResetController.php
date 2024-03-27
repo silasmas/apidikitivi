@@ -39,12 +39,12 @@ class PasswordResetController extends BaseController
      */
     public function store(Request $request)
     {
-        $random_string = (string) random_int(1000000, 9999999);
+        $random_int_stringified = (string) random_int(1000000, 9999999);
         // Get inputs
         $inputs = [
             'email' => $request->email,
             'phone' => $request->phone,
-            'token' => $random_string,
+            'token' => $random_int_stringified,
             'former_password' => $request->former_password
         ];
 
@@ -116,13 +116,13 @@ class PasswordResetController extends BaseController
      */
     public function update(Request $request, PasswordReset $password_reset)
     {
-        $random_string = (string) random_int(1000000, 9999999);
+        $random_int_stringified = (string) random_int(1000000, 9999999);
         // Get inputs
         $inputs = [
             'id' => $request->id,
             'email' => $request->email,
             'phone' => $request->phone,
-            'token' => $random_string,
+            'token' => $random_int_stringified,
             'former_password' => $request->former_password,
             'updated_at' => now()
         ];
@@ -172,7 +172,7 @@ class PasswordResetController extends BaseController
      */
     public function searchByEmailOrPhone($data)
     {
-        $random_string = (string) random_int(1000000, 9999999);
+        $random_int_stringified = (string) random_int(1000000, 9999999);
 
         if (is_numeric($data)) {
             $password_reset = PasswordReset::where('phone', $data)->first();
@@ -187,8 +187,8 @@ class PasswordResetController extends BaseController
             }
 
             $password_reset->update([
-                'former_password' => Random::generate(7),
-                'token' => $random_string,
+                'former_password' => Random::generate(10, 'a-zA-Z'),
+                'token' => $random_int_stringified,
                 'updated_at' => now()
             ]);
 
@@ -216,8 +216,8 @@ class PasswordResetController extends BaseController
             }
 
             $password_reset->update([
-                'former_password' => Random::generate(7),
-                'token' => $random_string,
+                'former_password' => Random::generate(10, 'a-zA-Z'),
+                'token' => $random_int_stringified,
                 'updated_at' => now()
             ]);
 
@@ -254,11 +254,11 @@ class PasswordResetController extends BaseController
         }
 
         if ($password_reset->email != null) {
-            $random_string = (string) random_int(1000000, 9999999);
+            $random_int_stringified = (string) random_int(1000000, 9999999);
 
             $password_reset->update([
-                'former_password' => Random::generate(7),
-                'token' => $random_string,
+                'former_password' => Random::generate(10, 'a-zA-Z'),
+                'token' => $random_int_stringified,
                 'updated_at' => now()
             ]);
 
@@ -299,10 +299,10 @@ class PasswordResetController extends BaseController
         }
 
         if ($password_reset->phone != null) {
-            $random_string = (string) random_int(1000000, 9999999);
+            $random_int_stringified = (string) random_int(1000000, 9999999);
 
             $password_reset->update([
-                'token' => $random_string,
+                'token' => $random_int_stringified,
                 'updated_at' => now()
             ]);
 

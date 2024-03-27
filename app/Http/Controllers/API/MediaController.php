@@ -14,6 +14,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\YouTubeController;
 use App\Http\Resources\Media as ResourcesMedia;
+use App\Http\Resources\User as ResourcesUser;
 
 /**
  * @author Xanders
@@ -179,29 +180,6 @@ class MediaController extends BaseController
                     $session->medias()->sync([$media->id]);
                 }
 
-            }
-
-            if ($media->user_id != null) {
-				$status_unread = Status::where('status_name->fr', 'Non lue')->first();
-				$visitor = User::find($request->header('X-user-id'));
-
-				/*
-					HISTORY AND/OR NOTIFICATION MANAGEMENT
-				*/
-                if (!empty($visitor)) {
-                    Notification::create([
-                        'notification_url' => 'members/' . $visitor->id,
-                        'notification_content' => [
-                            'en' => $visitor->firstname . ' watched your video.',
-                            'fr' => $visitor->firstname . ' a regardé votre vidéo.',
-                            'ln' => $visitor->firstname . ' atali video na yo.',
-                        ],
-                        'icon' => 'bi bi-eye',
-                        'color' => 'text-warning',
-                        'status_id' => $status_unread->id,
-                        'user_id' => $media->user_id
-                    ]);
-                }
             }
         }
 
@@ -553,6 +531,48 @@ class MediaController extends BaseController
     }
 
     /**
+     * Find media views.
+     *
+     * @param  int  $media_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findViews($media_id)
+    {
+        $media = Media::find($media_id);
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        $users = User::whereHas('medias', function($query) {
+                            $query->where('media_user.is_viewed', 1);
+                        })->orderByDesc('media_user.created_at')->get();
+
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+    }
+
+    /**
+     * Find media likes.
+     *
+     * @param  int  $media_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findLikes($media_id)
+    {
+        $media = Media::find($media_id);
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        $users = User::whereHas('medias', function($query) {
+                            $query->where('media_user.is_liked', 1);
+                        })->orderByDesc('media_user.created_at')->get();
+
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+    }
+
+    /**
      * Filter medias by categories.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -568,6 +588,116 @@ class MediaController extends BaseController
     }
 
     /**
+     * Switch the media view.
+     *
+     * @param  int $user_id
+     * @param  int $media_id
+     * @param  int $status_id
+     * @return \Illuminate\Http\Response
+     */
+    public function switchView($user_id, $media_id)
+    {
+        $user = User::find($user_id);
+        $media = Media::find($media_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        foreach ($user->medias as $med) {
+            if ($med->pivot->media_id == null) {
+                $user->medias()->attach([$media->id => ['is_viewed' => 1]]);
+            }
+
+            if ($med->pivot->media_id != null) {
+                $user->medias()->updateExistingPivot([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
+            }
+        }
+
+        if ($media->user_id != null) {
+            $status_unread = Status::where('status_name->fr', 'Non lue')->first();
+            $visitor = User::find($request->header('X-user-id'));
+
+            /*
+                HISTORY AND/OR NOTIFICATION MANAGEMENT
+            */
+            if (!empty($visitor)) {
+                Notification::create([
+                    'notification_url' => 'members/' . $visitor->id,
+                    'notification_content' => [
+                        'en' => $visitor->firstname . ' watched your ' . $media->type->type_name->en . '.',
+                        'fr' => $visitor->firstname . ' a regardé votre ' . $media->type->type_name->fr . '.',
+                        'ln' => $visitor->firstname . ' atali ' . $media->type->type_name->ln . ' na yo.',
+                    ],
+                    'icon' => 'bi bi-eye',
+                    'color' => 'text-warning',
+                    'status_id' => $status_unread->id,
+                    'user_id' => $media->user_id
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Switch the media like.
+     *
+     * @param  int $user_id
+     * @param  int $media_id
+     * @param  int $status_id
+     * @return \Illuminate\Http\Response
+     */
+    public function switchLike($user_id, $media_id)
+    {
+        $user = User::find($user_id);
+        $media = Media::find($media_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        foreach ($user->medias as $med) {
+            if ($med->pivot->media_id == null) {
+                $user->medias()->attach([$media->id => ['is_liked' => 1]]);
+            }
+
+            if ($med->pivot->media_id != null) {
+                $user->medias()->updateExistingPivot([$media->id => ['is_liked' => ($med->pivot->is_liked == 1 ? 0 : 1)]]);
+            }
+        }
+
+        if ($media->user_id != null) {
+            $status_unread = Status::where('status_name->fr', 'Non lue')->first();
+            $visitor = User::find($request->header('X-user-id'));
+
+            /*
+                HISTORY AND/OR NOTIFICATION MANAGEMENT
+            */
+            if (!empty($visitor)) {
+                Notification::create([
+                    'notification_url' => 'members/' . $visitor->id,
+                    'notification_content' => [
+                        'en' => $visitor->firstname . ' liked your ' . $media->type->type_name->en . '.',
+                        'fr' => $visitor->firstname . ' a aimé votre ' . $media->type->type_name->fr . '.',
+                        'ln' => $visitor->firstname . ' alingi ' . $media->type->type_name->ln . ' na yo.',
+                    ],
+                    'icon' => 'bi bi-eye',
+                    'color' => 'text-warning',
+                    'status_id' => $status_unread->id,
+                    'user_id' => $media->user_id
+                ]);
+            }
+        }
+    }
+
+    /**
      * Approve the media.
      *
      * @param  int $user_id
@@ -578,20 +708,25 @@ class MediaController extends BaseController
     public function setApprobation($user_id, $media_id, $status_id)
     {
         $user = User::find($user_id);
+        $media = Media::find($media_id);
 
         if (is_null($user)) {
             return $this->handleError(__('notifications.find_user_404'));
         }
 
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
         foreach ($user->medias as $med) {
             if ($med->pivot->media_id == null) {
-                $user->medias()->attach([$media_id => [
+                $user->medias()->attach([$media->id => [
                     'status_id' => $status_id
                 ]]);
             }
 
             if ($med->pivot->media_id != null) {
-                $user->medias()->sync([$media_id => [
+                $user->medias()->updateExistingPivot([$media->id => [
                     'status_id' => $status_id
                 ]]);
             }

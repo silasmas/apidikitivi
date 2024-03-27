@@ -54,11 +54,11 @@ class User extends Authenticatable
 
     /**
      * MANY-TO-MANY
-     * Several media_approbations for several users
+     * Several media_notices for several users
      */
-    public function media_approbations()
+    public function media_notices()
     {
-        return $this->belongsToMany(Media::class);
+        return $this->belongsToMany(Media::class)->withPivot(['is_viewed', 'is_liked', 'status_id']);
     }
 
     /**

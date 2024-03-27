@@ -75,7 +75,7 @@ class UserController extends BaseController
         $client = new \Vonage\Client($basic);
 
         if (trim($inputs['email']) == null AND trim($inputs['phone']) == null) {
-            return $this->handleError(__('validation.custom.email_or_phone.required'));
+            $inputs['email'] = 'child-' . Random::generate(10, '0-9a-zA-Z') . '@no_mail.com';
         }
 
         if ($inputs['email'] != null) {
@@ -125,7 +125,7 @@ class UserController extends BaseController
 
         // If it is a child's account, generate a code for his parent if the code does not exist
         if ($inputs['belongs_to'] != null) {
-            $random_string = Random::generate(7);
+            $random_string = Random::generate(7, '0-9a-zA-Z');
 
             $parent = User::find($inputs['belongs_to']);
 
@@ -150,13 +150,13 @@ class UserController extends BaseController
             //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
             // }
 
-            $random_string = (string) random_int(1000000, 9999999);
+            $random_int_stringified = (string) random_int(1000000, 9999999);
 
             if ($inputs['email'] != null AND $inputs['phone'] != null) {
                 $password_reset = PasswordReset::create([
                     'email' => $inputs['email'],
                     'phone' => $inputs['phone'],
-                    'token' => $random_string,
+                    'token' => $random_int_stringified,
                     'former_password' => $request->password
                 ]);
 
@@ -173,7 +173,7 @@ class UserController extends BaseController
                 if ($inputs['email'] != null AND $inputs['phone'] == null) {
                     $password_reset = PasswordReset::create([
                         'email' => $inputs['email'],
-                        'token' => $random_string,
+                        'token' => $random_int_stringified,
                         'former_password' => $request->password
                     ]);
 
@@ -183,7 +183,7 @@ class UserController extends BaseController
                 if ($inputs['email'] == null AND $inputs['phone'] != null) {
                     $password_reset = PasswordReset::create([
                         'phone' => $inputs['phone'],
-                        'token' => $random_string,
+                        'token' => $random_int_stringified,
                         'former_password' => $request->password
                     ]);
 
@@ -198,13 +198,13 @@ class UserController extends BaseController
         }
 
         if ($inputs['password'] == null) {
-            $random_string = (string) random_int(1000000, 9999999);
+            $random_int_stringified = (string) random_int(1000000, 9999999);
 
             if ($inputs['email'] != null AND $inputs['phone'] != null) {
                 $password_reset = PasswordReset::create([
                     'email' => $inputs['email'],
                     'phone' => $inputs['phone'],
-                    'token' => $random_string,
+                    'token' => $random_int_stringified,
                     'former_password' => Random::generate(10, 'a-zA-Z'),
                 ]);
 
@@ -221,7 +221,7 @@ class UserController extends BaseController
                 if ($inputs['email'] != null AND $inputs['phone'] == null) {
                     $password_reset = PasswordReset::create([
                         'email' => $inputs['email'],
-                        'token' => $random_string,
+                        'token' => $random_int_stringified,
                         'former_password' => Random::generate(10, 'a-zA-Z')
                     ]);
 
@@ -233,7 +233,7 @@ class UserController extends BaseController
                 if ($inputs['email'] == null AND $inputs['phone'] != null) {
                     $password_reset = PasswordReset::create([
                         'phone' => $inputs['phone'],
-                        'token' => $random_string,
+                        'token' => $random_int_stringified,
                         'former_password' => Random::generate(10, 'a-zA-Z')
                     ]);
 
@@ -424,9 +424,11 @@ class UserController extends BaseController
         if ($inputs['email'] != null) {
             // Check if email already exists
             foreach ($users as $another_user):
-                if (!empty($current_user->email) AND $current_user->email != $inputs['email']) {
-                    if ($another_user->email == $inputs['email']) {
-                        return $this->handleError($inputs['email'], __('validation.custom.email.exists'), 400);
+                if (!empty($current_user->email)) {
+                    if ($current_user->email != $inputs['email']) {
+                        if ($another_user->email == $inputs['email']) {
+                            return $this->handleError($inputs['email'], __('validation.custom.email.exists'), 400);
+                        }
                     }
                 }
             endforeach;
@@ -439,17 +441,23 @@ class UserController extends BaseController
             $password_reset_by_email = PasswordReset::where('email', $inputs['email'])->first();
 
             if ($password_reset_by_email == null) {
-                $password_reset_by_phone = PasswordReset::where('phone', $current_user->phone)->first();
+                if (!empty($current_user->phone)) {
+                    $password_reset_by_phone = PasswordReset::where('phone', $current_user->phone)->first();
 
-                if ($password_reset_by_phone != null) {
-                    $password_reset_by_phone->update([
-                        'email' => $inputs['email'],
-                        'updated_at' => now(),
-                    ]);
+                    if ($password_reset_by_phone != null) {
+                        $password_reset_by_phone->update([
+                            'email' => $inputs['email'],
+                            'updated_at' => now(),
+                        ]);
+
+                    }
 
                 } else {
+                    $random_int_stringified = (string) random_int(1000000, 9999999);
+
                     PasswordReset::create([
                         'email' => $inputs['email'],
+                        'token' => $random_int_stringified,
                     ]);
                 }
             }
@@ -458,9 +466,11 @@ class UserController extends BaseController
         if ($inputs['phone'] != null) {
             // Check if phone already exists
             foreach ($users as $another_user):
-                if (!empty($current_user->phone) AND $current_user->phone != $inputs['phone']) {
-                    if ($another_user->phone == $inputs['phone']) {
-                        return $this->handleError($inputs['phone'], __('validation.custom.phone.exists'), 400);
+                if (!empty($current_user->phone)) {
+                    if ($current_user->phone != $inputs['phone']) {
+                        if ($another_user->phone == $inputs['phone']) {
+                            return $this->handleError($inputs['phone'], __('validation.custom.phone.exists'), 400);
+                        }
                     }
                 }
             endforeach;
@@ -473,17 +483,22 @@ class UserController extends BaseController
             $password_reset_by_phone = PasswordReset::where('phone', $inputs['phone'])->first();
 
             if ($password_reset_by_phone == null) {
-                $password_reset_by_email = PasswordReset::where('email', $inputs['email'])->first();
+                if (!empty($current_user->email)) {
+                    $password_reset_by_email = PasswordReset::where('email', $current_user->email)->first();
 
-                if ($password_reset_by_email != null) {
-                    $password_reset_by_email->update([
-                        'phone' => $inputs['phone'],
-                        'updated_at' => now(),
-                    ]);
+                    if ($password_reset_by_email != null) {
+                        $password_reset_by_email->update([
+                            'phone' => $inputs['phone'],
+                            'updated_at' => now(),
+                        ]);
+                    }
 
                 } else {
+                    $random_int_stringified = (string) random_int(1000000, 9999999);
+
                     PasswordReset::create([
                         'phone' => $inputs['phone'],
+                        'token' => $random_int_stringified,
                     ]);
                 }
             }
@@ -492,9 +507,11 @@ class UserController extends BaseController
         if ($inputs['username'] != null) {
             // Check if username already exists
             foreach ($users as $another_user):
-                if (!empty($current_user->username) AND $current_user->username != $inputs['username']) {
-                    if ($another_user->username == $inputs['username']) {
-                        return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
+                if (!empty($current_user->username)) {
+                    if ($current_user->username != $inputs['username']) {
+                        if ($another_user->username == $inputs['username']) {
+                            return $this->handleError($inputs['username'], __('validation.custom.username.exists'), 400);
+                        }
                     }
                 }
             endforeach;
@@ -507,7 +524,7 @@ class UserController extends BaseController
 
         // If it is a child's account, generate a code for his parent if the code does not exist
         if ($inputs['belongs_to'] != null) {
-            $random_string = Random::generate(7);
+            $random_string = Random::generate(7, '0-9a-zA-Z');
 
             $parent = User::find($inputs['belongs_to']);
 
@@ -558,28 +575,28 @@ class UserController extends BaseController
             //     return $this->handleError($inputs['password'], __('miscellaneous.password.error'), 400);
             // }
 
-            if ($current_user->email != null) {
+            if (!empty($current_user->email)) {
                 $password_reset = PasswordReset::where('email', $current_user->email)->first();
-                $random_string = (string) random_int(1000000, 9999999);
+                $random_int_stringified = (string) random_int(1000000, 9999999);
 
                 // If password_reset exists, update it
                 if ($password_reset != null) {
                     $password_reset->update([
-                        'token' => $random_string,
+                        'token' => $random_int_stringified,
                         'former_password' => $inputs['password'],
                         'updated_at' => now(),
                     ]);
                 }
 
             } else {
-                if ($current_user->phone != null) {
+                if (!empty($current_user->phone)) {
                     $password_reset = PasswordReset::where('phone', $current_user->phone)->first();
-                    $random_string = (string) random_int(1000000, 9999999);
+                    $random_int_stringified = (string) random_int(1000000, 9999999);
 
                     // If password_reset exists, update it
                     if ($password_reset != null) {
                         $password_reset->update([
-                            'token' => $random_string,
+                            'token' => $random_int_stringified,
                             'former_password' => $inputs['password'],
                             'updated_at' => now(),
                         ]);
@@ -593,7 +610,7 @@ class UserController extends BaseController
             ]);
 
             // If the user is a parent, change its children's password according to its own
-            if ($user->parental_code != null) {
+            if (!empty($user->parental_code)) {
                 $children = User::where('belongs_to', $user->id)->get();
 
                 foreach ($children as $child):
@@ -602,12 +619,24 @@ class UserController extends BaseController
                         'updated_at' => now(),
                     ]);
 
-                    $child_password_reset = PasswordReset::where('email', $child->email)->orWhere('phone', $child->phone)->first();
+                    if (!empty($child->email)) {
+                        $child_password_reset = PasswordReset::where('email', $child->email)->first();
 
-                    $child_password_reset->update([
-                        'former_password' => $inputs['password'],
-                        'updated_at' => now(),
-                    ]);
+                        $child_password_reset->update([
+                            'former_password' => $inputs['password'],
+                            'updated_at' => now(),
+                        ]);
+
+                    } else {
+                        if (!empty($child->phone)) {
+                            $child_password_reset = PasswordReset::where('phone', $child->phone)->first();
+
+                            $child_password_reset->update([
+                                'former_password' => $inputs['password'],
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
                 endforeach;
             }
         }
@@ -769,9 +798,8 @@ class UserController extends BaseController
                 return $this->handleError($inputs['password'], __('auth.password'), 400);
             }
 
-            $password_reset = PasswordReset::where('phone', $user->phone)->first();
-
             if ($user->phone_verified_at == null) {
+                $password_reset = PasswordReset::where('phone', $user->phone)->first();
 				$object = new stdClass();
 
 				$object->password_reset = new ResourcesPasswordReset($password_reset);
@@ -800,15 +828,18 @@ class UserController extends BaseController
                 return $this->handleError($inputs['password'], __('auth.password'), 400);
             }
 
-            $password_reset = PasswordReset::where('email', $user->email)->first();
+            if (!empty($user->email)) {
+                if ($inputs['username'] == $user->email) {
+                    if ($user->email_verified_at == null) {
+                        $password_reset = PasswordReset::where('email', $user->email)->first();
+                        $object = new stdClass();
 
-            if ($user->email_verified_at == null) {
-				$object = new stdClass();
+                        $object->password_reset = new ResourcesPasswordReset($password_reset);
+                        $object->user = new ResourcesUser($user);
 
-				$object->password_reset = new ResourcesPasswordReset($password_reset);
-				$object->user = new ResourcesUser($user);
-
-                return $this->handleError($object, __('notifications.unverified_token_email'), 400);
+                        return $this->handleError($object, __('notifications.unverified_token_email'), 400);
+                    }
+                }
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -1007,26 +1038,75 @@ class UserController extends BaseController
         // }
 
         // Update password reset
-        $password_reset = PasswordReset::where('email', $user->email)->orWhere('phone', $user->phone)->first();
-        $random_string = (string) random_int(1000000, 9999999);
+        if (!empty($user->email) AND !empty($user->phone)) {
+            $password_reset = PasswordReset::where([['email', $user->email], ['phone', $user->phone]])->first();
+            $random_int_stringified = (string) random_int(1000000, 9999999);
 
-        // If password_reset doesn't exist, create it.
-        if ($password_reset == null) {
-            PasswordReset::create([
-                'email' => $inputs['email'],
-                'phone' => $inputs['phone'],
-                'token' => $random_string,
-                'former_password' => $inputs['new_password'],
-            ]);
-        }
+            // If password_reset doesn't exist, create it.
+            if ($password_reset == null) {
+                PasswordReset::create([
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'token' => $random_int_stringified,
+                    'former_password' => $inputs['new_password'],
+                ]);
+            }
 
-        // If password_reset exists, update it
-        if ($password_reset != null) {
-            $password_reset->update([
-                'token' => $random_string,
-                'former_password' => $inputs['new_password'],
-                'updated_at' => now(),
-            ]);
+            // If password_reset exists, update it
+            if ($password_reset != null) {
+                $password_reset->update([
+                    'token' => $random_int_stringified,
+                    'former_password' => $inputs['new_password'],
+                    'updated_at' => now(),
+                ]);
+            }
+
+        } else {
+            if (!empty($user->email)) {
+                $password_reset = PasswordReset::where('email', $user->email)->first();
+                $random_int_stringified = (string) random_int(1000000, 9999999);
+
+                // If password_reset doesn't exist, create it.
+                if ($password_reset == null) {
+                    PasswordReset::create([
+                        'email' => $user->email,
+                        'token' => $random_int_stringified,
+                        'former_password' => $inputs['new_password'],
+                    ]);
+                }
+
+                // If password_reset exists, update it
+                if ($password_reset != null) {
+                    $password_reset->update([
+                        'token' => $random_int_stringified,
+                        'former_password' => $inputs['new_password'],
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            if (!empty($user->phone)) {
+                $password_reset = PasswordReset::where('phone', $user->phone)->first();
+                $random_int_stringified = (string) random_int(1000000, 9999999);
+
+                // If password_reset doesn't exist, create it.
+                if ($password_reset == null) {
+                    PasswordReset::create([
+                        'phone' => $user->phone,
+                        'token' => $random_int_stringified,
+                        'former_password' => $inputs['new_password'],
+                    ]);
+                }
+
+                // If password_reset exists, update it
+                if ($password_reset != null) {
+                    $password_reset->update([
+                        'token' => $random_int_stringified,
+                        'former_password' => $inputs['new_password'],
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
         }
 
         // update "password" and "password_visible" column
@@ -1036,7 +1116,7 @@ class UserController extends BaseController
         ]);
 
         // If the user is a parent, change its children's password according to its own
-        if ($user->parental_code != null) {
+        if (!empty($user->parental_code)) {
             $children = User::where('belongs_to', $user->id)->get();
 
             foreach ($children as $child):
@@ -1045,12 +1125,24 @@ class UserController extends BaseController
                     'updated_at' => now(),
                 ]);
 
-                $child_password_reset = PasswordReset::where('email', $child->email)->orWhere('phone', $child->phone)->first();
+                if (!empty($child->email)) {
+                    $child_password_reset = PasswordReset::where('email', $child->email)->first();
 
-                $child_password_reset->update([
-                    'former_password' => $inputs['password'],
-                    'updated_at' => now(),
-                ]);
+                    $child_password_reset->update([
+                        'former_password' => $inputs['password'],
+                        'updated_at' => now(),
+                    ]);
+
+                } else {
+                    if (!empty($child->phone)) {
+                        $child_password_reset = PasswordReset::where('phone', $child->phone)->first();
+
+                        $child_password_reset->update([
+                            'former_password' => $inputs['password'],
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
             endforeach;
         }
 

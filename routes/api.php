@@ -84,6 +84,9 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('media/find_live/{for_youth}', 'App\Http\Controllers\API\MediaController@findLive')->name('media.api.find_live');
     Route::get('media/find_all_by_type/{locale}/{type_name}', 'App\Http\Controllers\API\MediaController@findAllByType')->name('media.api.find_all_by_type');
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
+    Route::get('media/find_views/{media_id}', 'App\Http\Controllers\API\MediaController@findViews')->name('media.api.find_views');
+    Route::get('media/find_likes/{media_id}', 'App\Http\Controllers\API\MediaController@findLikes')->name('media.api.find_likes');
+    Route::post('media/filter_by_categories', 'App\Http\Controllers\API\MediaController@filterByCategories')->name('media.api.filter_by_categories');
     // Pricing
     Route::get('pricing', 'App\Http\Controllers\API\PricingController@index')->name('pricing.api.index');
     // Role
@@ -108,7 +111,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('category', 'App\Http\Controllers\API\CategoryController')->except(['index', 'show', 'search']);
     Route::resource('country', 'App\Http\Controllers\API\CountryController')->except(['index', 'show', 'search']);
     Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
-    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findLive', 'filterByCategories', 'findAllByType', 'findAllByAgeType']);
+    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findLive', 'findAllByType', 'findAllByAgeType', 'findViews', 'findLikes', 'filterByCategories']);
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
     Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');
@@ -153,7 +156,6 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::post('media', 'App\Http\Controllers\API\MediaController@store')->name('media.api.store');
     Route::put('media/{id}', 'App\Http\Controllers\API\MediaController@update')->name('media.api.update');
     Route::delete('media/{id}', 'App\Http\Controllers\API\MediaController@destroy')->name('media.api.destroy');
-    Route::post('media/filter_by_categories', 'App\Http\Controllers\API\MediaController@filterByCategories')->name('media.api.filter_by_categories');
     Route::put('media/set_approbation/{user_id}/{media_id}/{status_id}', 'App\Http\Controllers\API\MediaController@setApprobation')->name('media.api.set_approbation');
     Route::put('media/add_image/{id}', 'App\Http\Controllers\API\MediaController@addImage')->name('media.api.add_image');
     // Cart
