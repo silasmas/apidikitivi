@@ -438,30 +438,51 @@ class UserController extends BaseController
                 'updated_at' => now(),
             ]);
 
-            $password_reset_by_email = PasswordReset::where('email', $inputs['email'])->first();
+            if (!empty($current_user->phone)) {
+                $password_reset_by_phone = PasswordReset::where('phone', $current_user->phone)->first();
+                $random_int_stringified = (string) random_int(1000000, 9999999);
 
-            if ($password_reset_by_email == null) {
-                if (!empty($current_user->phone)) {
-                    $password_reset_by_phone = PasswordReset::where('phone', $current_user->phone)->first();
+                if ($password_reset_by_phone != null) {
+                    if (!empty($password_reset_by_phone->email)) {
+                        if ($password_reset_by_phone->email != $inputs['email']) {
+                            $password_reset_by_phone->update([
+                                'email' => $inputs['email'],
+                                'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, '0-9a-zA-Z'),
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
 
-                    if ($password_reset_by_phone != null) {
+                    if (empty($password_reset_by_phone->email)) {
                         $password_reset_by_phone->update([
                             'email' => $inputs['email'],
                             'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, '0-9a-zA-Z'),
                             'updated_at' => now(),
                         ]);
-
                     }
-
-                } else {
-                    $random_int_stringified = (string) random_int(1000000, 9999999);
-
-                    PasswordReset::create([
-                        'email' => $inputs['email'],
-                        'token' => $random_int_stringified,
-                        'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, 'a-zA-Z'),
-                    ]);
                 }
+
+                if ($password_reset_by_phone == null) {
+                    $password_reset_by_email = PasswordReset::where('email', $inputs['email'])->first();
+
+                    if ($password_reset_by_email == null) {
+                        PasswordReset::create([
+                            'email' => $inputs['email'],
+                            'phone' => $current_user->phone,
+                            'token' => $random_int_stringified,
+                            'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, 'a-zA-Z'),
+                        ]);
+                    }
+                }
+
+            } else {
+                $random_int_stringified = (string) random_int(1000000, 9999999);
+
+                PasswordReset::create([
+                    'email' => $inputs['email'],
+                    'token' => $random_int_stringified,
+                    'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, 'a-zA-Z'),
+                ]);
             }
         }
 
@@ -482,29 +503,51 @@ class UserController extends BaseController
                 'updated_at' => now(),
             ]);
 
-            $password_reset_by_phone = PasswordReset::where('phone', $inputs['phone'])->first();
+            if (!empty($current_user->email)) {
+                $password_reset_by_email = PasswordReset::where('email', $current_user->email)->first();
+                $random_int_stringified = (string) random_int(1000000, 9999999);
 
-            if ($password_reset_by_phone == null) {
-                if (!empty($current_user->email)) {
-                    $password_reset_by_email = PasswordReset::where('email', $current_user->email)->first();
+                if ($password_reset_by_email != null) {
+                    if (!empty($password_reset_by_email->phone)) {
+                        if ($password_reset_by_email->phone != $inputs['phone']) {
+                            $password_reset_by_email->update([
+                                'phone' => $inputs['phone'],
+                                'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, '0-9a-zA-Z'),
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
 
-                    if ($password_reset_by_email != null) {
+                    if (empty($password_reset_by_email->phone)) {
                         $password_reset_by_email->update([
                             'phone' => $inputs['phone'],
                             'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, '0-9a-zA-Z'),
                             'updated_at' => now(),
                         ]);
                     }
-
-                } else {
-                    $random_int_stringified = (string) random_int(1000000, 9999999);
-
-                    PasswordReset::create([
-                        'phone' => $inputs['phone'],
-                        'token' => $random_int_stringified,
-                        'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, 'a-zA-Z'),
-                    ]);
                 }
+
+                if ($password_reset_by_email == null) {
+                    $password_reset_by_phone = PasswordReset::where('phone', $inputs['phone'])->first();
+
+                    if ($password_reset_by_email == null) {
+                        PasswordReset::create([
+                            'email' => $current_user->email,
+                            'phone' => $inputs['phone'],
+                            'token' => $random_int_stringified,
+                            'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, 'a-zA-Z'),
+                        ]);
+                    }
+                }
+
+            } else {
+                $random_int_stringified = (string) random_int(1000000, 9999999);
+
+                PasswordReset::create([
+                    'phone' => $inputs['phone'],
+                    'token' => $random_int_stringified,
+                    'former_password' => $inputs['password'] != null ? $inputs['password'] : Random::generate(10, 'a-zA-Z'),
+                ]);
             }
         }
 
