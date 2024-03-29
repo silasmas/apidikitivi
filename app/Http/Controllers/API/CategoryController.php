@@ -147,6 +147,19 @@ class CategoryController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Find all categories used for medias.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function allUsedCategories()
+    {
+        $categories = Category::whereHas('medias')->get();
+
+        return $this->handleResponse(ResourcesCategory::collection($categories), __('notifications.find_all_categories_success'));
+    }
+
+    /**
      * Search a category by its name.
      *
      * @param  string $locale

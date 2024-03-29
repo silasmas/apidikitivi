@@ -27,10 +27,10 @@ class Category extends Model
 
     /**
      * MANY-TO-ONE
-     * Several medias for a category
+     * Several medias for several categories
      */
     public function medias()
     {
-        return $this->hasMany(Media::class);
+        return $this->belongsToMany(Media::class);
     }
 }

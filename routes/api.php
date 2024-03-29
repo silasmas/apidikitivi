@@ -66,6 +66,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     // Category
     Route::get('category', 'App\Http\Controllers\API\CategoryController@index')->name('category.api.index');
     Route::get('category/{id}', 'App\Http\Controllers\API\CategoryController@show')->name('category.api.show');
+    Route::get('category/all_used_categories', 'App\Http\Controllers\API\CategoryController@allUsedCategories')->name('category.api.all_used_categories');
     Route::get('category/search/{locale}/{data}', 'App\Http\Controllers\API\CategoryController@search')->name('category.api.search');
     // Country
     Route::get('country', 'App\Http\Controllers\API\CountryController@index')->name('country.api.index');
@@ -110,7 +111,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('legal_info_content', 'App\Http\Controllers\API\LegalInfoContentController')->except(['index', 'show', 'search']);
     Route::resource('status', 'App\Http\Controllers\API\StatusController')->except(['index', 'show', 'search', 'findByGroup']);
     Route::resource('type', 'App\Http\Controllers\API\TypeController')->except(['index', 'show', 'search', 'findByGroup']);
-    Route::resource('category', 'App\Http\Controllers\API\CategoryController')->except(['index', 'show', 'search']);
+    Route::resource('category', 'App\Http\Controllers\API\CategoryController')->except(['index', 'show', 'allUsedCategories', 'search']);
     Route::resource('country', 'App\Http\Controllers\API\CountryController')->except(['index', 'show', 'search']);
     Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
     Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'search', 'findLive', 'findAllByType', 'findAllByAgeType', 'currentTrends', 'findViews', 'findLikes', 'switchView', 'filterByCategories']);
