@@ -66,7 +66,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     // Category
     Route::get('category', 'App\Http\Controllers\API\CategoryController@index')->name('category.api.index');
     Route::get('category/{id}', 'App\Http\Controllers\API\CategoryController@show')->name('category.api.show');
-    Route::get('category/all_used_categories', 'App\Http\Controllers\API\CategoryController@allUsedCategories')->name('category.api.all_used_categories');
+    Route::get('category/all_used_categories/{for_youth}', 'App\Http\Controllers\API\CategoryController@allUsedCategories')->name('category.api.all_used_categories');
     Route::get('category/search/{locale}/{data}', 'App\Http\Controllers\API\CategoryController@search')->name('category.api.search');
     // Country
     Route::get('country', 'App\Http\Controllers\API\CountryController@index')->name('country.api.index');

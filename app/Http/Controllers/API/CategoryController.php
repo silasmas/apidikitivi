@@ -149,12 +149,14 @@ class CategoryController extends BaseController
     /**
      * Find all categories used for medias.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $for_youth
      * @return \Illuminate\Http\Response
      */
-    public function allUsedCategories()
+    public function allUsedCategories($for_youth)
     {
-        $categories = Category::whereHas('medias')->get();
+        $categories = Category::whereHas('medias', function ($query) use ($for_youth) {
+                                    $query->where('for_youth', $for_youth);
+                                })->get();
 
         return $this->handleResponse(ResourcesCategory::collection($categories), __('notifications.find_all_categories_success'));
     }
