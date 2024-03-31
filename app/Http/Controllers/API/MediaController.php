@@ -371,6 +371,22 @@ class MediaController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Find current trends.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function currentTrends()
+    {
+		dd('tokoti');
+        $medias = Media::whereHas('sessions', function($query) {
+                            $query->whereMonth('sessions.created_at', '>=', date('m'))
+                                    ->whereYear('sessions.created_at', '=', date('Y'));
+                        })->distinct()->orderByDesc('media_session.created_at')->limit(5)->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+    }
+
+    /**
      * Get all by title.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -504,22 +520,6 @@ class MediaController extends BaseController
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
         }
-    }
-
-    /**
-     * Find current trends.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function currentTrends()
-    {
-		dd('tokoti');
-        $medias = Media::whereHas('sessions', function($query) {
-                            $query->whereMonth('sessions.created_at', '>=', date('m'))
-                                    ->whereYear('sessions.created_at', '=', date('Y'));
-                        })->distinct()->orderByDesc('media_session.created_at')->limit(5)->get();
-
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
 
     /**
