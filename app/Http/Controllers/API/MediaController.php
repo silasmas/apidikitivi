@@ -513,6 +513,7 @@ class MediaController extends BaseController
      */
     public function currentTrends()
     {
+		dd('tokoti');
         $medias = Media::whereHas('sessions', function($query) {
                             $query->whereMonth('sessions.created_at', '>=', date('m'))
                                     ->whereYear('sessions.created_at', '=', date('Y'));
