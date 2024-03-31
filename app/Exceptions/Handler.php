@@ -77,6 +77,6 @@ class Handler extends ExceptionHandler
             return response()->view('auth.login');
         }
 
-        return response()->json(['error' => __('notifications.401_description')], 401);
+        return response()->json(['message' => __('notifications.401_description')], 401);
     }
 }
