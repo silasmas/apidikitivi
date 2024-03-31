@@ -67,11 +67,11 @@ class MediaController extends BaseController
 
         // Validate required fields
         if ($inputs['type_id'] == null) {
-            return $this->handleError(__('validation.custom.type.required'), __('validation.required'), 400);
+            return $this->handleError($inputs['type_id'], __('validation.custom.type.required'), 400);
         }
 
         if (trim($inputs['media_title']) == null) {
-            return $this->handleError(__('validation.custom.title.required'), __('validation.required'), 400);
+            return $this->handleError($inputs['media_title'], __('validation.custom.title.required'), 400);
         }
 
         // Check if media title already exists
