@@ -36,7 +36,7 @@ class Media extends JsonResource
             'belongs_to' => $this->belongs_to,
             'type' => Type::make($this->type),
             'user' => User::make($this->user),
-            'categories' => Category::make($this->categories),
+            'categories' => Category::collection($this->categories),
             'created_at_ago' => timeAgo($this->created_at->format('Y-m-d H:i:s')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at_ago' => timeAgo($this->updated_at->format('Y-m-d H:i:s')),
