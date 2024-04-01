@@ -80,7 +80,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('book/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\BookController@findAllByAgeType')->name('book.api.find_all_by_age_type');
     // Media
     Route::get('media', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
-    Route::get('media/current_trends', 'App\Http\Controllers\API\MediaController@currentTrends')->name('media.api.current_trends');
+    Route::get('media/trends', 'App\Http\Controllers\API\MediaController@currentTrends')->name('media.api.trends');
     Route::get('media/{id}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/search/{data}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
     Route::get('media/find_live/{for_youth}', 'App\Http\Controllers\API\MediaController@findLive')->name('media.api.find_live');
