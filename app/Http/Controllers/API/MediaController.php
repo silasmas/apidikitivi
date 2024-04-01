@@ -375,7 +375,7 @@ class MediaController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function currentTrends()
+    public function trends()
     {
 		dd('tokoti');
         $medias = Media::whereHas('sessions', function($query) {
