@@ -376,11 +376,11 @@ class MediaController extends BaseController
      * @param  string $year
      * @return \Illuminate\Http\Response
      */
-    public function trends($year)
+    public function trends()
     {
-        $medias = Media::whereHas('sessions', function($query) use ($year) {
+        $medias = Media::whereHas('sessions', function($query) {
                             $query->whereMonth('sessions.created_at', '>=', date('m'))
-                                    ->whereYear('sessions.created_at', '=', $year);
+                                    ->whereYear('sessions.created_at', '=', date('Y'));
                         })->distinct()->orderByDesc('created_at')->limit(5)->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
