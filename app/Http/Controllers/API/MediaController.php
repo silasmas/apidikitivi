@@ -378,7 +378,6 @@ class MediaController extends BaseController
      */
     public function trends($year)
     {
-		dd('tokoti');
         $medias = Media::whereHas('sessions', function($query) use ($year) {
                             $query->whereMonth('sessions.created_at', '>=', date('m'))
                                     ->whereYear('sessions.created_at', '=', $year);
