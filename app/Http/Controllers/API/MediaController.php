@@ -380,8 +380,8 @@ class MediaController extends BaseController
     {
         $medias = Media::whereHas('sessions', function($query) use ($year) {
                             $query->whereMonth('media_session.created_at', '>=', date('m'))
-                                    ->whereYear('media_session.created_at', '=', $year)
-									->orderByDesc('media_session.created_at');
+                                    ->whereYear('media_session.created_at', '=', $year);
+									// ->orderByDesc('media_session.created_at');
                         })->distinct()->limit(5)->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
