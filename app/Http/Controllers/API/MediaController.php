@@ -373,14 +373,15 @@ class MediaController extends BaseController
     /**
      * Find current trends.
      *
+     * @param  string $year
      * @return \Illuminate\Http\Response
      */
-    public function trends()
+    public function trends($year)
     {
 		dd('tokoti');
-        $medias = Media::whereHas('sessions', function($query) {
+        $medias = Media::whereHas('sessions', function($query) use ($year) {
                             $query->whereMonth('sessions.created_at', '>=', date('m'))
-                                    ->whereYear('sessions.created_at', '=', date('Y'));
+                                    ->whereYear('sessions.created_at', '=', $year);
                         })->distinct()->orderByDesc('media_session.created_at')->limit(5)->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
