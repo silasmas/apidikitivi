@@ -6,9 +6,7 @@ use stdClass;
 use App\Mail\OTPCode;
 use App\Models\PasswordReset;
 use App\Models\User;
-use Nette\Utils\Random;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
 use App\Http\Resources\User as ResourcesUser;
@@ -187,13 +185,7 @@ class PasswordResetController extends BaseController
             }
 
             $password_reset->update([
-                'former_password' => Random::generate(10, 'a-zA-Z'),
                 'token' => $random_int_stringified,
-                'updated_at' => now()
-            ]);
-
-            $user->update([
-                'password' => Hash::make($password_reset->former_password),
                 'updated_at' => now()
             ]);
 
@@ -216,13 +208,7 @@ class PasswordResetController extends BaseController
             }
 
             $password_reset->update([
-                'former_password' => Random::generate(10, 'a-zA-Z'),
                 'token' => $random_int_stringified,
-                'updated_at' => now()
-            ]);
-
-            $user->update([
-                'password' => Hash::make($password_reset->former_password),
                 'updated_at' => now()
             ]);
 
@@ -257,13 +243,7 @@ class PasswordResetController extends BaseController
             $random_int_stringified = (string) random_int(1000000, 9999999);
 
             $password_reset->update([
-                'former_password' => Random::generate(10, 'a-zA-Z'),
                 'token' => $random_int_stringified,
-                'updated_at' => now()
-            ]);
-
-            $user->update([
-                'password' => Hash::make($password_reset->former_password),
                 'updated_at' => now()
             ]);
 
@@ -303,11 +283,6 @@ class PasswordResetController extends BaseController
 
             $password_reset->update([
                 'token' => $random_int_stringified,
-                'updated_at' => now()
-            ]);
-
-            $user->update([
-                'password' => Hash::make($password_reset->former_password),
                 'updated_at' => now()
             ]);
 
