@@ -39,6 +39,7 @@ class User extends JsonResource
             'phone_verified_at' => $this->phone_verified_at,
             'remember_token' => $this->remember_token,
             'api_token' => $this->api_token,
+            'prefered_theme' => $this->prefered_theme,
             'avatar_url' => $this->avatar_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage/' . $this->avatar_url : (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/assets/img/user.png',
             'id_card_type' => $this->id_card_type,
             'id_card_recto' => $this->id_card_recto != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage/' . $this->id_card_recto : null,
