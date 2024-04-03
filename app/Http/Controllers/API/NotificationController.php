@@ -150,6 +150,20 @@ class NotificationController extends BaseController
     }
 
     /**
+     * Select all read notifications for a user.
+     *
+     * @param  $user_id
+     * @param  $status_id
+     * @return \Illuminate\Http\Response
+     */
+    public function selectByStatusUser($status_id, $user_id)
+    {
+        $notifications = Notification::where([['status_id', $status_id], ['user_id', $user_id]])->orderByDesc('created_at')->get();
+
+        return $this->handleResponse(ResourcesNotification::collection($notifications), __('notifications.find_all_notifications_success'));
+    }
+
+    /**
      * Change notification status.
      *
      * @param  $id
