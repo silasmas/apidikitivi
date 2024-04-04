@@ -492,7 +492,7 @@ class MediaController extends BaseController
                                 })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
 				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->get();
                 // Merged data
-                $medias = $session_medias->union($global_medias)->distinct()->get();;
+                $medias = $session_medias->union($global_medias)->get();;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
             }
@@ -511,7 +511,7 @@ class MediaController extends BaseController
                                 })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
 				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->get();
                 // Merged data
-                $medias = $session_medias->union($global_medias)->distinct()->get();;
+                $medias = $session_medias->union($global_medias)->get();;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
             }
