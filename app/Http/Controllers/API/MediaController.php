@@ -374,14 +374,15 @@ class MediaController extends BaseController
      * Find current trends.
      *
      * @param  string $year
+     * @param  int $for_youth
      * @return \Illuminate\Http\Response
      */
-    public function trends($year)
+    public function trends($year, $for_youth)
     {
         $medias = Media::whereHas('sessions', function($query) use ($year) {
                             $query->whereMonth('sessions.created_at', '>=', date('m'))
                                     ->whereYear('sessions.created_at', '=', $year);
-                        })->distinct()->limit(5)->get();
+                        })->where('for_youth', $for_youth)->distinct()->limit(5)->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
@@ -568,13 +569,14 @@ class MediaController extends BaseController
      * Filter medias by categories.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  int $for_youth
      * @return \Illuminate\Http\Response
      */
-    public function filterByCategories(Request $request)
+    public function filterByCategories(Request $request, $for_youth)
     {
         $medias = Media::whereHas('categories', function($query) use($request) {
                             $query->whereIn('categories.id', $request->categories_ids);
-                        })->orderByDesc('medias.created_at')->get();
+                        })->where('for_youth', $for_youth)->orderByDesc('medias.created_at')->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }

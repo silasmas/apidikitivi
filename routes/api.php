@@ -80,7 +80,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('book/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\BookController@findAllByAgeType')->name('book.api.find_all_by_age_type');
     // Media
     Route::get('media', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
-    Route::get('media/trends/{year}', 'App\Http\Controllers\API\MediaController@trends')->name('media.api.trends');
+    Route::get('media/trends/{year}/{for_youth}', 'App\Http\Controllers\API\MediaController@trends')->name('media.api.trends');
     Route::get('media/{id}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
     Route::get('media/search/{data}', 'App\Http\Controllers\API\MediaController@search')->name('media.api.search');
     Route::get('media/find_live/{for_youth}', 'App\Http\Controllers\API\MediaController@findLive')->name('media.api.find_live');
@@ -88,7 +88,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('media/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\MediaController@findAllByAgeType')->name('media.api.find_all_by_age_type');
     Route::get('media/find_views/{media_id}', 'App\Http\Controllers\API\MediaController@findViews')->name('media.api.find_views');
     Route::get('media/find_likes/{media_id}', 'App\Http\Controllers\API\MediaController@findLikes')->name('media.api.find_likes');
-    Route::post('media/filter_by_categories', 'App\Http\Controllers\API\MediaController@filterByCategories')->name('media.api.filter_by_categories');
+    Route::post('media/filter_by_categories/{for_youth}', 'App\Http\Controllers\API\MediaController@filterByCategories')->name('media.api.filter_by_categories');
     Route::put('media/switch_view/{media_id}', 'App\Http\Controllers\API\MediaController@switchView')->name('media.api.switch_view');
     // Pricing
     Route::get('pricing', 'App\Http\Controllers\API\PricingController@index')->name('pricing.api.index');
