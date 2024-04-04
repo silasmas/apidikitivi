@@ -576,7 +576,7 @@ class MediaController extends BaseController
     {
         $medias = Media::whereHas('categories', function($query) use($request) {
                             $query->whereIn('categories.id', $request->categories_ids);
-                        })->where('for_youth', $for_youth)->orderByDesc('medias.created_at')->get();
+                        })->where('for_youth', $for_youth)->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
