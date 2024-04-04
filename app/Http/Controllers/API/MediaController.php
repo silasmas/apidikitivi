@@ -655,11 +655,12 @@ class MediaController extends BaseController
     /**
      * Switch the media like.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int $user_id
      * @param  int $media_id
      * @return \Illuminate\Http\Response
      */
-    public function switchLike($user_id, $media_id)
+    public function switchLike(Request $request, $user_id, $media_id)
     {
         $user = User::find($user_id);
         $media = Media::find($media_id);
