@@ -20,6 +20,7 @@ class RoleController extends BaseController
     public function index()
     {
         $roles = Role::all();
+        dd($roles);
 
         return $this->handleResponse(ResourcesRole::collection($roles), __('notifications.find_all_roles_success'));
     }
