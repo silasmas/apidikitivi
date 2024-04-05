@@ -65,9 +65,9 @@ class User extends Authenticatable
      * MANY-TO-MANY
      * Several media_notices for several users
      */
-    public function media_notices()
+    public function medias()
     {
-        return $this->belongsToMany(Media::class)->withPivot(['is_liked', 'status_id']);
+        return $this->belongsToMany(Media::class)->withTimestamps()->withPivot(['is_liked', 'status_id']);
     }
 
     /**
@@ -92,7 +92,7 @@ class User extends Authenticatable
      * MANY-TO-ONE
      * Several medias for a user
      */
-    public function medias()
+    public function owned_medias()
     {
         return $this->hasMany(Media::class);
     }

@@ -33,11 +33,11 @@ class Media extends Model
 
     /**
      * MANY-TO-MANY
-     * Several user_notices for several medias
+     * Several users for several medias
      */
-    public function user_notices()
+    public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(['is_liked', 'status_id']);
+        return $this->belongsToMany(User::class)->withTimestamps()->withPivot(['is_liked', 'status_id']);
     }
 
     /**
@@ -62,7 +62,7 @@ class Media extends Model
      * ONE-TO-MANY
      * One user for several medias
      */
-    public function user()
+    public function user_owner()
     {
         return $this->belongsTo(User::class);
     }

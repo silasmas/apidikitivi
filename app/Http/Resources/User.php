@@ -48,7 +48,7 @@ class User extends JsonResource
             'status' => Status::make($this->status),
             'country' => Country::make($this->country),
             'roles' => Role::collection($this->roles),
-            'medias' => Media::collection($this->medias)->sortByDesc('created_at')->toArray(),
+            'owned_medias' => Media::collection($this->owned_medias)->sortByDesc('created_at')->toArray(),
             'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'notifications' => Notification::collection($this->notifications)->sortByDesc('created_at')->toArray(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
