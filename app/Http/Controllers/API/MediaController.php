@@ -35,7 +35,7 @@ class MediaController extends BaseController
 
         $object = new stdClass();
         $object->collection = ResourcesMedia::collection($medias);
-        $object->lastPage = $medias->getLastPage();
+        $object->lastPage = $medias->lastPage;
 
         return $this->handleResponse($object, __('notifications.find_all_medias_success'));
     }
