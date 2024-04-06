@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Cart;
+use App\Models\Order;
+use App\Models\Type;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\Cart as ResourcesCart;
 
@@ -161,5 +164,84 @@ class CartController extends BaseController
         $carts = Cart::where([['user_id', $user_id], ['type_id', $type_id]])->get();
 
         return $this->handleResponse(ResourcesCart::collection($carts), __('notifications.find_all_carts_success'));
+    }
+
+    /**
+     * Add media to cart or watchlist.
+     *
+     * @param  string $locale
+     * @param  string $type_name
+     * @param  int $media_id
+     * @param  int $user_id
+     * @return \Illuminate\Http\Response
+     */
+    public function addToCart($locale, $type_name, $media_id, $user_id)
+    {
+        $media = Media::find($media_id);
+        $user = User::find($user_id);
+        $type = Type::where('type_name->' . $locale, $type_name)->first();
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        if (is_null($type)) {
+            return $this->handleError(__('notifications.find_type_404'));
+        }
+
+        $cart = Cart::where([['user_id', $user->id], ['type_id', $type->id]])->first();
+
+        if ($cart != null) {
+            Order::create([
+                'media_id' => $media->id,
+                'cart_id' => $cart->id
+            ]);
+
+            return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+
+        } else {
+            $cart = Cart::create([
+                'type_id' => $type->id,
+                'user_id' => $user->id
+            ]);
+
+            Order::create([
+                'media_id' => $media->id,
+                'cart_id' => $cart->id
+            ]);
+
+            return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+        }
+    }
+
+    /**
+     * Remove media from cart or watchlist.
+     *
+     * @param  int $cart_id
+     * @param  int $media_id
+     * @return \Illuminate\Http\Response
+     */
+    public function removeFromCart($cart_id, $media_id)
+    {
+        $cart = Cart::find($cart_id);
+        $media = Media::find($media_id);
+
+        if (is_null($cart)) {
+            return $this->handleError(__('notifications.find_cart_404'));
+        }
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        $order = Order::find([['media_id', $media->id], ['cart_id', $cart->id]])->first();
+
+        $order->delete();
+
+        return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
     }
 }
