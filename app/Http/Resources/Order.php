@@ -25,6 +25,8 @@ class Order extends JsonResource
             'book' => Book::make($this->book),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'media_id' => $this->media_id,
+            'book_id' => $this->book_id,
             'cart_id' => $this->cart_id
         ];
     }
