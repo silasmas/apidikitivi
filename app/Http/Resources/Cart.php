@@ -23,7 +23,7 @@ class Cart extends JsonResource
             'payment_code' => $this->payment_code,
             'type' => Type::make($this->type),
             'status' => Status::make($this->status),
-            'orders' => Order::collection($this->orders),
+            'orders' => Order::collection($this->orders)->unique('media_id')->all(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'user_id' => $this->user_id
