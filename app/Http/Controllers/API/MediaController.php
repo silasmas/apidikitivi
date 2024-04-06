@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use stdClass;
 use App\Models\Media;
 use App\Models\Notification;
 use App\Models\Session;
