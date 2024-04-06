@@ -197,9 +197,9 @@ class CartController extends BaseController
         $cart = Cart::where([['user_id', $user->id], ['type_id', $type->id]])->first();
 
         if ($cart != null) {
-            $orders = Order::find('cart_id', $cart->id)->get();
+            $order = Order::find([['media_id', $media->id], ['cart_id', $cart->id]])->first();
 
-            if (!inArrayR($media->id, $orders, 'media_id')) {
+            if ($order == null) {
                 Order::create([
                     'media_id' => $media->id,
                     'cart_id' => $cart->id
