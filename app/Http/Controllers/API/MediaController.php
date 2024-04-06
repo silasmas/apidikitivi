@@ -32,6 +32,7 @@ class MediaController extends BaseController
     {
         $medias = Media::orderByDesc('created_at')->paginate(10);
 
+        dd($medias);
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
 
