@@ -30,9 +30,13 @@ class MediaController extends BaseController
      */
     public function index()
     {
-        $medias = Media::orderByDesc('created_at')->paginate(request()->all());
+        $medias = Media::orderByDesc('created_at')->paginate(10);
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+        $object = new stdClass();
+        $object->collection = ResourcesMedia::collection($medias);
+        $object->lastPage = $medias->getLastPage();
+
+        return $this->handleResponse($object, __('notifications.find_all_medias_success'));
     }
 
     /**
