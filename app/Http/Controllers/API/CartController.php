@@ -197,10 +197,14 @@ class CartController extends BaseController
         $cart = Cart::where([['user_id', $user->id], ['type_id', $type->id]])->first();
 
         if ($cart != null) {
-            Order::create([
-                'media_id' => $media->id,
-                'cart_id' => $cart->id
-            ]);
+            $order = Order::find([['media_id', $media->id], ['cart_id', $cart->id]])->first();
+
+            if (is_null($order)) {
+                Order::create([
+                    'media_id' => $media->id,
+                    'cart_id' => $cart->id
+                ]);
+            }
 
             return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
 
