@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Cart;
+use App\Models\Media;
 use App\Models\Order;
 use App\Models\Type;
 use App\Models\User;
