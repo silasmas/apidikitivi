@@ -17,15 +17,27 @@ class BaseController extends Controller
      * @param  $msg
      * @return \Illuminate\Http\Response
      */
-    public function handleResponse($result, $msg)
+    public function handleResponse($result, $msg, $lastPage = null)
     {
-        $res = [
-            'success' => true,
-            'message' => $msg,
-            'data'    => $result
-        ];
+        if ($lastPage != null) {
+            $res = [
+                'success' => true,
+                'message' => $msg,
+                'data'    => $result,
+                'lastPage'    => $lastPage
+            ];
 
-        return response()->json($res, 200);
+            return response()->json($res, 200);
+
+        } else {
+            $res = [
+                'success' => true,
+                'message' => $msg,
+                'data'    => $result
+            ];
+
+            return response()->json($res, 200);
+        }
     }
 
     /**
