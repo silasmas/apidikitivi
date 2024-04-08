@@ -494,7 +494,7 @@ class MediaController extends BaseController
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique()->paginate(12);
 
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage());
             }
 
         } else if ($request->hasHeader('X-ip-address')) {
@@ -513,7 +513,7 @@ class MediaController extends BaseController
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique()->paginate(12);
 
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage());
             }
 
         } else {

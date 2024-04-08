@@ -183,6 +183,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Dawson\Youtube\YoutubeServiceProvider::class, //--- Dawson YouTube
+        Aneeskhan47\PaginationMerge\PaginationMergeServiceProvider::class, //--- Pagination Merge
     ])->toArray(),
 
     /*
@@ -199,6 +200,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
         'Youtube' => Dawson\Youtube\Facades\Youtube::class, //--- Dawson YouTube
+        'PaginationMerge' => Aneeskhan47\PaginationMerge\Facades\PaginationMerge::class, //--- Pagination Merge
     ])->toArray(),
 
 ];
