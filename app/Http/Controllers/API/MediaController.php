@@ -489,10 +489,10 @@ class MediaController extends BaseController
             } else {
                 $session_medias = Media::whereHas('sessions', function ($query) use ($request) {
                                     $query->where('sessions.user_id', $request->header('X-user-id'));
-                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
-				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->get();
+                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->paginate(12);
+				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
                 // Merged data
-                $medias = ($session_medias->merge($global_medias))->unique()->paginate(12);
+                $medias = ($session_medias->merge($global_medias))->unique();
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage());
             }
@@ -508,10 +508,10 @@ class MediaController extends BaseController
             } else {
                 $session_medias = Media::whereHas('sessions', function ($query) use ($request) {
                                     $query->where('sessions.ip_address', $request->header('X-ip-address'));
-                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->get();
-				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->get();
+                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->paginate(12);
+				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
                 // Merged data
-                $medias = ($session_medias->merge($global_medias))->unique()->paginate(12);
+                $medias = ($session_medias->merge($global_medias))->unique();
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage());
             }
