@@ -379,10 +379,9 @@ class MediaController extends BaseController
      */
     public function trends($year, $for_youth)
     {
-        $medias = Media::whereHas('sessions', function($query) use ($year) {
-                            $query->whereMonth('sessions.created_at', '>=', date('m'))
-                                    ->whereYear('sessions.created_at', '=', $year);
-                        })->where('for_youth', $for_youth)->distinct()->limit(5)->get();
+        $query_all = Media::whereHas('sessions', function($query) use ($year) { $query->whereMonth('sessions.created_at', '>=', date('m'))->whereYear('sessions.created_at', '=', $year); })->distinct()->limit(5)->get();
+        $query_child = Media::whereHas('sessions', function($query) use ($year) { $query->whereMonth('sessions.created_at', '>=', date('m'))->whereYear('sessions.created_at', '=', $year); })->where('for_youth', 1)->distinct()->limit(5)->get();
+        $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
@@ -442,8 +441,9 @@ class MediaController extends BaseController
         if (is_null($type)) {
             return $this->handleError(__('notifications.find_type_404'));
         }
-
-        $medias = Media::where([['for_youth', $for_youth], ['is_live', 1], ['type_id', $type->id]])->paginate(12);
+        $query_all = Media::where([['is_live', 1], ['type_id', $type->id]])->paginate(12);
+        $query_child = Media::where([['for_youth', 1], ['is_live', 1], ['type_id', $type->id]])->paginate(12);
+        $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
     }
@@ -478,19 +478,24 @@ class MediaController extends BaseController
      */
     public function findAllByAgeType(Request $request, $for_youth, $type_id)
     {
+        $query_all = Media::where('type_id', $type_id)->orderByDesc('created_at')->paginate(12);
+        $query_session_user_all = Media::whereHas('sessions', function ($query) use ($request) { $query->where('sessions.user_id', $request->header('X-user-id')); })->where('medias.type_id', $type_id)->orderByDesc('medias.created_at')->paginate(12);
+        $query_session_ip_address_all = Media::whereHas('sessions', function ($query) use ($request) { $query->where('sessions.ip_address', $request->header('X-ip-address')); })->where('medias.type_id', $type_id)->orderByDesc('medias.created_at')->paginate(12);
+        $query_child = Media::where([['for_youth', 1], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
+        $query_session_user_child = Media::whereHas('sessions', function ($query) use ($request) { $query->where('sessions.user_id', $request->header('X-user-id')); })->where([['medias.for_youth', 1], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->paginate(12);
+        $query_session_ip_address_child = Media::whereHas('sessions', function ($query) use ($request) { $query->where('sessions.ip_address', $request->header('X-ip-address')); })->where([['medias.for_youth', 1], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->paginate(12);
+
         if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
 			$sessions = Session::where('user_id', $request->header('X-user-id'))->get();
 
 			if ($sessions == null) {
-				$medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
+				$medias = $for_youth == 0 ? $query_all : $query_child;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
 
             } else {
-                $session_medias = Media::whereHas('sessions', function ($query) use ($request) {
-                                    $query->where('sessions.user_id', $request->header('X-user-id'));
-                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->paginate(12);
-				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
+                $session_medias = $for_youth == 0 ? $query_session_user_all : $query_session_user_child;
+				$global_medias = $for_youth == 0 ? $query_all : $query_child;
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique();
 
@@ -501,15 +506,13 @@ class MediaController extends BaseController
 			$sessions = Session::where('ip_address', $request->header('X-ip-address'))->get();
 
 			if ($sessions == null) {
-				$medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
+				$medias = $for_youth == 0 ? $query_all : $query_child;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
 
             } else {
-                $session_medias = Media::whereHas('sessions', function ($query) use ($request) {
-                                    $query->where('sessions.ip_address', $request->header('X-ip-address'));
-                                })->where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->orderByDesc('medias.created_at')->paginate(12);
-				$global_medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
+                $session_medias = $for_youth == 0 ? $query_session_ip_address_all : $query_session_ip_address_child;
+				$global_medias = $for_youth == 0 ? $query_all : $query_child;
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique();
 
@@ -517,7 +520,7 @@ class MediaController extends BaseController
             }
 
         } else {
-            $medias = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->paginate(12);
+            $medias = $for_youth == 0 ? $query_all : $query_child;
 
             return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
         }
@@ -576,9 +579,9 @@ class MediaController extends BaseController
      */
     public function filterByCategories(Request $request, $for_youth)
     {
-        $medias = Media::whereHas('categories', function($query) use($request) {
-                            $query->whereIn('categories.id', $request->categories_ids);
-                        })->where('for_youth', $for_youth)->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->paginate(12);
+        $query_all = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->paginate(12);
+        $query_child = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->where('for_youth', 1)->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->paginate(12);
+        $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
     }
