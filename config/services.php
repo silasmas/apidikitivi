@@ -37,4 +37,11 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
     ],
 
+    'flexpay' => [
+        'gateway_mobile' => env('FLEXPAY_GATEWAY_MOBILE'),
+        'gateway_card_v1' => env('FLEXPAY_GATEWAY_CARD_V1'),
+        'gateway_card_v2' => env('FLEXPAY_GATEWAY_CARD_V2'),
+        'gateway_check' => env('FLEXPAY_GATEWAY_CHECK'),
+        'api_token' => env('FLEXPAY_API_TOKEN'),
+    ],
 ];

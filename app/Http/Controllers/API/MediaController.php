@@ -115,7 +115,7 @@ class MediaController extends BaseController
                 $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
 
             $media->update([
-                'media_url' => 'https://www.youtube.com/watch?v=' . $youtubeID,
+                'media_url' => 'https://www.youtube.com/embed/' . $youtubeID,
                 'updated_at' => now()
             ]);
         }
@@ -615,7 +615,7 @@ class MediaController extends BaseController
                 if ($media->user_id != null) {
                     $status_unread = Status::where('status_name->fr', 'Non lue')->first();
                     $visitor = User::find($request->user_id);
-    
+
                     /*
                         HISTORY AND/OR NOTIFICATION MANAGEMENT
                     */
