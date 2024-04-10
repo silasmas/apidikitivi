@@ -18,8 +18,6 @@ Route::middleware(['auth:sanctum', 'localization'])->group(function () {
     Route::apiResource('password_reset', 'App\Http\Controllers\API\PasswordResetController')->except(['searchByEmailOrPhone', 'searchByEmail', 'searchByPhone', 'checkToken']);
     Route::apiResource('personal_access_token', 'App\Http\Controllers\API\PersonalAccessTokenController');
     Route::apiResource('notification', 'App\Http\Controllers\API\NotificationController');
-    Route::apiResource('donation', 'App\Http\Controllers\API\DonationController');
-    Route::apiResource('payment', 'App\Http\Controllers\API\PaymentController');
 });
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +37,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::resource('role', 'App\Http\Controllers\API\RoleController');
     Route::resource('user', 'App\Http\Controllers\API\UserController');
     Route::resource('password_reset', 'App\Http\Controllers\API\PasswordResetController');
+    Route::resource('donation', 'App\Http\Controllers\API\DonationController');
     Route::resource('payment', 'App\Http\Controllers\API\PaymentController');
 
     // LegalInfoSubject
@@ -102,8 +101,13 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('password_reset/search_by_email/{data}', 'App\Http\Controllers\API\PasswordResetController@searchByEmail')->name('password_reset.api.search_by_email');
     Route::get('password_reset/search_by_phone/{data}', 'App\Http\Controllers\API\PasswordResetController@searchByPhone')->name('password_reset.api.search_by_phone');
     Route::post('password_reset/check_token', 'App\Http\Controllers\API\PasswordResetController@checkToken')->name('password_reset.api.check_token');
+    // Donation
+    Route::post('donation/store', 'App\Http\Controllers\API\DonationController@store')->name('donation.api.store');
     // Payment
     Route::post('payment/store', 'App\Http\Controllers\API\PaymentController@store')->name('payment.api.store');
+    Route::get('payment/find_by_order_number/{order_number}', 'App\Http\Controllers\API\PaymentController@findByOrderNumber')->name('payment.api.find_by_order_number');
+    Route::get('payment/find_by_order_number_user/{order_number}/{user_id}', 'App\Http\Controllers\API\PaymentController@findByOrderNumberUser')->name('payment.api.find_by_order_number_user');
+    Route::put('payment/switch_status/{status_id}/{id}', 'App\Http\Controllers\API\PaymentController@switchStatus')->name('payment.api.switch_status');
 });
 Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function () {
     Route::resource('legal_info_subject', 'App\Http\Controllers\API\LegalInfoSubjectController')->except(['index', 'show', 'search']);
@@ -118,7 +122,8 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
     Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');
-    Route::resource('payment', 'App\Http\Controllers\API\PaymentController');
+    Route::resource('donation', 'App\Http\Controllers\API\DonationController')->except(['store']);
+    Route::resource('payment', 'App\Http\Controllers\API\PaymentController')->except(['store', 'findByOrderNumber', 'findByOrderNumberUser', 'switchStatus']);
 
     // LegalInfoSubject
     Route::post('legal_info_subject', 'App\Http\Controllers\API\LegalInfoSubjectController@store')->name('legal_info_subject.api.store');
@@ -196,14 +201,15 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::get('notification/select_by_status_user/{status_id}/{user_id}', 'App\Http\Controllers\API\NotificationController@selectByStatusUser')->name('notification.api.select_by_status_user');
     Route::put('notification/switch_status/{id}/{status_id}', 'App\Http\Controllers\API\NotificationController@switchStatus')->name('notification.api.switch_status');
     Route::put('notification/mark_all_read/{user_id}', 'App\Http\Controllers\API\NotificationController@markAllRead')->name('notification.api.mark_all_read');
+    // Donation
+    Route::get('donation', 'App\Http\Controllers\API\DonationController@index')->name('donation.api.index');
+    Route::get('donation/{id}', 'App\Http\Controllers\API\DonationController@show')->name('donation.api.show');
+    Route::put('donation/{id}', 'App\Http\Controllers\API\DonationController@update')->name('donation.api.update');
+    Route::delete('donation/{id}', 'App\Http\Controllers\API\DonationController@destroy')->name('donation.api.destroy');
     // Payment
     Route::get('payment', 'App\Http\Controllers\API\PaymentController@index')->name('payment.api.index');
-    Route::post('payment/store', 'App\Http\Controllers\API\PaymentController@store')->name('payment.api.store');
     Route::get('payment/{id}', 'App\Http\Controllers\API\PaymentController@show')->name('payment.api.show');
     Route::put('payment/{id}', 'App\Http\Controllers\API\PaymentController@update')->name('payment.api.update');
     Route::delete('payment/{id}', 'App\Http\Controllers\API\PaymentController@destroy')->name('payment.api.destroy');
     Route::get('payment/find_by_phone/{phone_number}', 'App\Http\Controllers\API\PaymentController@findByPhone')->name('payment.api.find_by_phone');
-    Route::get('payment/find_by_order_number/{order_number}', 'App\Http\Controllers\API\PaymentController@findByOrderNumber')->name('payment.api.find_by_order_number');
-    Route::get('payment/find_by_order_number_user/{order_number}/{user_id}', 'App\Http\Controllers\API\PaymentController@findByOrderNumberUser')->name('payment.api.find_by_order_number_user');
-    Route::put('payment/switch_status/{status_id}/{id}', 'App\Http\Controllers\API\PaymentController@switchStatus')->name('payment.api.switch_status');
 });

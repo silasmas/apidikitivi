@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use stdClass;
 use App\Models\Donation;
+use App\Models\Payment;
 use App\Models\Type;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -115,6 +116,22 @@ class DonationController extends BaseController
 
                         $object->donation = new ResourcesDonation($donation);
 
+                        // Register payment, even if FlexPay will
+                        $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+
+                        if (is_null($payment)) {
+                            Payment::create([
+                                'reference' => $reference,
+                                'order_number' => $jsonRes->orderNumber,
+                                'amount' => $inputs['amount'],
+                                'phone' => $request->other_phone,
+                                'currency' => $request->currency,
+                                'type_id' => $request->transaction_type_id,
+                                'donation_id' => $donation->id,
+                                'user_id' => $inputs['user_id']
+                            ]);
+                        }
+
                         return $this->handleResponse($object, __('notifications.create_donation_success'));
                     }
 
@@ -153,6 +170,21 @@ class DonationController extends BaseController
 
                     $object->donation = new ResourcesDonation($donation);
 
+                    // Register payment, even if FlexPay will
+                    $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+
+                    if (is_null($payment)) {
+                        Payment::create([
+                            'reference' => $reference,
+                            'order_number' => $jsonRes->orderNumber,
+                            'amount' => $inputs['amount'],
+                            'phone' => $request->other_phone,
+                            'currency' => $request->currency,
+                            'type_id' => $request->transaction_type_id,
+                            'donation_id' => $donation->id,
+                        ]);
+                    }
+
                     return $this->handleResponse($object, __('notifications.create_donation_success'));
                 }
             }
@@ -175,9 +207,9 @@ class DonationController extends BaseController
                         'description' => __('miscellaneous.bank_transaction_description'),
                         'currency' => $request->currency,
                         'callbackUrl' => getApiURL() . '/payment/store',
-                        'approve_url' => $request->app_url . '/offer_sent/' . $inputs['amount'] . '/' . $request->currency . '/0/' . $current_user->id,
-                        'cancel_url' => $request->app_url . '/offer_sent/' . $inputs['amount'] . '/' . $request->currency . '/1/' . $current_user->id,
-                        'decline_url' => $request->app_url . '/offer_sent/' . $inputs['amount'] . '/' . $request->currency . '/2/' . $current_user->id,
+                        'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/0/' . $current_user->id,
+                        'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/1/' . $current_user->id,
+                        'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/2/' . $current_user->id,
                         'language' => app()->getLocale(),
                     ]);
 
@@ -197,6 +229,21 @@ class DonationController extends BaseController
                         $donation = Donation::create($inputs);
 
                         $object->donation = new ResourcesDonation($donation);
+
+                        // Register payment, even if FlexPay will
+                        $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+
+                        if (is_null($payment)) {
+                            Payment::create([
+                                'reference' => $reference,
+                                'order_number' => $jsonRes->orderNumber,
+                                'amount' => $inputs['amount'],
+                                'currency' => $request->currency,
+                                'type_id' => $request->transaction_type_id,
+                                'donation_id' => $donation->id,
+                                'user_id' => $inputs['user_id']
+                            ]);
+                        }
 
                         return $this->handleResponse($object, __('notifications.create_donation_success'));
                     }
@@ -238,6 +285,20 @@ class DonationController extends BaseController
                     $donation = Donation::create($inputs);
 
                     $object->donation = new ResourcesDonation($donation);
+
+                    // Register payment, even if FlexPay will
+                    $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+
+                    if (is_null($payment)) {
+                        Payment::create([
+                            'reference' => $reference,
+                            'order_number' => $jsonRes->orderNumber,
+                            'amount' => $inputs['amount'],
+                            'currency' => $request->currency,
+                            'type_id' => $request->transaction_type_id,
+                            'donation_id' => $donation->id,
+                        ]);
+                    }
 
                     return $this->handleResponse($object, __('notifications.create_donation_success'));
                 }

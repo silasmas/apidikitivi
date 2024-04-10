@@ -23,7 +23,6 @@ class Donation extends JsonResource
             'amount' => $this->amount,
             'pricing' => Pricing::make($this->pricing),
             'user' => User::make($this->user),
-            'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ];

@@ -31,9 +31,9 @@ class Payment extends JsonResource
             'type' => Type::make($this->type),
             'cart' => Cart::make($this->cart),
             'status' => Status::make($this->status),
+            'donation' => Donation::make($this->donation),
             'created_at' => timeAgo($this->created_at->format('Y-m-d H:i:s')),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'donation_id' => $this->donation_id,
             'user_id' => $this->user_id
         ];
     }
