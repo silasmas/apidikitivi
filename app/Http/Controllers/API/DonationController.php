@@ -270,7 +270,7 @@ class DonationController extends BaseController
                 ]);
 
                 if ($jsonRes->code != '0') {
-                    return $this->handleError(__('notifications.error_while_processing'));
+                    return $this->handleError($jsonRes, __('notifications.error_while_processing'), 400);
 
                 } else {
                     $object = new stdClass();
