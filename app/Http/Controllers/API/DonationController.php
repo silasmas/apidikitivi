@@ -95,13 +95,13 @@ class DonationController extends BaseController
 
                     if ($code != '0') {
                         try {
-                            $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.create_user_SMS_failed')));
+                            $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
 
                         } catch (\Throwable $th) {
-                            return $this->handleError($th->getMessage(), __('notifications.create_user_SMS_failed'), 500);
+                            return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
                         }
 
-                        return $this->handleError(__('notifications.process_failed'));
+                        return $this->handleError($jsonRes->code, $jsonRes->message, 400);
 
                     } else {
                         $object = new stdClass();
@@ -155,7 +155,7 @@ class DonationController extends BaseController
                 $code = $jsonRes->code;
 
                 if ($code != '0') {
-                    return $this->handleError(__('notifications.process_failed'));
+                    return $this->handleError($jsonRes->code, $jsonRes->message, 400);
 
                 } else {
                     $object = new stdClass();
@@ -214,7 +214,14 @@ class DonationController extends BaseController
                     ]);
 
                     if ($jsonRes->code != '0') {
-                        return $this->handleError($jsonRes, __('notifications.error_while_processing'), 400);
+                        try {
+                            $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
+
+                        } catch (\Throwable $th) {
+                            return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
+                        }
+
+                        return $this->handleError($jsonRes->code, $jsonRes->message, 400);
 
                     } else {
                         $object = new stdClass();
@@ -270,7 +277,7 @@ class DonationController extends BaseController
                 ]);
 
                 if ($jsonRes->code != '0') {
-                    return $this->handleError($jsonRes, __('notifications.error_while_processing'), 400);
+                    return $this->handleError($jsonRes->code, $jsonRes->message, 400);
 
                 } else {
                     $object = new stdClass();
