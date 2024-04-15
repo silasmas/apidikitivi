@@ -603,11 +603,11 @@ class MediaController extends BaseController
             $session = Session::where('user_id', $request->user_id)->first();
 
             if (!empty($session)) {
-                if ($session->medias) == 0) {
+                if (count($session->medias) == 0) {
                     $session->medias()->attach([$media->id => ['is_viewed' => 1]]);
                 }
 
-                if ($session->medias) > 0) {
+                if (count($session->medias) > 0) {
                     foreach ($session->medias as $med) {
                         $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
                     }
@@ -642,11 +642,11 @@ class MediaController extends BaseController
             $session = Session::where('ip_address', $request->ip_address)->first();
 
             if (!empty($session)) {
-                if ($session->medias) == 0) {
+                if ($session->medias() == null) {
                     $session->medias()->attach([$media->id => ['is_viewed' => 1]]);
                 }
 
-                if ($session->medias) > 0) {
+                if ($session->medias() != null) {
                     foreach ($session->medias as $med) {
                         $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
                     }
