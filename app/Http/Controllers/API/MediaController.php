@@ -538,9 +538,10 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $sessions = Session::whereHas('medias', function($query) {
+        $sessions = Session::whereHas('medias', function($query) use ($media) {
                             // $query->where('media_session.is_viewed', 1)
-                            $query->orderByDesc('media_session.created_at');
+                            $query->where('media_session.media_id', $media->id)
+                                    ->orderByDesc('media_session.created_at');
                         })->get();
 
         return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'));
@@ -560,8 +561,9 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $users = User::whereHas('medias', function($query) {
+        $users = User::whereHas('medias', function($query) use ($media) {
                         $query->where('media_user.is_liked', 1)
+                                ->where('media_user.media_id', $media->id)
                                 ->orderByDesc('media_user.created_at');
                     })->get();
 
