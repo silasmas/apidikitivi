@@ -151,7 +151,7 @@ class MediaController extends BaseController
                 }
 
                 if (count($session->medias) > 0) {
-                    $session->medias()->sync([$media->id]);
+                    $session->medias()->syncWithoutDetaching([$media->id]);
                 }
             }
         }
@@ -165,7 +165,7 @@ class MediaController extends BaseController
                 }
 
                 if (count($session->medias) > 0) {
-                    $session->medias()->sync([$media->id]);
+                    $session->medias()->syncWithoutDetaching([$media->id]);
                 }
             }
         }
@@ -404,7 +404,7 @@ class MediaController extends BaseController
                 }
 
                 if (count($session->medias) > 0) {
-                    $session->medias()->sync($medias->pluck('id'));
+                    $session->medias()->syncWithoutDetaching($medias->pluck('id'));
                 }
             }
         }
@@ -418,7 +418,7 @@ class MediaController extends BaseController
                 }
 
                 if (count($session->medias) > 0) {
-                    $session->medias()->sync($medias->pluck('id'));
+                    $session->medias()->syncWithoutDetaching($medias->pluck('id'));
                 }
             }
         }
@@ -609,7 +609,7 @@ class MediaController extends BaseController
 
                 if (count($session->medias) > 0) {
                     foreach ($session->medias as $med) {
-                        $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
+                        $session->medias()->syncWithoutDetaching([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
                     }
                 }
 
@@ -648,7 +648,7 @@ class MediaController extends BaseController
 
                 if ($session->medias() != null) {
                     foreach ($session->medias as $med) {
-                        $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
+                        $session->medias()->syncWithoutDetaching([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
                     }
                 }
             }
