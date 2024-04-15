@@ -94,6 +94,8 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     // Role
     Route::get('role/search/{data}', 'App\Http\Controllers\API\RoleController@search')->name('role.api.search');
     // User
+    Route::get('user/{id}', 'App\Http\Controllers\API\UserController@show')->name('user.api.show');
+    Route::get('user/find_by_parental_code/{parental_code}', 'App\Http\Controllers\API\UserController@findByParentalCode')->name('user.api.find_by_parental_code');
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
     Route::post('user/login', 'App\Http\Controllers\API\UserController@login')->name('user.api.login');
     // PasswordReset
@@ -178,14 +180,12 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::delete('cart/remove_from_cart/{cart_id}/{media_id}', 'App\Http\Controllers\API\CartController@removeFromCart')->name('cart.api.remove_from_cart');
     // User
     Route::get('user', 'App\Http\Controllers\API\UserController@index')->name('user.api.index');
-    Route::get('user/{id}', 'App\Http\Controllers\API\UserController@show')->name('user.api.show');
     Route::put('user/{id}', 'App\Http\Controllers\API\UserController@update')->name('user.api.update');
     Route::delete('user/{id}', 'App\Http\Controllers\API\UserController@destroy')->name('user.api.destroy');
     Route::get('user/profile/{username}', 'App\Http\Controllers\API\UserController@profile')->name('user.api.profile');
     Route::get('user/find_by_role/{locale}/{role_name}', 'App\Http\Controllers\API\UserController@findByRole')->name('user.api.find_by_role');
     Route::get('user/find_by_not_role/{locale}/{role_name}', 'App\Http\Controllers\API\UserController@findByNotRole')->name('user.api.find_by_not_role');
     Route::get('user/find_by_status/{status_id}', 'App\Http\Controllers\API\UserController@findByStatus')->name('user.api.find_by_status');
-    Route::get('user/find_by_parental_code/{parental_code}/{user_id}', 'App\Http\Controllers\API\UserController@findByParentalCode')->name('user.api.find_by_parental_code');
     Route::put('user/switch_status/{id}/{status_id}', 'App\Http\Controllers\API\UserController@switchStatus')->name('user.api.switch_status');
     Route::put('user/update_role/{id}', 'App\Http\Controllers\API\UserController@updateRole')->name('user.api.update_role');
     Route::put('user/update_password/{id}', 'App\Http\Controllers\API\UserController@updatePassword')->name('user.api.update_password');
