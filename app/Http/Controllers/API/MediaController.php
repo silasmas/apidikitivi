@@ -145,8 +145,8 @@ class MediaController extends BaseController
         if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
-            dd($session);
             if (!empty($session)) {
+				dd($session->medias());
                 if ($session->medias() == null) {
                     $session->medias()->attach([$media->id]);
                 }
