@@ -146,7 +146,13 @@ class MediaController extends BaseController
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
-				$session->medias()->toggle([$media->id]);
+                if (count($session->medias) == 0) {
+                    $session->medias()->attach([$media->id]);
+                }
+
+                if (count($session->medias) > 0) {
+                    $session->medias()->sync([$media->id]);
+                }
             }
         }
 
@@ -154,14 +160,13 @@ class MediaController extends BaseController
             $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
 
             if (!empty($session)) {
-                if ($session->medias() == null) {
+                if (count($session->medias) == 0) {
                     $session->medias()->attach([$media->id]);
                 }
 
-                if ($session->medias() != null) {
+                if (count($session->medias) > 0) {
                     $session->medias()->sync([$media->id]);
                 }
-
             }
         }
 
@@ -394,11 +399,11 @@ class MediaController extends BaseController
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
-                if ($session->medias() == null) {
+                if (count($session->medias) == 0) {
                     $session->medias()->attach($medias->pluck('id'));
                 }
 
-                if ($session->medias() != null) {
+                if (count($session->medias) > 0) {
                     $session->medias()->sync($medias->pluck('id'));
                 }
             }
@@ -408,11 +413,11 @@ class MediaController extends BaseController
             $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
 
             if (!empty($session)) {
-                if ($session->medias() == null) {
+                if (count($session->medias) == 0) {
                     $session->medias()->attach($medias->pluck('id'));
                 }
 
-                if ($session->medias() != null) {
+                if (count($session->medias) > 0) {
                     $session->medias()->sync($medias->pluck('id'));
                 }
             }
@@ -598,11 +603,11 @@ class MediaController extends BaseController
             $session = Session::where('user_id', $request->user_id)->first();
 
             if (!empty($session)) {
-                if ($session->medias() == null) {
+                if ($session->medias) == 0) {
                     $session->medias()->attach([$media->id => ['is_viewed' => 1]]);
                 }
 
-                if ($session->medias() != null) {
+                if ($session->medias) > 0) {
                     foreach ($session->medias as $med) {
                         $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
                     }
@@ -637,11 +642,11 @@ class MediaController extends BaseController
             $session = Session::where('ip_address', $request->ip_address)->first();
 
             if (!empty($session)) {
-                if ($session->medias() == null) {
+                if ($session->medias) == 0) {
                     $session->medias()->attach([$media->id => ['is_viewed' => 1]]);
                 }
 
-                if ($session->medias() != null) {
+                if ($session->medias) > 0) {
                     foreach ($session->medias as $med) {
                         $session->medias()->sync([$media->id => ['is_viewed' => ($med->pivot->is_viewed == 1 ? 0 : 1)]]);
                     }
