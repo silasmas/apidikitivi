@@ -74,6 +74,7 @@ class UserController extends BaseController
         $basic  = new \Vonage\Client\Credentials\Basic(config('vonage.api_key'), config('vonage.api_secret'));
         $client = new \Vonage\Client($basic);
 
+        // If "email" and "phone" are NULL, it means that it's a child. So, generate an email for him
         if (trim($inputs['email']) == null AND trim($inputs['phone']) == null) {
             $inputs['email'] = 'child-' . Random::generate(10, '0-9a-zA-Z') . '@no_mail.com';
         }
@@ -318,7 +319,25 @@ class UserController extends BaseController
             return $this->handleError(__('notifications.find_user_404'));
         }
 
-        return $this->handleResponse(new ResourcesUser($user), __('notifications.find_user_success'));
+        if (!empty($user->email)) {
+            $password_reset_email = PasswordReset::where('email', $user->email)->first();
+
+            $object = new stdClass();
+            $object->password_reset = new ResourcesPasswordReset($password_reset_email);
+            $object->user = new ResourcesUser($user);
+
+            return $this->handleResponse($object, __('notifications.find_user_success'));
+        }
+
+        if (!empty($user->phone)) {
+            $password_reset_phone = PasswordReset::where('phone', $user->phone)->first();
+
+            $object = new stdClass();
+            $object->password_reset = new ResourcesPasswordReset($password_reset_phone);
+            $object->user = new ResourcesUser($user);
+
+            return $this->handleResponse($object, __('notifications.find_user_success'));
+        }
     }
 
     /**
@@ -904,48 +923,23 @@ class UserController extends BaseController
      * Search a user by a parental code.
      *
      * @param  string $parental_code
-     * @param  int $user_id
      * @return \Illuminate\Http\Response
      */
-    public function findByParentalCode($parental_code, $user_id)
+    public function findByParentalCode($parental_code)
     {
-        $status_unread = Status::where('status_name->fr', 'Non lue')->first();
-        $parent = User::where('parental_code', $parental_code)->first();
-        $user = User::find($user_id);
-
-        if (is_null($user)) {
-            return $this->handleError(__('notifications.find_user_404'));
-        }
+        $parent = User::where('parental_code', $parental_code)->whereNull('belongs_to')->first();
 
         if (is_null($parent)) {
             return $this->handleError(__('notifications.find_parent_404'));
         }
 
-        if ($user->belongs_to != $parent->id) {
-            return $this->handleError(__('notifications.parental_code_error'));
+        $users = User::where('belongs_to', $parent->id)->get();
+
+        if ($users == null) {
+            return $this->handleError(__('notifications.find_user_404'));
         }
 
-        /*
-            HISTORY AND/OR NOTIFICATION MANAGEMENT
-        */
-        Notification::create([
-            'notification_url' => 'account/children/' . $user->id,
-            'notification_content' => [
-                'en' => $user->firstname . ' is logged in using your parental code.',
-                'fr' => $user->firstname . ' s\'est connecté en utilisant votre code parental.',
-                'ln' => $user->firstname . ' a se connecter na kosalela code na yo ya moboti.',
-            ],
-            'icon' => 'bi bi-shield-lock',
-            'color' => 'text-primary',
-            'status_id' => $status_unread->id,
-            'user_id' => $parent->id
-        ]);
-
-        $object = new stdClass();
-        $object->parent = new ResourcesUser($parent);
-        $object->user = new ResourcesUser($user);
-
-        return $this->handleResponse($object, __('notifications.find_user_success'));
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
     }
 
     /**
