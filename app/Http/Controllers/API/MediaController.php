@@ -146,14 +146,7 @@ class MediaController extends BaseController
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
-                if (count($session->medias) == 0) {
-                    $session->medias()->attach([$media->id]);
-                }
-
-                if (count($session->medias) > 0) {
-                    $session->medias()->sync([$media->id]);
-                }
-
+				$session->medias()->toggle([$media->id]);
             }
         }
 
