@@ -212,4 +212,11 @@ return [
     'create_donation_success' => 'Donation créée',
     'update_donation_success' => 'Donation modifiée',
     'delete_donation_success' => 'Donation supprimée',
+    // Session
+    'find_all_sessions_success' => 'Sessions trouvées',
+    'find_session_success' => 'Session trouvée',
+    'find_session_404' => 'Session non trouvée',
+    'create_session_success' => 'Session créée',
+    'update_session_success' => 'Session modifiée',
+    'delete_session_success' => 'Session supprimée',
 ];
