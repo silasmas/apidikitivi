@@ -935,7 +935,7 @@ class UserController extends BaseController
 
         $users = User::where('belongs_to', $parent->id)->get();
 
-        if ($users == null) {
+        if (count($users) == 0) {
             return $this->handleError(__('notifications.find_user_404'));
         }
 
