@@ -168,7 +168,7 @@ class CartController extends BaseController
             return $this->handleError(__('notifications.find_type_404'));
         }
 
-        if ($type->type_name->fr == 'Watchlist') {
+        if ($type->type_name == 'Watchlist') {
             $cart = Cart::where([['user_id', $user_id], ['type_id', $type->id]])->first();
 
             return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
