@@ -162,9 +162,22 @@ class CartController extends BaseController
      */
     public function findByType($user_id, $type_id)
     {
-        $carts = Cart::where([['user_id', $user_id], ['type_id', $type_id]])->get();
+        $type = Type::find($type_id);
 
-        return $this->handleResponse(ResourcesCart::collection($carts), __('notifications.find_all_carts_success'));
+        if (is_null($type)) {
+            return $this->handleError(__('notifications.find_type_404'));
+        }
+
+        if ($type->type_name->fr == 'Watchlist') {
+            $cart = Cart::where([['user_id', $user_id], ['type_id', $type->id]])->first();
+
+            return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+    
+        } else {
+            $carts = Cart::where([['user_id', $user_id], ['type_id', $type->id]])->get();
+
+            return $this->handleResponse(ResourcesCart::collection($carts), __('notifications.find_all_carts_success'));
+        }
     }
 
     /**
