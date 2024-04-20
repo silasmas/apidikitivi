@@ -369,6 +369,19 @@ class MediaController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Display a listing of the resource.
+     * 
+     * @param  int $for_youth
+     * @return \Illuminate\Http\Response
+     */
+    public function allByAge($for_youth)
+    {
+        $medias = Media::where('for_youth', $for_youth)->orderByDesc('created_at')->paginate(12);
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+    }
+
+    /**
      * Find current trends.
      *
      * @param  string $year
@@ -393,7 +406,7 @@ class MediaController extends BaseController
      */
     public function search(Request $request, $data)
     {
-        $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->paginate(12);
+        $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->orderByDesc('created_at')->paginate(12);
 
         if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
@@ -427,6 +440,19 @@ class MediaController extends BaseController
     }
 
     /**
+     * Get all belonging to a media.
+     *
+     * @param  int $media_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findByBelongsTo($media_id)
+    {
+        $medias = Media::where('belongs_to', $media_id)->orderByDesc('created_at')->paginate(12);
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+    }
+
+    /**
      * Get by type.
      *
      * @param  int $for_youth
@@ -439,8 +465,8 @@ class MediaController extends BaseController
         if (is_null($type)) {
             return $this->handleError(__('notifications.find_type_404'));
         }
-        $query_all = Media::where([['is_live', 1], ['type_id', $type->id]])->paginate(12);
-        $query_child = Media::where([['for_youth', 1], ['is_live', 1], ['type_id', $type->id]])->paginate(12);
+        $query_all = Media::where([['is_live', 1], ['type_id', $type->id]])->orderByDesc('created_at')->paginate(12);
+        $query_child = Media::where([['for_youth', 1], ['is_live', 1], ['type_id', $type->id]])->orderByDesc('created_at')->paginate(12);
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
@@ -461,7 +487,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_type_404'));
         }
 
-        $medias = Media::where('type_id', $type->id)->paginate(12);
+        $medias = Media::where('type_id', $type->id)->orderByDesc('created_at')->paginate(12);
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
     }
