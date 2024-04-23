@@ -75,7 +75,7 @@ class DonationController extends BaseController
         // If the transaction is via mobile money
         if ($request->transaction_type_id == $mobile_money_type->id) {
             // If "user_id" is empty, then it's an anonymous donation
-            if ($inputs['user_id'] != null AND is_numeric($inputs['user_id'])) {
+            if (is_numeric($inputs['user_id'])) {
                 $current_user = User::find($inputs['user_id']);
 
                 if ($current_user != null) {
@@ -205,7 +205,7 @@ class DonationController extends BaseController
         // If the transaction is via bank card
         if ($request->transaction_type_id == $bank_card_type->id) {
             // If "user_id" is empty, then it's an anonymous donation
-            if ($inputs['user_id'] != null AND is_numeric($inputs['user_id'])) {
+            if (is_numeric($inputs['user_id'])) {
                 $current_user = User::find($inputs['user_id']);
 
                 if ($current_user != null) {
