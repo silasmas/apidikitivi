@@ -91,49 +91,54 @@ class DonationController extends BaseController
                         'currency' => $request->currency,
                         'callbackUrl' => getApiURL() . '/payment/store'
                     ]);
-                    dd($jsonRes);
-                    $code = $jsonRes->code;
 
-                    if ($code != '0') {
-                        try {
-                            $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
+                    if (!empty($jsonRes->code)) {
+                        $code = $jsonRes->code;
 
-                        } catch (\Throwable $th) {
-                            return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
+                        if ($code != '0') {
+                            try {
+                                $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
+
+                            } catch (\Throwable $th) {
+                                return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
+                            }
+
+                            return $this->handleError($jsonRes->code, $jsonRes->message, 400);
+
+                        } else {
+                            $object = new stdClass();
+
+                            $object->result_response = [
+                                'message' => $jsonRes->message,
+                                'order_number' => $jsonRes->orderNumber
+                            ];
+
+                            // The donation is registered only if the processing succeed
+                            $donation = Donation::create($inputs);
+
+                            $object->donation = new ResourcesDonation($donation);
+
+                            // Register payment, even if FlexPay will
+                            $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+
+                            if (is_null($payment)) {
+                                Payment::create([
+                                    'reference' => $reference,
+                                    'order_number' => $jsonRes->orderNumber,
+                                    'amount' => $inputs['amount'],
+                                    'phone' => $request->other_phone,
+                                    'currency' => $request->currency,
+                                    'type_id' => $request->transaction_type_id,
+                                    'donation_id' => $donation->id,
+                                    'user_id' => $inputs['user_id']
+                                ]);
+                            }
+
+                            return $this->handleResponse($object, __('notifications.create_donation_success'));
                         }
-
-                        return $this->handleError($jsonRes->code, $jsonRes->message, 400);
 
                     } else {
-                        $object = new stdClass();
-
-                        $object->result_response = [
-                            'message' => $jsonRes->message,
-                            'order_number' => $jsonRes->orderNumber
-                        ];
-
-                        // The donation is registered only if the processing succeed
-                        $donation = Donation::create($inputs);
-
-                        $object->donation = new ResourcesDonation($donation);
-
-                        // Register payment, even if FlexPay will
-                        $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
-
-                        if (is_null($payment)) {
-                            Payment::create([
-                                'reference' => $reference,
-                                'order_number' => $jsonRes->orderNumber,
-                                'amount' => $inputs['amount'],
-                                'phone' => $request->other_phone,
-                                'currency' => $request->currency,
-                                'type_id' => $request->transaction_type_id,
-                                'donation_id' => $donation->id,
-                                'user_id' => $inputs['user_id']
-                            ]);
-                        }
-
-                        return $this->handleResponse($object, __('notifications.create_donation_success'));
+                        return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
                     }
 
                 } else {
