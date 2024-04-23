@@ -92,7 +92,10 @@ class DonationController extends BaseController
                         'callbackUrl' => getApiURL() . '/payment/store'
                     ], null, null, true);
 
-                    if (!empty($jsonRes->code)) {
+                    if (!empty($jsonRes->error)) {
+                        return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+
+                    } else {
                         $code = $jsonRes->code;
 
                         if ($code != '0') {
@@ -136,9 +139,6 @@ class DonationController extends BaseController
 
                             return $this->handleResponse($object, __('notifications.create_donation_success'));
                         }
-
-                    } else {
-                        return $this->handleError($jsonRes->message);
                     }
 
                 } else {
@@ -159,7 +159,10 @@ class DonationController extends BaseController
                     'callbackUrl' => getApiURL() . '/payment/store'
                 ], null, null, true);
 
-                if (!empty($jsonRes->code)) {
+                if (!empty($jsonRes->error)) {
+                    return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+
+                } else {
                     $code = $jsonRes->code;
 
                     if ($code != '0') {
@@ -195,9 +198,6 @@ class DonationController extends BaseController
 
                         return $this->handleResponse($object, __('notifications.create_donation_success'));
                     }
-
-                } else {
-                    return $this->handleError($jsonRes->message);
                 }
             }
         }
@@ -225,7 +225,10 @@ class DonationController extends BaseController
                         'language' => app()->getLocale(),
                     ], null, null, true);
 
-                    if (!empty($jsonRes->code)) {
+                    if (!empty($jsonRes->error)) {
+                        return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+
+                    } else {
                         if ($jsonRes->code != '0') {
                             try {
                                 $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
@@ -267,9 +270,6 @@ class DonationController extends BaseController
 
                             return $this->handleResponse($object, __('notifications.create_donation_success'));
                         }
-
-                    } else {
-                        return $this->handleError($jsonRes->message);
                     }
 
                 } else {
@@ -293,7 +293,10 @@ class DonationController extends BaseController
                     'language' => app()->getLocale(),
                 ], null, null, true);
 
-                if (!empty($jsonRes->code)) {
+                if (!empty($jsonRes->error)) {
+                    return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+
+                } else {
                     if ($jsonRes->code != '0') {
                         return $this->handleError($jsonRes->code, $jsonRes->message, 400);
 
@@ -327,9 +330,6 @@ class DonationController extends BaseController
 
                         return $this->handleResponse($object, __('notifications.create_donation_success'));
                     }
-
-                } else {
-                    return $this->handleError($jsonRes->message);
                 }
             }
         }
