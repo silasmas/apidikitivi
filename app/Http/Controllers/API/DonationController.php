@@ -91,6 +91,7 @@ class DonationController extends BaseController
                         'currency' => $request->currency,
                         'callbackUrl' => getApiURL() . '/payment/store'
                     ]);
+                    dd($jsonRes);
                     $code = $jsonRes->code;
 
                     if ($code != '0') {
