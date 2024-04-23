@@ -138,7 +138,7 @@ class DonationController extends BaseController
                         }
 
                     } else {
-                        return $this->handleError((!empty($jsonRes->error) ? $jsonRes->error : null), $jsonRes->message, $jsonRes->status);
+                        return $this->handleError($jsonRes->message);
                     }
 
                 } else {
@@ -197,7 +197,7 @@ class DonationController extends BaseController
                     }
 
                 } else {
-                    return $this->handleError((!empty($jsonRes->error) ? $jsonRes->error : null), $jsonRes->message, $jsonRes->status);
+                    return $this->handleError($jsonRes->message);
                 }
             }
         }
@@ -269,7 +269,7 @@ class DonationController extends BaseController
                         }
 
                     } else {
-                        return $this->handleError((!empty($jsonRes->error) ? $jsonRes->error : null), $jsonRes->message, $jsonRes->status);
+                        return $this->handleError($jsonRes->message);
                     }
 
                 } else {
@@ -329,7 +329,7 @@ class DonationController extends BaseController
                     }
 
                 } else {
-                    return $this->handleError((!empty($jsonRes->error) ? $jsonRes->error : null), $jsonRes->message, $jsonRes->status);
+                    return $this->handleError($jsonRes->message);
                 }
             }
         }
