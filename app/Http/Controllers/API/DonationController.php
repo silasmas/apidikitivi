@@ -52,7 +52,7 @@ class DonationController extends BaseController
         $inputs = [
             'amount' => $request->amount,
             'pricing_id' => $request->pricing_id,
-            'user_id' => $request->user_id
+            'user_id' => !empty($request->user_id) AND is_numeric($request->user_id) ? $request->user_id : null
         ];
 
         // Validate required fields
@@ -75,7 +75,7 @@ class DonationController extends BaseController
         // If the transaction is via mobile money
         if ($request->transaction_type_id == $mobile_money_type->id) {
             // If "user_id" is empty, then it's an anonymous donation
-            if (is_numeric($inputs['user_id'])) {
+            if ($inputs['user_id'] != null) {
                 $current_user = User::find($inputs['user_id']);
 
                 if ($current_user != null) {
@@ -205,7 +205,7 @@ class DonationController extends BaseController
         // If the transaction is via bank card
         if ($request->transaction_type_id == $bank_card_type->id) {
             // If "user_id" is empty, then it's an anonymous donation
-            if (is_numeric($inputs['user_id'])) {
+            if ($inputs['user_id'] != null) {
                 $current_user = User::find($inputs['user_id']);
 
                 if ($current_user != null) {
