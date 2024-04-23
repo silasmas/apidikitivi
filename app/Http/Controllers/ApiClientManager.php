@@ -103,7 +103,7 @@ class ApiClientManager
                         'headers' => [
                             'Authorization' => 'Bearer ' . $api_token,
                             'Accept' => 'application/json',
-                            'Content-Type' => 'application/json',
+                            // 'Content-Type' => 'application/json',
                             'X-localization' => !empty(Session::get('locale')) ? Session::get('locale') : App::getLocale(),
                         ],
                         'form_params' => $data_to_send,
