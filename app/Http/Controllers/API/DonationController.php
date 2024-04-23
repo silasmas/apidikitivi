@@ -82,7 +82,7 @@ class DonationController extends BaseController
                     $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $inputs['user_id'];
 
                     // Create response by sending request to FlexPay
-                    $jsonRes = $api_manager::call('POST', $gateway_mobile, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc0NzA1ODEwLCJzdWIiOiJjYzk2NjA4NmNmMjA2MTUzZWVlNzJjM2I3OWFlMTc5ZCJ9.oiYFpc-h5abDAB34mCYsGUs6Z6dyTgEuXkbFVxiQ4g0', [
+                    $jsonRes = $api_manager::call('POST', $gateway_mobile, config('services.flexpay.api_token'), [
                         'merchant' => 'ATAMBUTU',
                         'type' => $request->transaction_type_id,
                         'phone' => $request->other_phone,
@@ -144,7 +144,7 @@ class DonationController extends BaseController
                 $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-ANONYMOUS';
 
                 // Create response by sending request to FlexPay
-                $jsonRes = $api_manager::call('POST', $gateway_mobile, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc0NzA1ODEwLCJzdWIiOiJjYzk2NjA4NmNmMjA2MTUzZWVlNzJjM2I3OWFlMTc5ZCJ9.oiYFpc-h5abDAB34mCYsGUs6Z6dyTgEuXkbFVxiQ4g0', [
+                $jsonRes = $api_manager::call('POST', $gateway_mobile, config('services.flexpay.api_token'), [
                     'merchant' => 'ATAMBUTU',
                     'type' => $request->transaction_type_id,
                     'phone' => $request->other_phone,
@@ -201,7 +201,7 @@ class DonationController extends BaseController
                     $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $current_user->id;
 
                     // Create response by sending request to FlexPay
-                    $jsonRes = $api_manager::call('POST', $gateway_card, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc0NzA1ODEwLCJzdWIiOiJjYzk2NjA4NmNmMjA2MTUzZWVlNzJjM2I3OWFlMTc5ZCJ9.oiYFpc-h5abDAB34mCYsGUs6Z6dyTgEuXkbFVxiQ4g0', [
+                    $jsonRes = $api_manager::call('POST', $gateway_card, config('services.flexpay.api_token'), [
                         'merchant' => 'ATAMBUTU',
                         'reference' => $reference_code,
                         'amount' => $inputs['amount'],
@@ -264,7 +264,7 @@ class DonationController extends BaseController
                 $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-ANONYMOUS';
 
                 // Create response by sending request to FlexPay
-                $jsonRes = $api_manager::call('POST', $gateway_card, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc0NzA1ODEwLCJzdWIiOiJjYzk2NjA4NmNmMjA2MTUzZWVlNzJjM2I3OWFlMTc5ZCJ9.oiYFpc-h5abDAB34mCYsGUs6Z6dyTgEuXkbFVxiQ4g0', [
+                $jsonRes = $api_manager::call('POST', $gateway_card, config('services.flexpay.api_token'), [
                     'merchant' => 'ATAMBUTU',
                     'reference' => $reference_code,
                     'amount' => $inputs['amount'],
