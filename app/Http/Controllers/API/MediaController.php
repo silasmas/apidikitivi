@@ -834,6 +834,8 @@ class MediaController extends BaseController
                 ]);
             }
         }
+
+        return $this->handleResponse(new ResourcesMedia($media), __('notifications.find_media_success'));
     }
 
     /**
