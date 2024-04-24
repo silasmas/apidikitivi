@@ -802,13 +802,20 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        foreach ($user->medias as $med) {
-            if ($med->pivot->media_id == null) {
-                $user->medias()->attach([$media->id => ['is_liked' => 1]]);
-            }
+        if (count($user->medias) == 0) {
+            $user->medias()->attach([$media->id => ['is_liked' => 1]]);
+        }
 
-            if ($med->pivot->media_id != null) {
-                $user->medias()->updateExistingPivot([$media->id => ['is_liked' => ($med->pivot->is_liked == 1 ? 0 : 1)]]);
+        if (count($user->medias) > 0) {
+            if (inArrayR($media->id, $user->medias, 'media_id')) {
+                foreach ($user->medias as $med):
+                    if ($med->id == $media->id) {
+                        $user->medias()->updateExistingPivot([$media->id => ['is_liked' => ($med->pivot->is_liked == 1 ? 0 : 1)]]);
+                    }
+                endforeach;
+
+            } else {
+                $user->medias()->attach([$media->id => ['is_liked' => 1]]);
             }
         }
 
@@ -859,15 +866,24 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        foreach ($user->medias as $med) {
-            if ($med->pivot->media_id == null) {
-                $user->medias()->attach([$media->id => [
-                    'status_id' => $status_id
-                ]]);
-            }
+        if (count($user->medias) == 0) {
+            $user->medias()->attach([$media->id => [
+                'status_id' => $status_id
+            ]]);
+        }
 
-            if ($med->pivot->media_id != null) {
-                $user->medias()->updateExistingPivot([$media->id => [
+        if (count($user->medias) > 0) {
+            if (inArrayR($media->id, $user->medias, 'media_id')) {
+                foreach ($user->medias as $med):
+                    if ($med->id == $media->id) {
+                        $user->medias()->updateExistingPivot([$media->id => [
+                            'status_id' => $status_id
+                        ]]);
+                    }
+                endforeach;
+
+            } else {
+                $user->medias()->attach([$media->id => [
                     'status_id' => $status_id
                 ]]);
             }
