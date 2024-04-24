@@ -806,6 +806,7 @@ class MediaController extends BaseController
             $user->medias()->attach([$media->id => ['is_liked' => 1]]);
         }
 
+        return $this->handleResponse(ResourcesMedia::collection($user->medias), 'TEST');
         if (count($user->medias) > 0) {
             if (inArrayR($media->id, $user->medias, 'media_id')) {
                 foreach ($user->medias as $med):
