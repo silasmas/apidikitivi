@@ -806,9 +806,8 @@ class MediaController extends BaseController
             $user->medias()->attach([$media->id => ['is_liked' => 1]]);
         }
 
-        return $this->handleResponse(ResourcesMedia::collection($user->medias), 'TEST');
         if (count($user->medias) > 0) {
-            if (inArrayR($media->id, $user->medias, 'media_id')) {
+            if (inArrayR($media->media_title, $user->medias, 'media_title')) {
                 foreach ($user->medias as $med):
                     if ($med->id == $media->id) {
                         $user->medias()->updateExistingPivot([$media->id => ['is_liked' => ($med->pivot->is_liked == 1 ? 0 : 1)]]);
