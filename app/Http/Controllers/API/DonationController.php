@@ -126,7 +126,7 @@ class DonationController extends BaseController
 
                             if (is_null($payment)) {
                                 Payment::create([
-                                    'reference' => $reference,
+                                    'reference' => $reference_code,
                                     'order_number' => $jsonRes->orderNumber,
                                     'amount' => $inputs['amount'],
                                     'phone' => $request->other_phone,
@@ -186,7 +186,7 @@ class DonationController extends BaseController
 
                         if (is_null($payment)) {
                             Payment::create([
-                                'reference' => $reference,
+                                'reference' => $reference_code,
                                 'order_number' => $jsonRes->orderNumber,
                                 'amount' => $inputs['amount'],
                                 'phone' => $request->other_phone,
@@ -258,7 +258,7 @@ class DonationController extends BaseController
 
                             if (is_null($payment)) {
                                 Payment::create([
-                                    'reference' => $reference,
+                                    'reference' => $reference_code,
                                     'order_number' => $jsonRes->orderNumber,
                                     'amount' => $inputs['amount'],
                                     'currency' => $request->currency,
@@ -319,7 +319,7 @@ class DonationController extends BaseController
 
                         if (is_null($payment)) {
                             Payment::create([
-                                'reference' => $reference,
+                                'reference' => $reference_code,
                                 'order_number' => $jsonRes->orderNumber,
                                 'amount' => $inputs['amount'],
                                 'currency' => $request->currency,
