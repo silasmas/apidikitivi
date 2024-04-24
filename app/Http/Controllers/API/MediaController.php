@@ -47,6 +47,9 @@ class MediaController extends BaseController
         $inputs = [
             'media_title' => $request->media_title,
             'media_description' => $request->media_description,
+            'source' => $request->source,
+            'belonging_count' => $request->belonging_count,
+            'time_length' => $request->time_length,
             'media_url' => $request->media_url,
             'teaser_url' => $request->file('teaser_url'),
             'author_names' => $request->author_names,
@@ -82,6 +85,31 @@ class MediaController extends BaseController
         endforeach;
 
         $media = Media::create($inputs);
+
+		if ($inputs['belongs_to'] != null) {
+			$media_parent = Media::find($inputs['belongs_to']);
+
+            if (is_null($media_parent)) {
+                return $this->handleError(__('notifications.find_parent_404'));
+            }
+
+            if ($media_parent->belonging_count != null) {
+                $count = (int) $media_parent->belonging_count;
+
+                $count++;
+
+                $media_parent->update([
+                    'belonging_count' => $count,
+                    'updated_at' => now()
+                ]);
+
+            } else {
+                $media_parent->update([
+                    'belonging_count' => 1,
+                    'updated_at' => now()
+                ]);
+            }
+        }
 
 		if ($request->file('teaser_url') != null) {
 			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
@@ -187,6 +215,9 @@ class MediaController extends BaseController
             'id' => $request->id,
             'media_title' => $request->media_title,
             'media_description' => $request->media_description,
+            'source' => $request->source,
+            'belonging_count' => $request->belonging_count,
+            'time_length' => $request->time_length,
             'media_url' => $request->media_url,
             'teaser_url' => $request->file('teaser_url'),
             'author_names' => $request->author_names,
@@ -225,6 +256,27 @@ class MediaController extends BaseController
         if ($inputs['media_description'] != null) {
             $media->update([
                 'media_description' => $inputs['media_description'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['source'] != null) {
+            $media->update([
+                'source' => $inputs['source'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['belonging_count'] != null) {
+            $media->update([
+                'belonging_count' => $inputs['belonging_count'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['time_length'] != null) {
+            $media->update([
+                'time_length' => $inputs['time_length'],
                 'updated_at' => now(),
             ]);
         }
@@ -317,6 +369,29 @@ class MediaController extends BaseController
         }
 
         if ($inputs['belongs_to'] != null) {
+            $media_parent = Media::find($inputs['belongs_to']);
+
+            if (is_null($media_parent)) {
+                return $this->handleError(__('notifications.find_parent_404'));
+            }
+
+            if ($media_parent->belonging_count != null) {
+                $count = (int) $media_parent->belonging_count;
+
+                $count++;
+
+                $media_parent->update([
+                    'belonging_count' => $count,
+                    'updated_at' => now()
+                ]);
+
+            } else {
+                $media_parent->update([
+                    'belonging_count' => 1,
+                    'updated_at' => now()
+                ]);
+            }
+
             $media->update([
                 'belongs_to' => $inputs['belongs_to'],
                 'updated_at' => now(),
