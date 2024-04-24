@@ -810,7 +810,7 @@ class MediaController extends BaseController
             if (inArrayR($media->media_title, $user->medias, 'media_title')) {
                 foreach ($user->medias as $med):
                     if ($med->id == $media->id) {
-                        $user->medias()->updateExistingPivot([$media->id => ['is_liked' => ($med->pivot->is_liked == 1 ? 0 : 1)]]);
+                        $user->medias()->updateExistingPivot($media->id, ['is_liked' => ($med->pivot->is_liked == 1 ? 0 : 1)]);
                     }
                 endforeach;
 
@@ -876,9 +876,7 @@ class MediaController extends BaseController
             if (inArrayR($media->id, $user->medias, 'media_id')) {
                 foreach ($user->medias as $med):
                     if ($med->id == $media->id) {
-                        $user->medias()->updateExistingPivot([$media->id => [
-                            'status_id' => $status_id
-                        ]]);
+                        $user->medias()->updateExistingPivot($media->id, ['status_id' => $status_id]);
                     }
                 endforeach;
 
