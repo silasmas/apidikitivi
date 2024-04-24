@@ -132,6 +132,7 @@ class DonationController extends BaseController
                                     'phone' => $request->other_phone,
                                     'currency' => $request->currency,
                                     'type_id' => $request->transaction_type_id,
+                                    'status_id' => $code,
                                     'donation_id' => $donation->id,
                                     'user_id' => $inputs['user_id']
                                 ]);
@@ -192,6 +193,7 @@ class DonationController extends BaseController
                                 'phone' => $request->other_phone,
                                 'currency' => $request->currency,
                                 'type_id' => $request->transaction_type_id,
+                                'status_id' => $code,
                                 'donation_id' => $donation->id,
                             ]);
                         }
@@ -263,6 +265,7 @@ class DonationController extends BaseController
                                     'amount' => $inputs['amount'],
                                     'currency' => $request->currency,
                                     'type_id' => $request->transaction_type_id,
+                                    'status_id' => $jsonRes->code,
                                     'donation_id' => $donation->id,
                                     'user_id' => $inputs['user_id']
                                 ]);
@@ -324,6 +327,7 @@ class DonationController extends BaseController
                                 'amount' => $inputs['amount'],
                                 'currency' => $request->currency,
                                 'type_id' => $request->transaction_type_id,
+                                'status_id' => $jsonRes->code,
                                 'donation_id' => $donation->id,
                             ]);
                         }
