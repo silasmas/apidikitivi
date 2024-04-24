@@ -51,6 +51,7 @@ class DonationController extends BaseController
         // Get inputs
         $inputs = [
             'amount' => $request->amount,
+            'currency' => $request->currency,
             'pricing_id' => $request->pricing_id,
             'user_id' => !empty($request->user_id) ? $request->user_id : null
         ];
@@ -88,7 +89,7 @@ class DonationController extends BaseController
                         'phone' => $request->other_phone,
                         'reference' => $reference_code,
                         'amount' => $inputs['amount'],
-                        'currency' => $request->currency,
+                        'currency' => $inputs['currency'],
                         'callbackUrl' => getApiURL() . '/payment/store'
                     ], null, null, true);
 
@@ -130,7 +131,7 @@ class DonationController extends BaseController
                                     'order_number' => $jsonRes->orderNumber,
                                     'amount' => $inputs['amount'],
                                     'phone' => $request->other_phone,
-                                    'currency' => $request->currency,
+                                    'currency' => $inputs['currency'],
                                     'type_id' => $request->transaction_type_id,
                                     'status_id' => $code,
                                     'donation_id' => $donation->id,
@@ -156,7 +157,7 @@ class DonationController extends BaseController
                     'phone' => $request->other_phone,
                     'reference' => $reference_code,
                     'amount' => $inputs['amount'],
-                    'currency' => $request->currency,
+                    'currency' => $inputs['currency'],
                     'callbackUrl' => getApiURL() . '/payment/store'
                 ], null, null, true);
 
@@ -191,7 +192,7 @@ class DonationController extends BaseController
                                 'order_number' => $jsonRes->orderNumber,
                                 'amount' => $inputs['amount'],
                                 'phone' => $request->other_phone,
-                                'currency' => $request->currency,
+                                'currency' => $inputs['currency'],
                                 'type_id' => $request->transaction_type_id,
                                 'status_id' => $code,
                                 'donation_id' => $donation->id,
@@ -219,11 +220,11 @@ class DonationController extends BaseController
                         'reference' => $reference_code,
                         'amount' => $inputs['amount'],
                         'description' => __('miscellaneous.bank_transaction_description'),
-                        'currency' => $request->currency,
+                        'currency' => $inputs['currency'],
                         'callbackUrl' => getApiURL() . '/payment/store',
-                        'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/0/' . $current_user->id,
-                        'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/1/' . $current_user->id,
-                        'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/2/' . $current_user->id,
+                        'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
+                        'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
+                        'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
                         'language' => app()->getLocale(),
                     ], null, null, true);
 
@@ -263,7 +264,7 @@ class DonationController extends BaseController
                                     'reference' => $reference_code,
                                     'order_number' => $jsonRes->orderNumber,
                                     'amount' => $inputs['amount'],
-                                    'currency' => $request->currency,
+                                    'currency' => $inputs['currency'],
                                     'type_id' => $request->transaction_type_id,
                                     'status_id' => $jsonRes->code,
                                     'donation_id' => $donation->id,
@@ -288,11 +289,11 @@ class DonationController extends BaseController
                     'reference' => $reference_code,
                     'amount' => $inputs['amount'],
                     'description' => __('miscellaneous.bank_transaction_description'),
-                    'currency' => $request->currency,
+                    'currency' => $inputs['currency'],
                     'callbackUrl' => getApiURL() . '/payment/store',
-                    'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/0/anonymous',
-                    'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/1/anonymous',
-                    'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $request->currency . '/2/anonymous',
+                    'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/anonymous',
+                    'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/anonymous',
+                    'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/anonymous',
                     'language' => app()->getLocale(),
                 ], null, null, true);
 
@@ -325,7 +326,7 @@ class DonationController extends BaseController
                                 'reference' => $reference_code,
                                 'order_number' => $jsonRes->orderNumber,
                                 'amount' => $inputs['amount'],
-                                'currency' => $request->currency,
+                                'currency' => $inputs['currency'],
                                 'type_id' => $request->transaction_type_id,
                                 'status_id' => $jsonRes->code,
                                 'donation_id' => $donation->id,
@@ -368,27 +369,35 @@ class DonationController extends BaseController
         // Get inputs
         $inputs = [
             'amount' => $request->amount,
+            'currency' => $request->currency,
             'pricing_id' => $request->pricing_id,
             'user_id' => $request->user_id
         ];
 
         if ($inputs['amount'] != null) {
             $donation->update([
-                'amount' => $request->amount,
+                'amount' => $inputs['amount'],
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($inputs['currency'] != null) {
+            $donation->update([
+                'currency' => $inputs['currency'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['pricing_id'] != null) {
             $donation->update([
-                'pricing_id' => $request->pricing_id,
+                'pricing_id' => $inputs['pricing_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['user_id'] != null) {
             $donation->update([
-                'user_id' => $request->user_id,
+                'user_id' => $inputs['user_id'],
                 'updated_at' => now(),
             ]);
         }
