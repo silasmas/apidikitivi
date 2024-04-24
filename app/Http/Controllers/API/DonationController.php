@@ -52,7 +52,7 @@ class DonationController extends BaseController
         $inputs = [
             'amount' => $request->amount,
             'pricing_id' => $request->pricing_id,
-            'user_id' => !empty($request->user_id) AND is_numeric($request->user_id) ? $request->user_id : null
+            'user_id' => !empty($request->user_id) ? $request->user_id : null
         ];
 
         // Validate required fields
