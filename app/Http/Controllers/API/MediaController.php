@@ -562,7 +562,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_type_404'));
         }
 
-        $medias = Media::where('type_id', $type->id)->orderByDesc('created_at')->paginate(12);
+        $medias = Media::where('type_id', $type->id)->orderByDesc('created_at')->get();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
     }
@@ -689,9 +689,9 @@ class MediaController extends BaseController
                         $query->where('media_user.is_liked', 1)
                                 ->where('media_user.user_id', $user->id)
                                 ->orderByDesc('media_user.created_at');
-                    })->get();
+                    })->paginate(12);
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
     }
 
     /**
