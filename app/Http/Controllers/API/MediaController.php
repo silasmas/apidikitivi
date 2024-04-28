@@ -564,7 +564,7 @@ class MediaController extends BaseController
 
         $medias = Media::where('type_id', $type->id)->orderByDesc('created_at')->get();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
     }
 
     /**
