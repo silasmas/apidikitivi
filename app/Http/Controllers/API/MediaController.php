@@ -453,9 +453,9 @@ class MediaController extends BaseController
     {
         $media->delete();
 
-        $medias = Media::all();
+        $medias = Media::orderByDesc('created_at')->paginate(12);
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.delete_media_success'));
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.delete_media_success'), $medias->lastPage());
     }
 
     // ==================================== CUSTOM METHODS ====================================
