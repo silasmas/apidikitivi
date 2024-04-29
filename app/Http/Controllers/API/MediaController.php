@@ -112,8 +112,10 @@ class MediaController extends BaseController
         }
 
 		if ($request->file('media_url') != null) {
+            $file = $request->file('media_url');
+            $filename = $file->getClientOriginalName();
 			// Upload cover
-			$request->media_url->storeAs('images/medias/' . $media->id, Str::random() . '.' . $request->file('media_url')->extension());
+			$request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
 
 			// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
 			$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
