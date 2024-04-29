@@ -112,10 +112,10 @@ class MediaController extends BaseController
         }
 
 		if ($request->file('media_url') != null) {
-			$file = $request->file('media_url');
-			$media_name = $file->getClientOriginalName();
+			$media_url = 'images/medias/' . $media->id . '/' . Str::random(10) . '.' . $request->file('media_url')->extension();
 
-            $file->storeAs('images/medias/' . $media->id, $media_name, 's3');
+			// Upload URL
+			Storage::url(Storage::disk('s3')->put($media_url, $inputs['media_url']));
 
             // $media->update([
             //     'media_url' => Storage::disk('s3')->response('images/medias/' . $media->id . '/' . ),
@@ -126,7 +126,7 @@ class MediaController extends BaseController
 		if ($request->file('teaser_url') != null) {
 			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
 
-			// Upload teaser
+			// Upload URL
 			Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
 
             $media->update([
