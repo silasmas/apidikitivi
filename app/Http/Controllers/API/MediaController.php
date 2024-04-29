@@ -112,15 +112,16 @@ class MediaController extends BaseController
         }
 
 		if ($request->file('media_url') != null) {
-			$media_url = 'images/medias/' . $media->id . '/' . Str::random(10) . '.' . $request->file('media_url')->extension();
+			// Upload cover
+			$request->media_url->storeAs('images/medias/' . $media->id, Str::random() . '.' . $request->file('media_url')->extension());
 
-			// Upload URL
-			Storage::url(Storage::disk('s3')->put($media_url, $inputs['media_url']));
+			// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
+			$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
 
-            // $media->update([
-            //     'media_url' => Storage::disk('s3')->response('images/medias/' . $media->id . '/' . ),
-            //     'updated_at' => now()
-            // ]);
+            $media->update([
+                'media_url' => $media_url,
+                'updated_at' => now()
+            ]);
         }
 
 		if ($request->file('teaser_url') != null) {
