@@ -51,7 +51,7 @@ class MediaController extends BaseController
             'belonging_count' => $request->belonging_count,
             'time_length' => $request->time_length,
             'media_url' => $request->media_url,
-            'teaser_url' => $request->file('teaser_url'),
+            'teaser_url' => $request->teaser_url,
             'author_names' => $request->author_names,
             'artist_names' => $request->artist_names,
             'writer' => $request->writer,
@@ -111,6 +111,18 @@ class MediaController extends BaseController
             }
         }
 
+		if ($request->file('media_url') != null) {
+			$file = $request->file('media_url');
+			$media_name = $file->getClientOriginalName();
+
+            $file->storeAs('images/medias/' . $media->id, $media_name, 's3');
+
+            // $media->update([
+            //     'media_url' => Storage::disk('s3')->response('images/medias/' . $media->id . '/' . ),
+            //     'updated_at' => now()
+            // ]);
+        }
+
 		if ($request->file('teaser_url') != null) {
 			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
 
@@ -135,18 +147,30 @@ class MediaController extends BaseController
             ]);
         }
 
-        if ($request->file('youtube_video') != null) {
-            $youtubeID = YouTubeController::store(
-                $request->file('youtube_video')->getPathName(), 
-                $inputs['media_title'], 
-                $inputs['cover_url'], 
-                $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
+		if ($request->file('cover_url') != null) {
+			// Upload cover
+			$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
+
+			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
             $media->update([
-                'media_url' => 'https://www.youtube.com/embed/' . $youtubeID,
+                'cover_url' => $cover_url,
                 'updated_at' => now()
             ]);
         }
+
+        // if ($request->file('youtube_video') != null) {
+        //     $youtubeID = YouTubeController::store(
+        //         $request->file('youtube_video')->getPathName(), 
+        //         $inputs['media_title'], 
+        //         $inputs['cover_url'], 
+        //         $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
+
+        //     $media->update([
+        //         'media_url' => 'https://www.youtube.com/embed/' . $youtubeID,
+        //         'updated_at' => now()
+        //     ]);
+        // }
 
         if ($request->categories_ids) {
             $media->categories()->attach($request->categories_ids);
