@@ -449,8 +449,14 @@ class MediaController extends BaseController
      * @param  \App\Models\Media  $media
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Media $media)
+    public function destroy($id)
     {
+        $media = Media::find($id);
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
         $media->delete();
 
         $medias = Media::orderByDesc('created_at')->paginate(12);
