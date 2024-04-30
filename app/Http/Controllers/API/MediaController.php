@@ -12,7 +12,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\YouTubeController;
 use App\Http\Resources\Media as ResourcesMedia;
 use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\Session as ResourcesSession;
