@@ -234,7 +234,7 @@ class MediaController extends BaseController
      * @param  \App\Models\Media  $media
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Media $media)
+    public function update(Request $request, $id)
     {
         // Get inputs
         $inputs = [
@@ -259,6 +259,7 @@ class MediaController extends BaseController
             'type_id' => $request->type_id,
             'user_id' => $request->user_id
         ];
+        $media = Media::find($id);
 
         if ($inputs['media_title'] != null) {
             // Select all user medias to check unique constraint
@@ -438,8 +439,8 @@ class MediaController extends BaseController
             ]);
         }
 
-        if (!empty($request->categories_ids)) {
-            $media->categories()->syncWithoutDetaching($request->categories_ids);
+        if ($request->categories_ids != null) {
+            $media->categories()->sync($request->categories_ids);
         }
 
         return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
