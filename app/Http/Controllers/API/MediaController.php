@@ -174,7 +174,7 @@ class MediaController extends BaseController
         //     ]);
         // }
 
-        if (!empty($request->categories_ids)) {
+        if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
             $media->categories()->attach($request->categories_ids);
         }
 
@@ -439,7 +439,7 @@ class MediaController extends BaseController
             ]);
         }
 
-        if ($request->categories_ids != null) {
+        if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
             $media->categories()->sync($request->categories_ids);
         }
 
