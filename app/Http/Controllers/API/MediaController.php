@@ -49,7 +49,7 @@ class MediaController extends BaseController
             'source' => $request->source,
             'belonging_count' => $request->belonging_count,
             'time_length' => $request->time_length,
-            'media_url' => $request->file('media_url'),
+            'media_url' => $request->media_url,
             'teaser_url' => $request->file('teaser_url'),
             'author_names' => $request->author_names,
             'artist_names' => $request->artist_names,
@@ -110,20 +110,20 @@ class MediaController extends BaseController
             }
         }
 
-		if ($request->file('media_url') != null) {
-            $file = $request->file('media_url');
-            $filename = $file->getClientOriginalName();
-			// Upload cover
-			$request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
+		// if ($request->file('media_url') != null) {
+        //     $file = $request->file('media_url');
+        //     $filename = $file->getClientOriginalName();
+		// 	// Upload cover
+		// 	$request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
 
-			// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
-			$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
+		// 	// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
+		// 	$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
 
-            $media->update([
-                'media_url' => $media_url,
-                'updated_at' => now()
-            ]);
-        }
+        //     $media->update([
+        //         'media_url' => $media_url,
+        //         'updated_at' => now()
+        //     ]);
+        // }
 
 		if ($request->file('teaser_url') != null) {
 			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
