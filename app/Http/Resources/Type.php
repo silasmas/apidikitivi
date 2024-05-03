@@ -18,7 +18,7 @@ class Type extends JsonResource
      */
     public function toArray($request)
     {
-        dd($this->group);
+        // dd($this->group);
         return [
             'id' => $this->id,
             'type_name' => $this->type_name,
@@ -28,7 +28,7 @@ class Type extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'group_id' => $this->group_id,
-            'group_name' => $this->group_name,
+            'group_name' => $this->group->group_name,
         ];
     }
 }
