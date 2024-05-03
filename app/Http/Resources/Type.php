@@ -22,6 +22,9 @@ class Type extends JsonResource
         return [
             'id' => $this->id,
             'type_name' => $this->type_name,
+            'type_name_fr' => $this->getTranslation('type_name', 'fr'),
+            'type_name_en' => $this->getTranslation('type_name', 'en'),
+            'type_name_ln' => $this->getTranslation('type_name', 'ln'),
             'type_description' => $this->type_description,
             'icon' => $this->icon,
             'color' => $this->color,
