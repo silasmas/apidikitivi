@@ -30,8 +30,9 @@ class MediaController extends BaseController
     public function index()
     {
         $medias = Media::orderByDesc('created_at')->paginate(12);
+        $count_all = Media::count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
 
     /**
@@ -463,8 +464,9 @@ class MediaController extends BaseController
         $media->delete();
 
         $medias = Media::orderByDesc('created_at')->paginate(12);
+        $count_all = Media::count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.delete_media_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.delete_media_success'), $medias->lastPage(), $count_all);
     }
 
     // ==================================== CUSTOM METHODS ====================================
@@ -477,8 +479,9 @@ class MediaController extends BaseController
     public function allByAge($for_youth)
     {
         $medias = Media::where('for_youth', $for_youth)->orderByDesc('created_at')->paginate(12);
+        $count_all = Media::where('for_youth', $for_youth)->count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
 
     /**
@@ -494,7 +497,7 @@ class MediaController extends BaseController
         $query_child = Media::whereHas('sessions', function($query) use ($year) { $query->whereMonth('sessions.created_at', '>=', date('m'))->whereYear('sessions.created_at', '=', $year); })->where('for_youth', 1)->distinct()->limit(5)->get();
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, count($medias));
     }
 
     /**
@@ -507,6 +510,7 @@ class MediaController extends BaseController
     public function search(Request $request, $data)
     {
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->orderByDesc('created_at')->paginate(12);
+        $count_all = Media::where('media_title', 'LIKE', '%' . $data . '%')->count();
 
         if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
@@ -536,7 +540,7 @@ class MediaController extends BaseController
             }
         }
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
 
     /**
@@ -548,8 +552,9 @@ class MediaController extends BaseController
     public function findByBelongsTo($media_id)
     {
         $medias = Media::where('belongs_to', $media_id)->orderByDesc('created_at')->paginate(12);
+        $count_all = Media::where('belongs_to', $media_id)->count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
 
     /**
@@ -569,7 +574,7 @@ class MediaController extends BaseController
         $query_child = Media::where([['for_youth', 1], ['is_live', 1], ['type_id', $type->id]])->orderByDesc('created_at')->paginate(12);
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
     }
 
     /**
@@ -588,8 +593,9 @@ class MediaController extends BaseController
         }
 
         $medias = Media::where('type_id', $type->id)->orderByDesc('created_at')->get();
+        $count_all = Media::where('type_id', $type->id)->count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'));
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, $count_all);
     }
 
     /**
@@ -615,7 +621,7 @@ class MediaController extends BaseController
 			if ($sessions == null) {
 				$medias = $for_youth == 0 ? $query_all : $query_child;
 
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
 
             } else {
                 $session_medias = $for_youth == 0 ? $query_session_user_all : $query_session_user_child;
@@ -623,7 +629,7 @@ class MediaController extends BaseController
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique();
 
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage());
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage(), count($medias));
             }
 
         } else if ($request->hasHeader('X-ip-address')) {
@@ -632,7 +638,7 @@ class MediaController extends BaseController
 			if ($sessions == null) {
 				$medias = $for_youth == 0 ? $query_all : $query_child;
 
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
 
             } else {
                 $session_medias = $for_youth == 0 ? $query_session_ip_address_all : $query_session_ip_address_child;
@@ -640,13 +646,13 @@ class MediaController extends BaseController
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique();
 
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage());
+                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage(), count($medias));
             }
 
         } else {
             $medias = $for_youth == 0 ? $query_all : $query_child;
 
-            return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+            return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
         }
     }
 
@@ -665,12 +671,17 @@ class MediaController extends BaseController
         }
 
         $sessions = Session::whereHas('medias', function($query) use ($media) {
-                            // $query->where('media_session.is_viewed', 1)
-                            $query->where('media_session.media_id', $media->id)
-                                    ->orderByDesc('media_session.created_at');
-                        })->get();
+                                // $query->where('media_session.is_viewed', 1)
+                                $query->where('media_session.media_id', $media->id)
+                                        ->orderByDesc('media_session.created_at');
+                            })->get();
+        $count_all = Session::whereHas('medias', function($query) use ($media) {
+                                // $query->where('media_session.is_viewed', 1)
+                                $query->where('media_session.media_id', $media->id)
+                                        ->orderByDesc('media_session.created_at');
+                            })->count();
 
-        return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'));
+        return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'), null, $count_all);
     }
 
     /**
@@ -688,12 +699,17 @@ class MediaController extends BaseController
         }
 
         $users = User::whereHas('medias', function($query) use ($media) {
-                        $query->where('media_user.is_liked', 1)
-                                ->where('media_user.media_id', $media->id)
-                                ->orderByDesc('media_user.created_at');
-                    })->get();
+                            $query->where('media_user.is_liked', 1)
+                                    ->where('media_user.media_id', $media->id)
+                                    ->orderByDesc('media_user.created_at');
+                        })->get();
+        $count_all = User::whereHas('medias', function($query) use ($media) {
+                            $query->where('media_user.is_liked', 1)
+                                    ->where('media_user.media_id', $media->id)
+                                    ->orderByDesc('media_user.created_at');
+                        })->count();
 
-        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $count_all);
     }
 
     /**
@@ -711,12 +727,17 @@ class MediaController extends BaseController
         }
 
         $medias = Media::whereHas('users', function($query) use ($user) {
-                        $query->where('media_user.is_liked', 1)
-                                ->where('media_user.user_id', $user->id)
-                                ->orderByDesc('media_user.created_at');
-                    })->paginate(12);
+                            $query->where('media_user.is_liked', 1)
+                                    ->where('media_user.user_id', $user->id)
+                                    ->orderByDesc('media_user.created_at');
+                        })->paginate(12);
+        $count_all = Media::whereHas('users', function($query) use ($user) {
+                            $query->where('media_user.is_liked', 1)
+                                    ->where('media_user.user_id', $user->id)
+                                    ->orderByDesc('media_user.created_at');
+                        })->count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
 
     /**
@@ -732,7 +753,7 @@ class MediaController extends BaseController
         $query_child = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->where('for_youth', 1)->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->paginate(12);
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage());
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
     }
 
     /**
@@ -911,6 +932,8 @@ class MediaController extends BaseController
                 ]]);
             }
         }
+
+        return $this->handleResponse(new ResourcesMedia($media), __('notifications.find_media_success'));
     }
 
     /**

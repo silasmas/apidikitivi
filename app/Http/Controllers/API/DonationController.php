@@ -84,7 +84,7 @@ class DonationController extends BaseController
 
                     // Create response by sending request to FlexPay
                     $jsonRes = $api_manager::call('POST', $gateway_mobile, config('services.flexpay.api_token'), [
-                        'merchant' => 'ATAMBUTU',
+                        'merchant' => 'DIKITIVI',
                         'type' => $request->transaction_type_id,
                         'phone' => $request->other_phone,
                         'reference' => $reference_code,
@@ -152,7 +152,7 @@ class DonationController extends BaseController
 
                 // Create response by sending request to FlexPay
                 $jsonRes = $api_manager::call('POST', $gateway_mobile, config('services.flexpay.api_token'), [
-                    'merchant' => 'ATAMBUTU',
+                    'merchant' => 'DIKITIVI',
                     'type' => $request->transaction_type_id,
                     'phone' => $request->other_phone,
                     'reference' => $reference_code,
@@ -216,7 +216,7 @@ class DonationController extends BaseController
 
                     // Create response by sending request to FlexPay
                     $jsonRes = $api_manager::call('POST', $gateway_card, config('services.flexpay.api_token'), [
-                        'merchant' => 'ATAMBUTU',
+                        'merchant' => 'DIKITIVI',
                         'reference' => $reference_code,
                         'amount' => $inputs['amount'],
                         'description' => __('miscellaneous.bank_transaction_description'),
@@ -285,7 +285,7 @@ class DonationController extends BaseController
 
                 // Create response by sending request to FlexPay
                 $jsonRes = $api_manager::call('POST', $gateway_card, config('services.flexpay.api_token'), [
-                    'merchant' => 'ATAMBUTU',
+                    'merchant' => 'DIKITIVI',
                     'reference' => $reference_code,
                     'amount' => $inputs['amount'],
                     'description' => __('miscellaneous.bank_transaction_description'),
