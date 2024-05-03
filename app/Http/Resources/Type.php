@@ -27,7 +27,7 @@ class Type extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'group_id' => $this->group_id,
-            'group_name' => $this->group_name
+            'group_name' => $this->group_name,
         ];
     }
 }
