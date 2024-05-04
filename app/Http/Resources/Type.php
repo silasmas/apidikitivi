@@ -18,15 +18,20 @@ class Type extends JsonResource
      */
     public function toArray($request)
     {
+        // dd($this->group);
         return [
             'id' => $this->id,
             'type_name' => $this->type_name,
+            'type_name_fr' => $this->getTranslation('type_name', 'fr'),
+            'type_name_en' => $this->getTranslation('type_name', 'en'),
+            'type_name_ln' => $this->getTranslation('type_name', 'ln'),
             'type_description' => $this->type_description,
             'icon' => $this->icon,
             'color' => $this->color,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'group_id' => $this->group_id
+            'group_id' => $this->group_id,
+            'group_name' => $this->group->group_name,
         ];
     }
 }
