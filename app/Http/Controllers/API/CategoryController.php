@@ -147,6 +147,21 @@ class CategoryController extends BaseController
 
     // ==================================== CUSTOM METHODS ====================================
     /**
+     * Find all categories by type.
+     *
+     * @param  int  $type_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findAllByType($type_id)
+    {
+        $categories = Category::whereHas('medias', function ($query) use ($type_id) {
+                                    $query->where('type_id', $type_id);
+                                })->get();
+
+        return $this->handleResponse(ResourcesCategory::collection($categories), __('notifications.find_all_categories_success'));
+    }
+
+    /**
      * Find all categories used for medias.
      *
      * @param  int  $for_youth
