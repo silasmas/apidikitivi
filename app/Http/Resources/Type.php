@@ -18,7 +18,7 @@ class Type extends JsonResource
      */
     public function toArray($request)
     {
-        dd($this->group->group_name);
+        // dd($this->group->group_name);
         return [
             'id' => $this->id,
             'type_name' => $this->type_name,
