@@ -749,8 +749,8 @@ class MediaController extends BaseController
      */
     public function filterByCategories(Request $request, $for_youth)
     {
-        $query_all = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->paginate(12);
-        $query_child = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->where('for_youth', 1)->whereNotNull('belongs_to')->orderByDesc('medias.created_at')->paginate(12);
+        $query_all = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->orderByDesc('medias.created_at')->paginate(12);
+        $query_child = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->where('for_youth', 1)->orderByDesc('medias.created_at')->paginate(12);
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
