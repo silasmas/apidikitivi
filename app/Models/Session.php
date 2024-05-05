@@ -44,7 +44,7 @@ class Session extends Model
 
     /**
      * MANY-TO-ONE
-     * Several mediaSessions for a media
+     * Several mediaSessions for a session
      */
     public function mediaSessions()
     {
