@@ -24,6 +24,7 @@ class Status extends JsonResource
             'status_description' => $this->status_description,
             'icon' => $this->icon,
             'color' => $this->color,
+            'group' => Group::make($this->group),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'group_id' => $this->group_id

@@ -18,7 +18,6 @@ class Type extends JsonResource
      */
     public function toArray($request)
     {
-        // dd($this->group->group_name);
         return [
             'id' => $this->id,
             'type_name' => $this->type_name,
@@ -28,10 +27,10 @@ class Type extends JsonResource
             'type_description' => $this->type_description,
             'icon' => $this->icon,
             'color' => $this->color,
+            'group' => Group::make($this->group),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'group_id' => $this->group_id,
-            // 'group_name' => $this->group->group_name,
         ];
     }
 }
