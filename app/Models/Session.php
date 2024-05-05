@@ -41,13 +41,4 @@ class Session extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    /**
-     * MANY-TO-ONE
-     * Several mediaSessions for a session
-     */
-    public function mediaSessions()
-    {
-        return $this->hasMany('media_session')->withTimestamps();
-    }
 }
