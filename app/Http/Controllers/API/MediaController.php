@@ -511,7 +511,7 @@ class MediaController extends BaseController
         $query_child = Media::whereHas('sessions', function($query) use ($year) { $query->whereMonth('sessions.created_at', '>=', date('m'))->whereYear('sessions.created_at', '=', $year); })->where('for_youth', 1)->distinct()->limit(5)->get();
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
-        return $this->handleResponse(ResourcesMedia::collection($query_all), __('notifications.find_all_medias_success'), null, count($medias));
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, count($medias));
     }
 
     /**
