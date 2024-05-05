@@ -36,6 +36,19 @@ class MediaController extends BaseController
     }
 
     /**
+     * Display a listing of the resource.
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function index2()
+    {
+        $medias = Media::orderByDesc('created_at')->paginate(100);
+        $count_all = Media::count();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -478,8 +491,8 @@ class MediaController extends BaseController
      */
     public function allByAge($for_youth)
     {
-        $query_all = Media::orderByDesc('created_at')->paginate(100);
-        $query_child = Media::where('for_youth', 1)->orderByDesc('created_at')->paginate(100);
+        $query_all = Media::orderByDesc('created_at')->paginate(12);
+        $query_child = Media::where('for_youth', 1)->orderByDesc('created_at')->paginate(12);
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));

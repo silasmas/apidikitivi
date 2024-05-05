@@ -80,6 +80,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('book/find_all_by_age_type/{for_youth}/{type_id}', 'App\Http\Controllers\API\BookController@findAllByAgeType')->name('book.api.find_all_by_age_type');
     // Media
     Route::get('media', 'App\Http\Controllers\API\MediaController@index')->name('media.api.index');
+    Route::get('media2', 'App\Http\Controllers\API\MediaController@index2')->name('media2.api.index');
     Route::get('media/all_by_age/{for_youth}', 'App\Http\Controllers\API\MediaController@allByAge')->name('media.api.all_by_age');
     Route::get('media/trends/{year}/{for_youth}', 'App\Http\Controllers\API\MediaController@trends')->name('media.api.trends');
     Route::get('media/{id}', 'App\Http\Controllers\API\MediaController@show')->name('media.api.show');
@@ -123,7 +124,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('category', 'App\Http\Controllers\API\CategoryController')->except(['index', 'show', 'allUsedCategories', 'search']);
     Route::resource('country', 'App\Http\Controllers\API\CountryController')->except(['index', 'show', 'search']);
     Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
-    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'show', 'allByAge', 'trends', 'search', 'findLive', 'findAllByType', 'findAllByAgeType', 'findViews', 'findLikes', 'switchView', 'filterByCategories']);
+    Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'index2', 'show', 'allByAge', 'trends', 'search', 'findLive', 'findAllByType', 'findAllByAgeType', 'findViews', 'findLikes', 'switchView', 'filterByCategories']);
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
     Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');
