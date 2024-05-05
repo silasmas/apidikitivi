@@ -478,10 +478,11 @@ class MediaController extends BaseController
      */
     public function allByAge($for_youth)
     {
-        $medias = Media::where('for_youth', $for_youth)->orderByDesc('created_at')->paginate(100);
-        $count_all = Media::where('for_youth', $for_youth)->count();
+        $query_all = Media::orderByDesc('created_at')->paginate(100);
+        $query_child = Media::where('for_youth', 1)->orderByDesc('created_at')->paginate(100);
+        $medias = $for_youth == 0 ? $query_all : $query_child;
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
     }
 
     /**
