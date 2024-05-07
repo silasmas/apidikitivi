@@ -474,6 +474,15 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
+		$medias_by_belongs_to = Media::where('belongs_to', $media->id)->get();
+
+		foreach ($medias_by_belongs_to as $med):
+			$med->update([
+                'belongs_to' => null,
+                'updated_at' => now(),
+            ]);
+		endforeach;
+
         $media->delete();
 
         $medias = Media::orderByDesc('created_at')->paginate(12);
