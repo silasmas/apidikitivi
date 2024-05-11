@@ -929,7 +929,6 @@ class UserController extends BaseController
     {
         $parent = User::where('parental_code', $parental_code)->whereNull('belongs_to')->first();
 
-        dd($parent);
         if (is_null($parent)) {
             return $this->handleError(__('notifications.find_parent_404'));
         }
