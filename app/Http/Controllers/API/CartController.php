@@ -256,6 +256,6 @@ class CartController extends BaseController
 
         $order->delete();
 
-        return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+        return $this->handleResponse(new ResourcesCart($cart), __('notifications.delete_media_success'));
     }
 }
