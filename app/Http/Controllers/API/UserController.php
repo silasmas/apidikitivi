@@ -757,7 +757,8 @@ class UserController extends BaseController
      */
     public function destroy(User $user)
     {
-        $password_reset = PasswordReset::where('email', $user->email)->orWhere('phone', $user->phone)->first();
+        $password_reset_email = PasswordReset::whereNotNull('email')->where('email', $user->email)->first();
+        $password_reset_phone = PasswordReset::whereNotNull('phone')->where('phone', $user->phone)->first();
         $personal_access_tokens = PersonalAccessToken::where('tokenable_id', $user->id)->get();
         $notifications = Notification::where('user_id', $user->id)->get();
         $children = User::where('belongs_to', $user->id)->get();
@@ -788,8 +789,20 @@ class UserController extends BaseController
             Storage::deleteDirectory($directory);
         }
 
+        if ($password_reset_email != null AND $password_reset_phone != null) {
+            $password_reset_email->delete();
+
+        } else {
+            if ($password_reset_email == null AND $password_reset_phone != null) {
+                $password_reset_phone->delete();
+            }
+
+            if ($password_reset_email != null AND $password_reset_phone == null) {
+                $password_reset_email->delete();
+            }
+        }
+
         $user->delete();
-        $password_reset->delete();
 
         $users = User::orderByDesc('created_at')->get();
 
