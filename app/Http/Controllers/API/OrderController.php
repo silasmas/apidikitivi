@@ -19,9 +19,10 @@ class OrderController extends BaseController
      */
     public function index()
     {
-        $orders = Order::orderByDesc('created_at')->get();
+        $orders = Order::orderByDesc('created_at')->paginate(12);
+        $count_all = Order::count();
 
-        return $this->handleResponse(ResourcesOrder::collection($orders), __('notifications.find_all_orders_success'));
+        return $this->handleResponse(ResourcesOrder::collection($orders), __('notifications.find_all_orders_success'), $orders->lastPage(), $count_all);
     }
 
     /**
