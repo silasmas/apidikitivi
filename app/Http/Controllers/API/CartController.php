@@ -252,11 +252,10 @@ class CartController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $order = Order::find([['media_id', $media->id], ['cart_id', $cart->id]])->first();
+        $order = Order::where([['media_id', $media->id], ['cart_id', $cart->id]])->first();
 
-        return $this->handleResponse(new ResourcesCart($order), new ResourcesCart($order));
-        // $order->delete();
+        $order->delete();
 
-        // return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+        return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
     }
 }
