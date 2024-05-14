@@ -760,10 +760,8 @@ class UserController extends BaseController
         $password_reset = PasswordReset::where('email', $user->email)->orWhere('phone', $user->phone)->first();
         $personal_access_tokens = PersonalAccessToken::where('tokenable_id', $user->id)->get();
         $notifications = Notification::where('user_id', $user->id)->get();
+        $children = User::where('belongs_to', $user->id)->get();
         $directory = $_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $user->id;
-
-        $user->delete();
-        $password_reset->delete();
 
         if (!is_null($personal_access_tokens)) {
             foreach ($personal_access_tokens as $personal_access_token):
@@ -777,9 +775,21 @@ class UserController extends BaseController
             endforeach;
         }
 
+        if (!is_null($children)) {
+            foreach ($children as $child):
+                $child->update([
+                    'belongs_to' => null,
+                    'updated_at' => now()
+                ]);
+            endforeach;
+        }
+
         if (Storage::exists($directory)) {
             Storage::deleteDirectory($directory);
         }
+
+        $user->delete();
+        $password_reset->delete();
 
         $users = User::orderByDesc('created_at')->get();
 
