@@ -254,8 +254,9 @@ class CartController extends BaseController
 
         $order = Order::find([['media_id', $media->id], ['cart_id', $cart->id]])->first();
 
-        $order->delete();
+        return $this->handleResponse(new ResourcesCart($order), new ResourcesCart($order));
+        // $order->delete();
 
-        return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
+        // return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
     }
 }
