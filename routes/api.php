@@ -167,6 +167,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::delete('book/{id}', 'App\Http\Controllers\API\BookController@destroy')->name('book.api.destroy');
     Route::put('book/add_image/{id}', 'App\Http\Controllers\API\BookController@addImage')->name('book.api.add_image');
     // Media
+    Route::get('media/find_viewed_medias/{user_id}', 'App\Http\Controllers\API\MediaController@findViewedMedias')->name('media.api.find_viewed_medias');
     Route::get('media/favorites/{user_id}', 'App\Http\Controllers\API\MediaController@favorites')->name('media.api.favorites');
     Route::post('media', 'App\Http\Controllers\API\MediaController@store')->name('media.api.store');
     Route::put('media/{id}', 'App\Http\Controllers\API\MediaController@update')->name('media.api.update');

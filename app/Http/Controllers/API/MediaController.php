@@ -736,6 +736,34 @@ class MediaController extends BaseController
     }
 
     /**
+     * Find medias viewed by a specific user.
+     *
+     * @param  int  $user_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findViewedMedias($user_id)
+    {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        $medias = Media::whereHas('sessions', function($query) use ($user) {
+                                // $query->where('media_session.is_viewed', 1)
+                                $query->where('sessions.user_id', $user->id)
+                                        ->orderByDesc('media_session.created_at');
+                            })->paginate(12);
+        $count_all = Media::whereHas('sessions', function($query) use ($user) {
+                                // $query->where('media_session.is_viewed', 1)
+                                $query->where('sessions.user_id', $user->id)
+                                        ->orderByDesc('media_session.created_at');
+                            })->count();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
+    }
+
+    /**
      * Find all medias liked by a user.
      *
      * @param  int  $user_id
