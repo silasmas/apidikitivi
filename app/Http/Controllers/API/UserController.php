@@ -452,11 +452,19 @@ class UserController extends BaseController
                 }
             endforeach;
 
-            $user->update([
-                'email' => $inputs['email'],
-                'email_verified_at' => null,
-                'updated_at' => now(),
-            ]);
+            if ($current_user->email != $inputs['email']) {
+                $user->update([
+                    'email' => $inputs['email'],
+                    'email_verified_at' => null,
+                    'updated_at' => now(),
+                ]);
+
+            } else {
+                $user->update([
+                    'email' => $inputs['email'],
+                    'updated_at' => now(),
+                ]);
+            }
 
             if (!empty($current_user->phone)) {
                 $password_reset_by_phone = PasswordReset::where('phone', $current_user->phone)->first();
@@ -518,11 +526,19 @@ class UserController extends BaseController
                 }
             endforeach;
 
-            $user->update([
-                'phone' => $inputs['phone'],
-                'phone_verified_at' => null,
-                'updated_at' => now(),
-            ]);
+            if ($current_user->phone != $inputs['phone']) {
+                $user->update([
+                    'phone' => $inputs['phone'],
+                    'phone_verified_at' => null,
+                    'updated_at' => now(),
+                ]);
+
+            } else {
+                $user->update([
+                    'phone' => $inputs['phone'],
+                    'updated_at' => now(),
+                ]);
+            }
 
             if (!empty($current_user->email)) {
                 $password_reset_by_email = PasswordReset::where('email', $current_user->email)->first();
