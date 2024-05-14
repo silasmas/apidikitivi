@@ -454,6 +454,7 @@ class UserController extends BaseController
 
             $user->update([
                 'email' => $inputs['email'],
+                'email_verified_at' => null,
                 'updated_at' => now(),
             ]);
 
@@ -519,6 +520,7 @@ class UserController extends BaseController
 
             $user->update([
                 'phone' => $inputs['phone'],
+                'phone_verified_at' => null,
                 'updated_at' => now(),
             ]);
 
