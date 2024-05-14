@@ -126,7 +126,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::resource('book', 'App\Http\Controllers\API\BookController')->except(['index', 'show', 'search', 'findAllByAge', 'findAllByAgeType']);
     Route::resource('media', 'App\Http\Controllers\API\MediaController')->except(['index', 'index2', 'show', 'allByAge', 'trends', 'search', 'findLive', 'findAllByType', 'findAllByAgeType', 'findViews', 'findLikes', 'switchView', 'filterByCategories']);
     Route::resource('cart', 'App\Http\Controllers\API\CartController');
-    Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'login']);
+    Route::resource('user', 'App\Http\Controllers\API\UserController')->except(['store', 'show', 'login']);
     Route::resource('notification', 'App\Http\Controllers\API\NotificationController');
     Route::resource('donation', 'App\Http\Controllers\API\DonationController')->except(['store']);
     Route::resource('payment', 'App\Http\Controllers\API\PaymentController')->except(['store', 'findByOrderNumber', 'findByOrderNumberUser', 'switchStatus']);
