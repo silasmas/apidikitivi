@@ -162,6 +162,12 @@ class CartController extends BaseController
      */
     public function findByType($user_id, $type_id)
     {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
         $type = Type::find($type_id);
 
         if (is_null($type)) {
@@ -169,10 +175,17 @@ class CartController extends BaseController
         }
 
         if ($type->type_name == 'Watchlist') {
-            $cart = Cart::where([['user_id', $user_id], ['type_id', $type->id]])->first();
+            $cart = Cart::where([['user_id', $user->id], ['type_id', $type->id]])->first();
+
+            if (is_null($cart)) {
+                $cart = Cart::create([
+                    'type_id' => $type->id,
+                    'user_id' => $user->id
+                ]);
+            }
 
             return $this->handleResponse(new ResourcesCart($cart), __('notifications.find_cart_success'));
-    
+            
         } else {
             $carts = Cart::where([['user_id', $user_id], ['type_id', $type->id]])->get();
 
