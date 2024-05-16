@@ -1299,8 +1299,8 @@ class UserController extends BaseController
             $file = new Filesystem;
             $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
             // Create image URL
-            $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
-            $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+            $image_url_recto = 'images/users/' . $id . '/identity_data/' . Str::random(50) . '.png';
+            $image_url_verso = 'images/users/' . $id . '/identity_data/' . Str::random(50) . '.png';
 
             // Upload image
             Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
@@ -1329,7 +1329,7 @@ class UserController extends BaseController
                 $file = new Filesystem;
                 $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
                 // Create image URL
-                $image_url_recto = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+                $image_url_recto = 'images/users/' . $id . '/identity_data/' . Str::random(50) . '.png';
 
                 // Upload image
                 Storage::url(Storage::disk('public')->put($image_url_recto, base64_decode($image_recto)));
@@ -1356,7 +1356,7 @@ class UserController extends BaseController
                 $file = new Filesystem;
                 $file->cleanDirectory($_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $inputs['user_id'] . '/identity_data');
                 // Create image URL
-                $image_url_verso = 'images/users/' . $inputs['user_id'] . '/identity_data/' . Str::random(50) . '.png';
+                $image_url_verso = 'images/users/' . $id . '/identity_data/' . Str::random(50) . '.png';
 
                 // Upload image
                 Storage::url(Storage::disk('public')->put($image_url_verso, base64_decode($image_verso)));
