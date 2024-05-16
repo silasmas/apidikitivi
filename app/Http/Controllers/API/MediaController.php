@@ -601,6 +601,26 @@ class MediaController extends BaseController
     }
 
     /**
+     * Get by user.
+     *
+     * @param  int $user_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findAllByUser($user_id)
+    {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        $medias = Media::where('user_id', $user->id)->orderByDesc('updated_at')->paginate(12);
+        $count_all = Media::where('user_id', $user->id)->count();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
+    }
+
+    /**
      * Get by type.
      *
      * @param  string $locale
