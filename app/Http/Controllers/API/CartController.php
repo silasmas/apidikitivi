@@ -194,6 +194,45 @@ class CartController extends BaseController
     }
 
     /**
+     * Check if media is in cart or watchlist.
+     *
+     * @param  int $media_id
+     * @param  int $user_id
+     * @param  int $type_id
+     * @return \Illuminate\Http\Response
+     */
+    public function isInside($media_id, $user_id, $type_id)
+    {
+        $media = Media::find($media_id);
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        $type = Type::find($type_id);
+
+        if (is_null($type)) {
+            return $this->handleError(__('notifications.find_type_404'));
+        }
+
+        $cart = Cart::where([['user_id', $user->id], ['type_id', $type->id]])->first();
+        $orders = $cart->orders();
+
+        if (inArrayR($media->id, $orders, 'media_id')) {
+            return $this->handleResponse(1, __('notifications.find_media_success'), null);
+
+        } else {
+            return $this->handleResponse(0, __('notifications.find_media_404'), null);
+        }
+    }
+
+    /**
      * Add media to cart or watchlist.
      *
      * @param  string $locale
