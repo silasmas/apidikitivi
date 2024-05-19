@@ -169,6 +169,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     // Media
     Route::get('media/find_all_by_user/{user_id}', 'App\Http\Controllers\API\MediaController@findAllByUser')->name('media.api.find_all_by_user');
     Route::get('media/find_viewed_medias/{user_id}', 'App\Http\Controllers\API\MediaController@findViewedMedias')->name('media.api.find_viewed_medias');
+    Route::get('media/has_liked/{media_id}/{user_id}', 'App\Http\Controllers\API\MediaController@hasLiked')->name('media.api.has_liked');
     Route::get('media/favorites/{user_id}', 'App\Http\Controllers\API\MediaController@favorites')->name('media.api.favorites');
     Route::post('media', 'App\Http\Controllers\API\MediaController@store')->name('media.api.store');
     Route::put('media/{id}', 'App\Http\Controllers\API\MediaController@update')->name('media.api.update');

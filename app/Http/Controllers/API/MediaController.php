@@ -784,6 +784,41 @@ class MediaController extends BaseController
     }
 
     /**
+     * Check if the user liked media.
+     *
+     * @param  int  $media_id
+     * @param  int  $user_id
+     * @return \Illuminate\Http\Response
+     */
+    public function hasLiked($media_id, $user_id)
+    {
+        $media = Media::find($media_id);
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
+        $users = User::whereHas('medias', function($query) use ($media) {
+                            $query->where('media_user.is_liked', 1)
+                                    ->where('media_user.media_id', $media->id)
+                                    ->orderByDesc('media_user.created_at');
+                        })->get();
+
+        if (inArrayR($user->username, $users, 'username')) {
+            return $this->handleResponse(1, __('notifications.find_user_success'), null);
+
+        } else {
+            return $this->handleResponse(0, __('notifications.find_user_404'), null);
+        }
+    }
+
+    /**
      * Find all medias liked by a user.
      *
      * @param  int  $user_id
