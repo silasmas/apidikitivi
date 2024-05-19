@@ -222,7 +222,6 @@ class CartController extends BaseController
         }
 
         $cart = Cart::where([['user_id', $user->id], ['type_id', $type->id]])->first();
-        // $orders = $cart->orders();
 
         if (inArrayR($media->id, $cart->orders, 'media_id')) {
             return $this->handleResponse(1, __('notifications.find_media_success'), null);
