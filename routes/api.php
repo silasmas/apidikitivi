@@ -176,6 +176,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::delete('media/{id}', 'App\Http\Controllers\API\MediaController@destroy')->name('media.api.destroy');
     Route::put('media/set_approbation/{user_id}/{media_id}/{status_id}', 'App\Http\Controllers\API\MediaController@setApprobation')->name('media.api.set_approbation');
     Route::put('media/switch_like/{user_id}/{media_id}', 'App\Http\Controllers\API\MediaController@switchLike')->name('media.api.switch_like');
+    Route::post('media/upload_files/{id}', 'App\Http\Controllers\API\MediaController@uploadFiles')->name('media.api.upload_files');
     Route::put('media/add_image/{id}', 'App\Http\Controllers\API\MediaController@addImage')->name('media.api.add_image');
     // Cart
     Route::get('cart', 'App\Http\Controllers\API\CartController@index')->name('cart.api.index');

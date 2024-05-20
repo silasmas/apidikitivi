@@ -261,190 +261,165 @@ class MediaController extends BaseController
         ];
         $media = Media::find($id);
 
-        return $this->handleError($request->cover_url, __('validation.custom.type.required'), 400);
-        // if ($inputs['media_title'] != null) {
-        //     // Select all user medias to check unique constraint
-        //     $medias = Media::where('user_id', $inputs['user_id'])->get();
-        //     $current_media = Media::find($inputs['id']);
+        if ($inputs['media_title'] != null) {
+            // Select all user medias to check unique constraint
+            $medias = Media::where('user_id', $inputs['user_id'])->get();
+            $current_media = Media::find($inputs['id']);
 
-        //     foreach ($medias as $another_media):
-        //         if ($current_media->media_title != $inputs['media_title']) {
-        //             if ($another_media->media_title == $inputs['media_title']) {
-        //                 return $this->handleError($inputs['media_title'], __('validation.custom.title.exists'), 400);
-        //             }
-        //         }
-        //     endforeach;
+            foreach ($medias as $another_media):
+                if ($current_media->media_title != $inputs['media_title']) {
+                    if ($another_media->media_title == $inputs['media_title']) {
+                        return $this->handleError($inputs['media_title'], __('validation.custom.title.exists'), 400);
+                    }
+                }
+            endforeach;
 
-        //     $media->update([
-        //         'media_title' => $inputs['media_title'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+            $media->update([
+                'media_title' => $inputs['media_title'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['media_description'] != null) {
-        //     $media->update([
-        //         'media_description' => $inputs['media_description'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['media_description'] != null) {
+            $media->update([
+                'media_description' => $inputs['media_description'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['source'] != null) {
-        //     $media->update([
-        //         'source' => $inputs['source'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['source'] != null) {
+            $media->update([
+                'source' => $inputs['source'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['belonging_count'] != null) {
-        //     $media->update([
-        //         'belonging_count' => $inputs['belonging_count'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['belonging_count'] != null) {
+            $media->update([
+                'belonging_count' => $inputs['belonging_count'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['time_length'] != null) {
-        //     $media->update([
-        //         'time_length' => $inputs['time_length'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['time_length'] != null) {
+            $media->update([
+                'time_length' => $inputs['time_length'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['media_url'] != null) {
-        //     $media->update([
-        //         'media_url' => $inputs['media_url'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['media_url'] != null) {
+            $media->update([
+                'media_url' => $inputs['media_url'],
+                'updated_at' => now(),
+            ]);
+        }
 
-		// if ($request->file('teaser_url') != null) {
-		// 	$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+        if ($inputs['author_names'] != null) {
+            $media->update([
+                'author_names' => $inputs['author_names'],
+                'updated_at' => now(),
+            ]);
+        }
 
-		// 	// Upload teaser
-		// 	Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+        if ($inputs['artist_names'] != null) {
+            $media->update([
+                'artist_names' => $inputs['artist_names'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        //     $media->update([
-        //         'teaser_url' => $teaser_url,
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['writer'] != null) {
+            $media->update([
+                'writer' => $inputs['writer'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['author_names'] != null) {
-        //     $media->update([
-        //         'author_names' => $inputs['author_names'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['director'] != null) {
+            $media->update([
+                'director' => $inputs['director'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['artist_names'] != null) {
-        //     $media->update([
-        //         'artist_names' => $inputs['artist_names'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['published_date'] != null) {
+            $media->update([
+                'published_date' => $inputs['published_date'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['writer'] != null) {
-        //     $media->update([
-        //         'writer' => $inputs['writer'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['price'] != null) {
+            $media->update([
+                'price' => $request->price,
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['director'] != null) {
-        //     $media->update([
-        //         'director' => $inputs['director'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['for_youth'] != null) {
+            $media->update([
+                'for_youth' => $inputs['for_youth'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        // if ($inputs['published_date'] != null) {
-        //     $media->update([
-        //         'published_date' => $inputs['published_date'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+        if ($inputs['is_live'] != null) {
+            $media->update([
+                'is_live' => $inputs['is_live'],
+                'updated_at' => now(),
+            ]);
+        }
 
-		// if ($request->file('cover_url') != null) {
-		// 	// Upload cover
-		// 	$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
+        if ($inputs['belongs_to'] != null) {
+            $media_parent = Media::find($inputs['belongs_to']);
 
-		// 	$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+            if (is_null($media_parent)) {
+                return $this->handleError(__('notifications.find_parent_404'));
+            }
 
-        //     $media->update([
-        //         'cover_url' => $cover_url,
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+            if ($media_parent->belonging_count != null) {
+                $count = (int) $media_parent->belonging_count;
 
-        // if ($inputs['price'] != null) {
-        //     $media->update([
-        //         'price' => $request->price,
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+                $count++;
 
-        // if ($inputs['for_youth'] != null) {
-        //     $media->update([
-        //         'for_youth' => $inputs['for_youth'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+                $media_parent->update([
+                    'belonging_count' => $count,
+                    'updated_at' => now()
+                ]);
 
-        // if ($inputs['is_live'] != null) {
-        //     $media->update([
-        //         'is_live' => $inputs['is_live'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+            } else {
+                $media_parent->update([
+                    'belonging_count' => 1,
+                    'updated_at' => now()
+                ]);
+            }
 
-        // if ($inputs['belongs_to'] != null) {
-        //     $media_parent = Media::find($inputs['belongs_to']);
+            $media->update([
+                'belongs_to' => $inputs['belongs_to'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        //     if (is_null($media_parent)) {
-        //         return $this->handleError(__('notifications.find_parent_404'));
-        //     }
+        if ($inputs['type_id'] != null) {
+            $media->update([
+                'type_id' => $inputs['type_id'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        //     if ($media_parent->belonging_count != null) {
-        //         $count = (int) $media_parent->belonging_count;
+        if ($inputs['user_id'] != null) {
+            $media->update([
+                'user_id' => $inputs['user_id'],
+                'updated_at' => now(),
+            ]);
+        }
 
-        //         $count++;
+        if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
+            $media->categories()->sync($request->categories_ids);
+        }
 
-        //         $media_parent->update([
-        //             'belonging_count' => $count,
-        //             'updated_at' => now()
-        //         ]);
-
-        //     } else {
-        //         $media_parent->update([
-        //             'belonging_count' => 1,
-        //             'updated_at' => now()
-        //         ]);
-        //     }
-
-        //     $media->update([
-        //         'belongs_to' => $inputs['belongs_to'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
-
-        // if ($inputs['type_id'] != null) {
-        //     $media->update([
-        //         'type_id' => $inputs['type_id'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
-
-        // if ($inputs['user_id'] != null) {
-        //     $media->update([
-        //         'user_id' => $inputs['user_id'],
-        //         'updated_at' => now(),
-        //     ]);
-        // }
-
-        // if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
-        //     $media->categories()->sync($request->categories_ids);
-        // }
-
-        // return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
+        return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
     }
 
     /**
@@ -1027,6 +1002,58 @@ class MediaController extends BaseController
         }
 
         return $this->handleResponse(new ResourcesMedia($media), __('notifications.find_media_success'));
+    }
+
+    /**
+     * Edit some files in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function uploadFiles(Request $request, $id)
+    {
+        $media = Media::find($id);
+
+        if (is_null($media)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        if ($request->file('media_url') != null) {
+			$media_url = 'images/medias/' . $media->id . '/' . Str::random(50) . '.' . $request->file('media_url')->extension();
+
+			// Upload media
+			Storage::url(Storage::disk('public')->put($media_url, $request->file('media_url')));
+
+            $media->update([
+                'media_url' => $media_url,
+                'updated_at' => now(),
+            ]);
+        }
+
+		if ($request->file('teaser_url') != null) {
+			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+
+			// Upload teaser
+			Storage::url(Storage::disk('public')->put($teaser_url, $request->file('teaser_url')));
+
+            $media->update([
+                'teaser_url' => $teaser_url,
+                'updated_at' => now(),
+            ]);
+        }
+
+		if ($request->file('cover_url') != null) {
+			// Upload cover
+			$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
+
+			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+
+            $media->update([
+                'cover_url' => $cover_url,
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**
