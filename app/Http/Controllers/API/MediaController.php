@@ -263,7 +263,7 @@ class MediaController extends BaseController
         ];
         $media = Media::find($id);
 
-        return $request->file('cover_url');
+        return $this->handleError($request->file('cover_url'), __('validation.custom.type.required'), 400);
         // if ($inputs['media_title'] != null) {
         //     // Select all user medias to check unique constraint
         //     $medias = Media::where('user_id', $inputs['user_id'])->get();
