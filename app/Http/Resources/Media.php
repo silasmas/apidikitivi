@@ -32,7 +32,7 @@ class Media extends JsonResource
             'writer' => $this->writer,
             'director' => $this->director,
             'published_date' => $this->published_date,
-            'cover_url' => $this->cover_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public/storage' . $this->cover_url : null,
+            'cover_url' => $this->cover_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/public' . $this->cover_url : null,
             'price' => $this->price,
             'for_youth' => $this->for_youth,
             'is_live' => $this->is_live,
