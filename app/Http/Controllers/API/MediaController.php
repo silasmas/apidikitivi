@@ -1054,6 +1054,8 @@ class MediaController extends BaseController
                 'updated_at' => now(),
             ]);
         }
+
+        return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
     }
 
     /**
