@@ -1044,7 +1044,7 @@ class MediaController extends BaseController
         }
 
 		if ($request->file('cover_url') != null) {
-			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+			$cover_url = 'images/medias/' . $media->id . '/cover';
 
 			// Upload cover
             $file_path = Storage::url(Storage::disk('public')->put($cover_url, $request->file('cover_url')));
