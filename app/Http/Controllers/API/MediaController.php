@@ -81,118 +81,108 @@ class MediaController extends BaseController
         // Select all medias to check unique constraint
         $medias = Media::where('user_id', $inputs['user_id'])->get();
 
-        // Validate required fields
-        if ($inputs['type_id'] == null) {
-            return $this->handleError($inputs['type_id'], __('validation.custom.type.required'), 400);
-        }
+        return $this->handleError($inputs['cover_url'], __('validation.custom.type.required'), 400);
 
-        if (trim($inputs['media_title']) == null) {
-            return $this->handleError($inputs['media_title'], __('validation.custom.title.required'), 400);
-        }
+        // // Validate required fields
+        // if ($inputs['type_id'] == null) {
+        //     return $this->handleError($inputs['type_id'], __('validation.custom.type.required'), 400);
+        // }
 
-        // Check if media title already exists
-        foreach ($medias as $another_media):
-            if ($another_media->media_title == $inputs['media_title']) {
-                return $this->handleError($inputs['media_title'], __('validation.custom.title.exists'), 400);
-            }
-        endforeach;
+        // if (trim($inputs['media_title']) == null) {
+        //     return $this->handleError($inputs['media_title'], __('validation.custom.title.required'), 400);
+        // }
 
-        $media = Media::create($inputs);
+        // // Check if media title already exists
+        // foreach ($medias as $another_media):
+        //     if ($another_media->media_title == $inputs['media_title']) {
+        //         return $this->handleError($inputs['media_title'], __('validation.custom.title.exists'), 400);
+        //     }
+        // endforeach;
 
-		if ($inputs['belongs_to'] != null) {
-			$media_parent = Media::find($inputs['belongs_to']);
+        // $media = Media::create($inputs);
 
-            if (is_null($media_parent)) {
-                return $this->handleError(__('notifications.find_parent_404'));
-            }
+		// if ($inputs['belongs_to'] != null) {
+		// 	$media_parent = Media::find($inputs['belongs_to']);
 
-            if ($media_parent->belonging_count != null) {
-                $count = (int) $media_parent->belonging_count;
+        //     if (is_null($media_parent)) {
+        //         return $this->handleError(__('notifications.find_parent_404'));
+        //     }
 
-                $count++;
+        //     if ($media_parent->belonging_count != null) {
+        //         $count = (int) $media_parent->belonging_count;
 
-                $media_parent->update([
-                    'belonging_count' => $count,
-                    'updated_at' => now()
-                ]);
+        //         $count++;
 
-            } else {
-                $media_parent->update([
-                    'belonging_count' => 1,
-                    'updated_at' => now()
-                ]);
-            }
-        }
+        //         $media_parent->update([
+        //             'belonging_count' => $count,
+        //             'updated_at' => now()
+        //         ]);
 
-		// if ($request->file('media_url') != null) {
-        //     $file = $request->file('media_url');
-        //     $filename = $file->getClientOriginalName();
+        //     } else {
+        //         $media_parent->update([
+        //             'belonging_count' => 1,
+        //             'updated_at' => now()
+        //         ]);
+        //     }
+        // }
+
+		// // if ($request->file('media_url') != null) {
+        // //     $file = $request->file('media_url');
+        // //     $filename = $file->getClientOriginalName();
+		// // 	// Upload cover
+		// // 	$request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
+
+		// // 	// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
+		// // 	$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
+
+        // //     $media->update([
+        // //         'media_url' => $media_url,
+        // //         'updated_at' => now()
+        // //     ]);
+        // // }
+
+		// if ($request->file('teaser_url') != null) {
+		// 	$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+
+		// 	// Upload URL
+		// 	Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+
+        //     $media->update([
+        //         'teaser_url' => $teaser_url,
+        //         'updated_at' => now()
+        //     ]);
+        // }
+
+		// if ($request->file('cover_url') != null) {
 		// 	// Upload cover
-		// 	$request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
+		// 	$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
 
-		// 	// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
-		// 	$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
+		// 	$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
         //     $media->update([
-        //         'media_url' => $media_url,
+        //         'cover_url' => $cover_url,
         //         'updated_at' => now()
         //     ]);
         // }
 
-		if ($request->file('teaser_url') != null) {
-			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+        // // if ($request->file('youtube_video') != null) {
+        // //     $youtubeID = YouTubeController::store(
+        // //         $request->file('youtube_video')->getPathName(), 
+        // //         $inputs['media_title'], 
+        // //         $inputs['cover_url'], 
+        // //         $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
 
-			// Upload URL
-			Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+        // //     $media->update([
+        // //         'media_url' => 'https://www.youtube.com/embed/' . $youtubeID,
+        // //         'updated_at' => now()
+        // //     ]);
+        // // }
 
-            $media->update([
-                'teaser_url' => $teaser_url,
-                'updated_at' => now()
-            ]);
-        }
-
-		if ($request->file('cover_url') != null) {
-			// Upload cover
-			$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
-
-			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
-
-            $media->update([
-                'cover_url' => $cover_url,
-                'updated_at' => now()
-            ]);
-        }
-
-		if ($request->file('cover_url') != null) {
-			// Upload cover
-			$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
-
-			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
-
-            $media->update([
-                'cover_url' => $cover_url,
-                'updated_at' => now()
-            ]);
-        }
-
-        // if ($request->file('youtube_video') != null) {
-        //     $youtubeID = YouTubeController::store(
-        //         $request->file('youtube_video')->getPathName(), 
-        //         $inputs['media_title'], 
-        //         $inputs['cover_url'], 
-        //         $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
-
-        //     $media->update([
-        //         'media_url' => 'https://www.youtube.com/embed/' . $youtubeID,
-        //         'updated_at' => now()
-        //     ]);
+        // if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
+        //     $media->categories()->attach($request->categories_ids);
         // }
 
-        if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
-            $media->categories()->attach($request->categories_ids);
-        }
-
-        return $this->handleResponse(new ResourcesMedia($media), __('notifications.create_media_success'));
+        // return $this->handleResponse(new ResourcesMedia($media), __('notifications.create_media_success'));
     }
 
     /**
