@@ -1032,13 +1032,13 @@ class MediaController extends BaseController
         }
 
 		if ($request->file('teaser_url') != null) {
-			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+			$teaser_url = 'images/medias/' . $media->id . '/teaser';
 
 			// Upload teaser
-			Storage::url(Storage::disk('public')->put($teaser_url, $request->file('teaser_url')));
+			$file_path = Storage::url(Storage::disk('public')->put($teaser_url, $request->file('teaser_url')));
 
             $media->update([
-                'teaser_url' => '/' . $teaser_url,
+                'teaser_url' => $file_path,
                 'updated_at' => now(),
             ]);
         }
