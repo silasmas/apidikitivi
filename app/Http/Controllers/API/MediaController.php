@@ -1014,7 +1014,8 @@ class MediaController extends BaseController
     public function uploadFiles(Request $request, $id)
     {
         $media = Media::find($id);
-        return $this->handleError($request->file("cover_url"), __('notifications.update_media_success'));
+        dd($request->hasFile('cover_url'));
+        // return $this->handleError($request->file("cover_url"), __('notifications.update_media_success'));
 
         // dd($request->file('cover_url'));
         if (is_null($media)) {
