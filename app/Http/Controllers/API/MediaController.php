@@ -1048,7 +1048,7 @@ class MediaController extends BaseController
 
             // Upload cover
             $file_path = Storage::url(Storage::disk('public')->put($cover_url, $request->file('cover_url')));
-            return $this->handleResponse($file_path, __('notifications.update_media_success'));
+            dd($file_path);
 
             // $media->update([
             //     'cover_url' => $file_path,
