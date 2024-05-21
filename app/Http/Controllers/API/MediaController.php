@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Resources\Media as ResourcesMedia;
+use App\Http\Resources\Session as ResourcesSession;
+use App\Http\Resources\User as ResourcesUser;
 use App\Models\Media;
 use App\Models\Notification;
 use App\Models\Session;
 use App\Models\Status;
 use App\Models\Type;
 use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Resources\Media as ResourcesMedia;
-use App\Http\Resources\User as ResourcesUser;
-use App\Http\Resources\Session as ResourcesSession;
+use Illuminate\Support\Str;
 
 /**
  * @author Xanders
@@ -24,7 +24,7 @@ class MediaController extends BaseController
 {
     /**
      * Display a listing of the resource.
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -37,7 +37,7 @@ class MediaController extends BaseController
 
     /**
      * Display a listing of the resource.
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index2()
@@ -76,7 +76,7 @@ class MediaController extends BaseController
             'is_live' => $request->is_live,
             'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
-            'user_id' => $request->user_id
+            'user_id' => $request->user_id,
         ];
         // Select all medias to check unique constraint
         $medias = Media::where('user_id', $inputs['user_id'])->get();
@@ -99,8 +99,8 @@ class MediaController extends BaseController
 
         $media = Media::create($inputs);
 
-		if ($inputs['belongs_to'] != null) {
-			$media_parent = Media::find($inputs['belongs_to']);
+        if ($inputs['belongs_to'] != null) {
+            $media_parent = Media::find($inputs['belongs_to']);
 
             if (is_null($media_parent)) {
                 return $this->handleError(__('notifications.find_parent_404'));
@@ -113,25 +113,25 @@ class MediaController extends BaseController
 
                 $media_parent->update([
                     'belonging_count' => $count,
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
 
             } else {
                 $media_parent->update([
                     'belonging_count' => 1,
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
             }
         }
 
-		// if ($request->file('media_url') != null) {
+        // if ($request->file('media_url') != null) {
         //     $file = $request->file('media_url');
         //     $filename = $file->getClientOriginalName();
-		// 	// Upload cover
-		// 	$request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
+        //     // Upload cover
+        //     $request->media_url->storeAs('images/medias/' . $media->id, $filename, 's3');
 
-		// 	// $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
-		// 	$media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
+        //     // $media_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension();
+        //     $media_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_url')->extension());
 
         //     $media->update([
         //         'media_url' => $media_url,
@@ -139,35 +139,35 @@ class MediaController extends BaseController
         //     ]);
         // }
 
-		if ($request->file('teaser_url') != null) {
-			$teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+        if ($request->file('teaser_url') != null) {
+            $teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
 
-			// Upload URL
-			Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+            // Upload URL
+            Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
 
             $media->update([
                 'teaser_url' => '/' . $teaser_url,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
 
-		if ($request->file('cover_url') != null) {
-			// Upload cover
-			$request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
+        if ($request->file('cover_url') != null) {
+            // Upload cover
+            $request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
 
-			$cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+            $cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
 
             $media->update([
                 'cover_url' => '/' . $cover_url,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
 
         // if ($request->file('youtube_video') != null) {
         //     $youtubeID = YouTubeController::store(
-        //         $request->file('youtube_video')->getPathName(), 
-        //         $inputs['media_title'], 
-        //         $inputs['cover_url'], 
+        //         $request->file('youtube_video')->getPathName(),
+        //         $inputs['media_title'],
+        //         $inputs['cover_url'],
         //         $inputs['media_title'] . ' belonging to ' . $inputs['author_names']);
 
         //     $media->update([
@@ -176,7 +176,7 @@ class MediaController extends BaseController
         //     ]);
         // }
 
-        if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
+        if ($request->categories_ids != null and count($request->categories_ids) > 0) {
             $media->categories()->attach($request->categories_ids);
         }
 
@@ -185,7 +185,7 @@ class MediaController extends BaseController
 
     /**
      * Display the specified resource.
-     * 
+     *
      * @param  \Illuminate\Http\Request  $request
      * @param  int $id
      * @return \Illuminate\Http\Response
@@ -198,7 +198,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
+        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address') or $request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -257,7 +257,7 @@ class MediaController extends BaseController
             'is_live' => $request->is_live,
             'belongs_to' => $request->belongs_to,
             'type_id' => $request->type_id,
-            'user_id' => $request->user_id
+            'user_id' => $request->user_id,
         ];
         $media = Media::find($id);
 
@@ -385,13 +385,13 @@ class MediaController extends BaseController
 
                 $media_parent->update([
                     'belonging_count' => $count,
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
 
             } else {
                 $media_parent->update([
                     'belonging_count' => 1,
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
             }
 
@@ -415,7 +415,7 @@ class MediaController extends BaseController
             ]);
         }
 
-        if ($request->categories_ids != null AND count($request->categories_ids) > 0) {
+        if ($request->categories_ids != null and count($request->categories_ids) > 0) {
             $media->categories()->sync($request->categories_ids);
         }
 
@@ -436,14 +436,14 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-		$medias_by_belongs_to = Media::where('belongs_to', $media->id)->get();
+        $medias_by_belongs_to = Media::where('belongs_to', $media->id)->get();
 
-		foreach ($medias_by_belongs_to as $med):
-			$med->update([
+        foreach ($medias_by_belongs_to as $med):
+            $med->update([
                 'belongs_to' => null,
                 'updated_at' => now(),
             ]);
-		endforeach;
+        endforeach;
 
         $media->delete();
 
@@ -456,7 +456,7 @@ class MediaController extends BaseController
     // ==================================== CUSTOM METHODS ====================================
     /**
      * Display a listing of the resource.
-     * 
+     *
      * @param  int $for_youth
      * @return \Illuminate\Http\Response
      */
@@ -478,8 +478,8 @@ class MediaController extends BaseController
      */
     public function trends($year, $for_youth)
     {
-        $query_all = Media::whereHas('sessions', function($query) use ($year) { $query->whereYear('sessions.created_at', '=', $year); })->distinct()->limit(5)->get();
-        $query_child = Media::where('for_youth', $for_youth)->whereHas('sessions', function($query) use ($year) { $query->whereYear('sessions.created_at', '=', $year); })->distinct()->limit(5)->get();
+        $query_all = Media::whereHas('sessions', function ($query) use ($year) {$query->whereYear('sessions.created_at', '=', $year);})->distinct()->limit(5)->get();
+        $query_child = Media::where('for_youth', $for_youth)->whereHas('sessions', function ($query) use ($year) {$query->whereYear('sessions.created_at', '=', $year);})->distinct()->limit(5)->get();
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, count($medias));
@@ -497,7 +497,7 @@ class MediaController extends BaseController
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->orderByDesc('created_at')->paginate(12);
         $count_all = Media::where('media_title', 'LIKE', '%' . $data . '%')->count();
 
-        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
+        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address') or $request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -614,23 +614,23 @@ class MediaController extends BaseController
     public function findAllByAgeType(Request $request, $for_youth, $type_id)
     {
         $query_all = Media::where('type_id', $type_id)->orderByDesc('created_at')->paginate(12);
-        $query_session_user_all = Media::whereHas('sessions', function ($query) use ($request) { $query->where('sessions.user_id', $request->header('X-user-id')); })->where('medias.type_id', $type_id)->orderByDesc('medias.created_at')->paginate(12);
-        $query_session_ip_address_all = Media::whereHas('sessions', function ($query) use ($request) { $query->where('sessions.ip_address', $request->header('X-ip-address')); })->where('medias.type_id', $type_id)->orderByDesc('medias.created_at')->paginate(12);
+        $query_session_user_all = Media::whereHas('sessions', function ($query) use ($request) {$query->where('sessions.user_id', $request->header('X-user-id'));})->where('medias.type_id', $type_id)->orderByDesc('medias.created_at')->paginate(12);
+        $query_session_ip_address_all = Media::whereHas('sessions', function ($query) use ($request) {$query->where('sessions.ip_address', $request->header('X-ip-address'));})->where('medias.type_id', $type_id)->orderByDesc('medias.created_at')->paginate(12);
         $query_child = Media::where([['for_youth', $for_youth], ['type_id', $type_id]])->orderByDesc('created_at')->paginate(12);
-        $query_session_user_child = Media::where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->whereHas('sessions', function ($query) use ($request) { $query->where('sessions.user_id', $request->header('X-user-id')); })->orderByDesc('medias.created_at')->paginate(12);
-        $query_session_ip_address_child = Media::where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->whereHas('sessions', function ($query) use ($request) { $query->where('sessions.ip_address', $request->header('X-ip-address')); })->orderByDesc('medias.created_at')->paginate(12);
+        $query_session_user_child = Media::where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->whereHas('sessions', function ($query) use ($request) {$query->where('sessions.user_id', $request->header('X-user-id'));})->orderByDesc('medias.created_at')->paginate(12);
+        $query_session_ip_address_child = Media::where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->whereHas('sessions', function ($query) use ($request) {$query->where('sessions.ip_address', $request->header('X-ip-address'));})->orderByDesc('medias.created_at')->paginate(12);
 
-        if ($request->hasHeader('X-user-id') AND $request->hasHeader('X-ip-address') OR $request->hasHeader('X-user-id') AND !$request->hasHeader('X-ip-address')) {
-			$sessions = Session::where('user_id', $request->header('X-user-id'))->get();
+        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address') or $request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+            $sessions = Session::where('user_id', $request->header('X-user-id'))->get();
 
-			if ($sessions == null) {
-				$medias = $for_youth == 0 ? $query_all : $query_child;
+            if ($sessions == null) {
+                $medias = $for_youth == 0 ? $query_all : $query_child;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
 
             } else {
                 $session_medias = $for_youth == 0 ? $query_session_user_all : $query_session_user_child;
-				$global_medias = $for_youth == 0 ? $query_all : $query_child;
+                $global_medias = $for_youth == 0 ? $query_all : $query_child;
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique();
 
@@ -638,16 +638,16 @@ class MediaController extends BaseController
             }
 
         } else if ($request->hasHeader('X-ip-address')) {
-			$sessions = Session::where('ip_address', $request->header('X-ip-address'))->get();
+            $sessions = Session::where('ip_address', $request->header('X-ip-address'))->get();
 
-			if ($sessions == null) {
-				$medias = $for_youth == 0 ? $query_all : $query_child;
+            if ($sessions == null) {
+                $medias = $for_youth == 0 ? $query_all : $query_child;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
 
             } else {
                 $session_medias = $for_youth == 0 ? $query_session_ip_address_all : $query_session_ip_address_child;
-				$global_medias = $for_youth == 0 ? $query_all : $query_child;
+                $global_medias = $for_youth == 0 ? $query_all : $query_child;
                 // Merged data
                 $medias = ($session_medias->merge($global_medias))->unique();
 
@@ -675,16 +675,16 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $sessions = Session::whereHas('medias', function($query) use ($media) {
-                                // $query->where('media_session.is_viewed', 1)
-                                $query->where('media_session.media_id', $media->id)
-                                        ->orderByDesc('media_session.created_at');
-                            })->get();
-        $count_all = Session::whereHas('medias', function($query) use ($media) {
-                                // $query->where('media_session.is_viewed', 1)
-                                $query->where('media_session.media_id', $media->id)
-                                        ->orderByDesc('media_session.created_at');
-                            })->count();
+        $sessions = Session::whereHas('medias', function ($query) use ($media) {
+            // $query->where('media_session.is_viewed', 1)
+            $query->where('media_session.media_id', $media->id)
+                ->orderByDesc('media_session.created_at');
+        })->get();
+        $count_all = Session::whereHas('medias', function ($query) use ($media) {
+            // $query->where('media_session.is_viewed', 1)
+            $query->where('media_session.media_id', $media->id)
+                ->orderByDesc('media_session.created_at');
+        })->count();
 
         return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'), null, $count_all);
     }
@@ -703,16 +703,16 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $users = User::whereHas('medias', function($query) use ($media) {
-                            $query->where('media_user.is_liked', 1)
-                                    ->where('media_user.media_id', $media->id)
-                                    ->orderByDesc('media_user.created_at');
-                        })->get();
-        $count_all = User::whereHas('medias', function($query) use ($media) {
-                            $query->where('media_user.is_liked', 1)
-                                    ->where('media_user.media_id', $media->id)
-                                    ->orderByDesc('media_user.created_at');
-                        })->count();
+        $users = User::whereHas('medias', function ($query) use ($media) {
+            $query->where('media_user.is_liked', 1)
+                ->where('media_user.media_id', $media->id)
+                ->orderByDesc('media_user.created_at');
+        })->get();
+        $count_all = User::whereHas('medias', function ($query) use ($media) {
+            $query->where('media_user.is_liked', 1)
+                ->where('media_user.media_id', $media->id)
+                ->orderByDesc('media_user.created_at');
+        })->count();
 
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $count_all);
     }
@@ -731,16 +731,16 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_user_404'));
         }
 
-        $medias = Media::whereHas('sessions', function($query) use ($user) {
-                                // $query->where('media_session.is_viewed', 1)
-                                $query->where('sessions.user_id', $user->id)
-                                        ->orderByDesc('media_session.created_at');
-                            })->paginate(12);
-        $count_all = Media::whereHas('sessions', function($query) use ($user) {
-                                // $query->where('media_session.is_viewed', 1)
-                                $query->where('sessions.user_id', $user->id)
-                                        ->orderByDesc('media_session.created_at');
-                            })->count();
+        $medias = Media::whereHas('sessions', function ($query) use ($user) {
+            // $query->where('media_session.is_viewed', 1)
+            $query->where('sessions.user_id', $user->id)
+                ->orderByDesc('media_session.created_at');
+        })->paginate(12);
+        $count_all = Media::whereHas('sessions', function ($query) use ($user) {
+            // $query->where('media_session.is_viewed', 1)
+            $query->where('sessions.user_id', $user->id)
+                ->orderByDesc('media_session.created_at');
+        })->count();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
@@ -766,11 +766,11 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_user_404'));
         }
 
-        $users = User::whereHas('medias', function($query) use ($media) {
-                            $query->where('media_user.is_liked', 1)
-                                    ->where('media_user.media_id', $media->id)
-                                    ->orderByDesc('media_user.created_at');
-                        })->get();
+        $users = User::whereHas('medias', function ($query) use ($media) {
+            $query->where('media_user.is_liked', 1)
+                ->where('media_user.media_id', $media->id)
+                ->orderByDesc('media_user.created_at');
+        })->get();
 
         if (inArrayR($user->username, $users, 'username')) {
             return $this->handleResponse(1, __('notifications.find_user_success'), null);
@@ -794,16 +794,16 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_user_404'));
         }
 
-        $medias = Media::whereHas('users', function($query) use ($user) {
-                            $query->where('media_user.is_liked', 1)
-                                    ->where('media_user.user_id', $user->id)
-                                    ->orderByDesc('media_user.created_at');
-                        })->paginate(12);
-        $count_all = Media::whereHas('users', function($query) use ($user) {
-                            $query->where('media_user.is_liked', 1)
-                                    ->where('media_user.user_id', $user->id)
-                                    ->orderByDesc('media_user.created_at');
-                        })->count();
+        $medias = Media::whereHas('users', function ($query) use ($user) {
+            $query->where('media_user.is_liked', 1)
+                ->where('media_user.user_id', $user->id)
+                ->orderByDesc('media_user.created_at');
+        })->paginate(12);
+        $count_all = Media::whereHas('users', function ($query) use ($user) {
+            $query->where('media_user.is_liked', 1)
+                ->where('media_user.user_id', $user->id)
+                ->orderByDesc('media_user.created_at');
+        })->count();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
@@ -817,8 +817,8 @@ class MediaController extends BaseController
      */
     public function filterByCategories(Request $request, $for_youth)
     {
-        $query_all = Media::whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->orderByDesc('medias.created_at')->paginate(12);
-        $query_child = Media::where('for_youth', $for_youth)->whereHas('categories', function($query) use($request) { $query->whereIn('categories.id', $request->categories_ids); })->orderByDesc('medias.created_at')->paginate(12);
+        $query_all = Media::whereHas('categories', function ($query) use ($request) {$query->whereIn('categories.id', $request->categories_ids);})->orderByDesc('medias.created_at')->paginate(12);
+        $query_child = Media::where('for_youth', $for_youth)->whereHas('categories', function ($query) use ($request) {$query->whereIn('categories.id', $request->categories_ids);})->orderByDesc('medias.created_at')->paginate(12);
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
@@ -839,7 +839,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        if (!empty($request->user_id) AND !empty($request->ip_address) OR !empty($request->user_id) AND empty($request->ip_address)) {
+        if (!empty($request->user_id) and !empty($request->ip_address) or !empty($request->user_id) and empty($request->ip_address)) {
             $session = Session::where('user_id', $request->user_id)->first();
 
             if (!empty($session)) {
@@ -858,8 +858,8 @@ class MediaController extends BaseController
                     $visitor = User::find($request->user_id);
 
                     /*
-                        HISTORY AND/OR NOTIFICATION MANAGEMENT
-                    */
+                    HISTORY AND/OR NOTIFICATION MANAGEMENT
+                     */
                     if (!empty($visitor)) {
                         Notification::create([
                             'notification_url' => 'members/' . $visitor->id,
@@ -871,14 +871,14 @@ class MediaController extends BaseController
                             'icon' => 'bi bi-eye',
                             'color' => 'text-warning',
                             'status_id' => $status_unread->id,
-                            'user_id' => $media->user_id
+                            'user_id' => $media->user_id,
                         ]);
                     }
                 }
             }
         }
 
-        if (empty($request->user_id) AND !empty($request->ip_address)) {
+        if (empty($request->user_id) and !empty($request->ip_address)) {
             $session = Session::where('ip_address', $request->ip_address)->first();
 
             if (!empty($session)) {
@@ -938,8 +938,8 @@ class MediaController extends BaseController
             $visitor = User::find($request->header('X-user-id'));
 
             /*
-                HISTORY AND/OR NOTIFICATION MANAGEMENT
-            */
+            HISTORY AND/OR NOTIFICATION MANAGEMENT
+             */
             if (!empty($visitor)) {
                 Notification::create([
                     'notification_url' => 'members/' . $visitor->id,
@@ -951,7 +951,7 @@ class MediaController extends BaseController
                     'icon' => 'bi bi-eye',
                     'color' => 'text-warning',
                     'status_id' => $status_unread->id,
-                    'user_id' => $media->user_id
+                    'user_id' => $media->user_id,
                 ]);
             }
         }
@@ -982,7 +982,7 @@ class MediaController extends BaseController
 
         if (count($user->medias) == 0) {
             $user->medias()->attach([$media->id => [
-                'status_id' => $status_id
+                'status_id' => $status_id,
             ]]);
         }
 
@@ -996,7 +996,7 @@ class MediaController extends BaseController
 
             } else {
                 $user->medias()->attach([$media->id => [
-                    'status_id' => $status_id
+                    'status_id' => $status_id,
                 ]]);
             }
         }
@@ -1020,10 +1020,10 @@ class MediaController extends BaseController
         }
 
         if ($request->file('media_url') != null) {
-			$media_url = 'images/medias/' . $media->id . '/' . Str::random(50) . '.' . $request->file('media_url')->extension();
+            $media_url = 'images/medias/' . $media->id . '/' . Str::random(50) . '.' . $request->file('media_url')->extension();
 
-			// Upload media
-			Storage::url(Storage::disk('public')->put($media_url, $request->file('media_url')));
+            // Upload media
+            Storage::url(Storage::disk('public')->put($media_url, $request->file('media_url')));
 
             $media->update([
                 'media_url' => '/' . $media_url,
@@ -1031,11 +1031,11 @@ class MediaController extends BaseController
             ]);
         }
 
-		if ($request->file('teaser_url') != null) {
-			$teaser_url = 'images/medias/' . $media->id . '/teaser';
+        if ($request->file('teaser_url') != null) {
+            $teaser_url = 'images/medias/' . $media->id . '/teaser';
 
-			// Upload teaser
-			$file_path = Storage::url(Storage::disk('public')->put($teaser_url, $request->file('teaser_url')));
+            // Upload teaser
+            $file_path = Storage::url(Storage::disk('public')->put($teaser_url, $request->file('teaser_url')));
 
             $media->update([
                 'teaser_url' => $file_path,
@@ -1043,10 +1043,10 @@ class MediaController extends BaseController
             ]);
         }
 
-		if ($request->file('cover_url') != null) {
-			$cover_url = 'images/medias/' . $media->id . '/cover';
+        if ($request->file('cover_url') != null) {
+            $cover_url = 'images/medias/' . $media->id . '/cover';
 
-			// Upload cover
+            // Upload cover
             $file_path = Storage::url(Storage::disk('public')->put($cover_url, $request->file('cover_url')));
             return $this->handleResponse($file_path, __('notifications.update_media_success'));
 
@@ -1070,7 +1070,7 @@ class MediaController extends BaseController
     {
         $inputs = [
             'media_id' => $request->entity_id,
-            'image_64' => $request->base64image
+            'image_64' => $request->base64image,
         ];
 
         // $extension = explode('/', explode(':', substr($inputs['image_64'], 0, strpos($inputs['image_64'], ';')))[1])[1];
@@ -1088,13 +1088,13 @@ class MediaController extends BaseController
         // Upload image
         Storage::url(Storage::disk('public')->put($image_url, base64_decode($image)));
 
-		$media = Media::find($id);
+        $media = Media::find($id);
 
         $media->update([
             'cover_url' => '/' . $image_url,
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
-	}
+    }
 }
