@@ -1056,7 +1056,7 @@ class MediaController extends BaseController
             // ]);
         }
 
-        return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
+        // return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
     }
 
     /**
