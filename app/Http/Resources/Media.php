@@ -33,6 +33,7 @@ class Media extends JsonResource
             'director' => $this->director,
             'published_date' => $this->published_date,
             'cover_url' => $this->cover_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://admindikitivi.jptshienda.com/public' . $this->cover_url : null,
+            'thumbnail_url' => $this->thumbnail_url != null ? (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://admindikitivi.jptshienda.com/public' . $this->thumbnail_url : null,
             'price' => $this->price,
             'for_youth' => $this->for_youth,
             'is_live' => $this->is_live,

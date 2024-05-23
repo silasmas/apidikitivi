@@ -140,25 +140,37 @@ class MediaController extends BaseController
         // }
 
         if ($request->file('teaser_url') != null) {
-            $teaser_url = 'images/medias/' . $media->id . '/teaser.' . $request->file('teaser_url')->extension();
+            $teaser_url = 'images/medias/' . $media->id . '/teaser';
 
             // Upload URL
-            Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
+            $file_path = Storage::url(Storage::disk('public')->put($teaser_url, $inputs['teaser_url']));
 
             $media->update([
-                'teaser_url' => '/' . $teaser_url,
+                'teaser_url' => '/' . $file_path,
                 'updated_at' => now(),
             ]);
         }
 
         if ($request->file('cover_url') != null) {
-            // Upload cover
-            $request->cover_url->storeAs('images/medias/' . $media->id, 'cover.' . $request->file('cover_url')->extension());
+            $cover_url = 'images/medias/' . $media->id . '/cover';
 
-            $cover_url = 'images/medias/' . $media->id . '/cover.' . $request->file('cover_url')->extension();
+            // Upload URL
+            $file_path = Storage::url(Storage::disk('public')->put($cover_url, $inputs['cover_url']));
 
             $media->update([
-                'cover_url' => '/' . $cover_url,
+                'cover_url' => '/' . $file_path,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($request->file('thumbnail_url') != null) {
+            $thumbnail_url = 'images/medias/' . $media->id . '/thumbnail';
+
+            // Upload URL
+            $file_path = Storage::url(Storage::disk('public')->put($thumbnail_url, $inputs['thumbnail_url']));
+
+            $media->update([
+                'thumbnail_url' => '/' . $file_path,
                 'updated_at' => now(),
             ]);
         }
@@ -1055,14 +1067,24 @@ class MediaController extends BaseController
             $cover_url = 'images/medias/' . $media->id . '/cover';
 
             // Upload cover
-            // dd($request->file('cover_url'));
             $file_path = Storage::url(Storage::disk('public')->put($cover_url, $request->file('cover_url')));
-             return $this->handleResponse($file_path, __('notifications.update_media_success'));
 
-            // $media->update([
-            //     'cover_url' => $file_path,
-            //     'updated_at' => now(),
-            // ]);
+            $media->update([
+                'cover_url' => $file_path,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if ($request->file('thumbnail_url') != null) {
+            $thumbnail_url = 'images/medias/' . $media->id . '/thumbnail';
+
+            // Upload cover
+            $file_path = Storage::url(Storage::disk('public')->put($thumbnail_url, $request->file('thumbnail_url')));
+
+            $media->update([
+                'thumbnail_url' => $file_path,
+                'updated_at' => now(),
+            ]);
         }
 
         // return $this->handleResponse(new ResourcesMedia($media), __('notifications.update_media_success'));
