@@ -963,15 +963,26 @@ class UserController extends BaseController
     /**
      * Search a user by a parental code.
      *
+     * @param  int $user_id
      * @param  string $parental_code
      * @return \Illuminate\Http\Response
      */
-    public function findByParentalCode($parental_code)
+    public function findByParentalCode($user_id, $parental_code)
     {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            return $this->handleError(__('notifications.find_user_404'));
+        }
+
         $parent = User::where('parental_code', $parental_code)->whereNull('belongs_to')->first();
 
         if (is_null($parent)) {
             return $this->handleError(__('notifications.find_parent_404'));
+        }
+
+        if ($user->id != $parent->id) {
+            return $this->handleError(__('notifications.children_not_allowed'));
         }
 
         $users = User::where('belongs_to', $parent->id)->get();

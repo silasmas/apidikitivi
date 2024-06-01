@@ -99,7 +99,7 @@ Route::group(['middleware' => ['api', 'localization']], function () {
     Route::get('role/search/{data}', 'App\Http\Controllers\API\RoleController@search')->name('role.api.search');
     // User
     Route::get('user/{id}', 'App\Http\Controllers\API\UserController@show')->name('user.api.show');
-    Route::get('user/find_by_parental_code/{parental_code}', 'App\Http\Controllers\API\UserController@findByParentalCode')->name('user.api.find_by_parental_code');
+    Route::get('user/find_by_parental_code/{user_id}/{parental_code}', 'App\Http\Controllers\API\UserController@findByParentalCode')->name('user.api.find_by_parental_code');
     Route::post('user', 'App\Http\Controllers\API\UserController@store')->name('user.api.store');
     Route::post('user/login', 'App\Http\Controllers\API\UserController@login')->name('user.api.login');
     // PasswordReset

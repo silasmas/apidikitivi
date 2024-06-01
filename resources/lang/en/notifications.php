@@ -161,6 +161,7 @@ return [
     'find_user_404' => 'User not found',
     'find_parent_404' => 'Parent not found',
     'find_visitor_404' => 'Visitor not found',
+    'children_not_allowed' => 'This parental code does not belong to you.',
     'parental_code_error' => 'Parental code error',
     'create_user_success' => 'User created',
     'create_user_SMS_failed' => 'There is a problem with the SMS service',
