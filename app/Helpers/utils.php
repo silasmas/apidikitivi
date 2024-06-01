@@ -88,3 +88,40 @@ if (!function_exists('addItemsToExplodedArray')) {
         return implode($separator, $saved);
     }
 }
+
+// Compare two collections
+if (!function_exists('compareCollections')) {
+    function compareCollections($c1, $c2)
+    {
+        // If the colletions have different sizes we return false:
+        if (count($c1) != count($c2)) {
+            return false;
+        }
+
+        // The collections have the same size, we check element by element:
+        foreach($c1 as $item) {
+            // We find the current element in $c1 in $c2:
+            $itemToCompare = array_filter($c2, function ($compareItem) use ($item) {
+                return ($compareItem['id'] == $item['id']);
+            });
+
+            // If we did not find the element in $c2, the collections are different:
+            if (empty($itemToCompare)) {
+                return false;
+            }
+
+            $itemToCompare = current($itemToCompare);
+
+            // We now use PHP to check the element keys:
+            $diff = array_diff_key($item, $itemToCompare);
+
+            // If there is a different, return false:
+            if (!empty($diff)) {
+                return false;
+            }       
+        }
+
+        // If everything is ok until here, the collections are the same:
+        return true;
+    }
+}
