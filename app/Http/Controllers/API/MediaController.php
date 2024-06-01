@@ -427,7 +427,7 @@ class MediaController extends BaseController
             ]);
         }
 
-        return $this->handleResponse($request->categories_ids, __('notifications.update_media_success'));
+        return $this->handleResponse($request->categories_ids[0], __('notifications.update_media_success'));
 
         if ($request->categories_ids == null) {
             if (count($media->categories) > 0) {
