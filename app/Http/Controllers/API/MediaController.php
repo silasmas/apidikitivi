@@ -427,7 +427,9 @@ class MediaController extends BaseController
             ]);
         }
 
-        if (count($request->categories_ids) == 0) {
+        return $this->handleResponse($request->categories_ids, __('notifications.update_media_success'));
+
+        if ($request->categories_ids == null) {
             if (count($media->categories) > 0) {
                 $media->categories()->detach();
             }
