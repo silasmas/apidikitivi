@@ -427,7 +427,7 @@ class MediaController extends BaseController
             ]);
         }
 
-        if (compareCollections($request->categories_ids, array_column($media->categories, 'id')) != false) {
+        if (compareCollections($request->categories_ids, array_column($media->categories->toArray(), 'id')) != false) {
             $media->categories()->sync($request->categories_ids);
         }
 
