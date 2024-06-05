@@ -191,13 +191,13 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::delete('cart/remove_from_cart/{cart_id}/{media_id}', 'App\Http\Controllers\API\CartController@removeFromCart')->name('cart.api.remove_from_cart');
     // User
     Route::get('user', 'App\Http\Controllers\API\UserController@index')->name('user.api.index');
+    Route::get('user/find_by_id_card', 'App\Http\Controllers\API\UserController@findByIdCard')->name('user.api.find_by_id_card');
     Route::put('user/{id}', 'App\Http\Controllers\API\UserController@update')->whereNumber('id')->name('user.api.update');
     Route::delete('user/{id}', 'App\Http\Controllers\API\UserController@destroy')->whereNumber('id')->name('user.api.destroy');
     Route::get('user/profile/{username}', 'App\Http\Controllers\API\UserController@profile')->name('user.api.profile');
     Route::get('user/find_by_role/{locale}/{role_name}', 'App\Http\Controllers\API\UserController@findByRole')->name('user.api.find_by_role');
     Route::get('user/find_by_not_role/{locale}/{role_name}', 'App\Http\Controllers\API\UserController@findByNotRole')->name('user.api.find_by_not_role');
     Route::get('user/find_by_status/{status_id}', 'App\Http\Controllers\API\UserController@findByStatus')->whereNumber('status_id')->name('user.api.find_by_status');
-    Route::get('user/find_by_id_card', 'App\Http\Controllers\API\UserController@findByIdCard')->name('user.api.find_by_id_card');
     Route::put('user/switch_status/{id}/{status_id}', 'App\Http\Controllers\API\UserController@switchStatus')->whereNumber(['id', 'status_id'])->name('user.api.switch_status');
     Route::put('user/update_role/{id}', 'App\Http\Controllers\API\UserController@updateRole')->whereNumber('id')->name('user.api.update_role');
     Route::put('user/update_password/{id}', 'App\Http\Controllers\API\UserController@updatePassword')->whereNumber('id')->name('user.api.update_password');
