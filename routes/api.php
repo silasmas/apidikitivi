@@ -191,7 +191,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::delete('cart/remove_from_cart/{cart_id}/{media_id}', 'App\Http\Controllers\API\CartController@removeFromCart')->name('cart.api.remove_from_cart');
     // User
     Route::get('user', 'App\Http\Controllers\API\UserController@index')->name('user.api.index');
-    Route::get('user/find_by_id_card', 'App\Http\Controllers\API\UserController@findByIdCard')->name('user.api.find_by_id_card');
+    Route::get('user/find_by_id_card/not_null', 'App\Http\Controllers\API\UserController@findByIdCard')->name('user.api.find_by_id_card');
     Route::put('user/{id}', 'App\Http\Controllers\API\UserController@update')->whereNumber('id')->name('user.api.update');
     Route::delete('user/{id}', 'App\Http\Controllers\API\UserController@destroy')->whereNumber('id')->name('user.api.destroy');
     Route::get('user/profile/{username}', 'App\Http\Controllers\API\UserController@profile')->name('user.api.profile');
