@@ -873,6 +873,19 @@ class UserController extends BaseController
     }
 
     /**
+     * Search all users having a ID card.
+     *
+     * @param  string $status_id
+     * @return \Illuminate\Http\Response
+     */
+    public function findByIdCard()
+    {
+        $users = User::whereNotNull('id_card_recto')->orderByDesc('created_at')->get();
+
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+    }
+
+    /**
      * Handle an incoming authentication request.
      *
      * @param  \Illuminate\Http\Request  $request
