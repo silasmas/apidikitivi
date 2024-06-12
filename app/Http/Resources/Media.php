@@ -40,10 +40,10 @@ class Media extends JsonResource
             'belongs_to' => $this->belongs_to,
             'type' => Type::make($this->type),
             'categories' => Category::collection($this->categories)->unique('id')->all(),
-            'created_at_ago' => timeAgo($this->created_at->format('Y-m-d H:i:s')),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at_ago' => timeAgo($this->updated_at->format('Y-m-d H:i:s')),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'created_at_ago' => !empty($this->created_at) ? timeAgo($this->created_at->format('Y-m-d H:i:s')) : null,
+            'created_at' => !empty($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : null,
+            'updated_at_ago' => !empty($this->updated_at) ? timeAgo($this->updated_at->format('Y-m-d H:i:s')) : null,
+            'updated_at' => !empty($this->updated_at) ? $this->updated_at->format('Y-m-d H:i:s') : null,
             'user_id' => $this->user_id,
         ];
     }
