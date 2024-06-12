@@ -35,7 +35,7 @@ class Order extends Model
      */
     public function media()
     {
-        return $this->belongsTo(Media::class);
+        return $this->belongsTo(Media::class)->withDefault();
     }
 
     /**
