@@ -210,7 +210,7 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address') or $request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -222,18 +222,34 @@ class MediaController extends BaseController
                     $session->medias()->syncWithoutDetaching([$media->id]);
                 }
             }
-        }
 
-        if ($request->hasHeader('X-ip-address')) {
-            $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
+        } else {
+            if ($request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+                $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
-            if (!empty($session)) {
-                if (count($session->medias) == 0) {
-                    $session->medias()->attach([$media->id]);
+                if (!empty($session)) {
+                    if (count($session->medias) == 0) {
+                        $session->medias()->attach([$media->id]);
+                    }
+
+                    if (count($session->medias) > 0) {
+                        $session->medias()->syncWithoutDetaching([$media->id]);
+                    }
                 }
 
-                if (count($session->medias) > 0) {
-                    $session->medias()->syncWithoutDetaching([$media->id]);
+            } else {
+                if ($request->hasHeader('X-ip-address')) {
+                    $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
+
+                    if (!empty($session)) {
+                        if (count($session->medias) == 0) {
+                            $session->medias()->attach([$media->id]);
+                        }
+
+                        if (count($session->medias) > 0) {
+                            $session->medias()->syncWithoutDetaching([$media->id]);
+                        }
+                    }
                 }
             }
         }
@@ -514,7 +530,7 @@ class MediaController extends BaseController
         $medias = Media::where('media_title', 'LIKE', '%' . $data . '%')->orderByDesc('created_at')->paginate(12);
         $count_all = Media::where('media_title', 'LIKE', '%' . $data . '%')->count();
 
-        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address') or $request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address')) {
             $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
             if (!empty($session)) {
@@ -526,18 +542,34 @@ class MediaController extends BaseController
                     $session->medias()->syncWithoutDetaching($medias->pluck('id'));
                 }
             }
-        }
 
-        if ($request->hasHeader('X-ip-address')) {
-            $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
+        } else {
+            if ($request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+                $session = Session::where('user_id', $request->header('X-user-id'))->first();
 
-            if (!empty($session)) {
-                if (count($session->medias) == 0) {
-                    $session->medias()->attach($medias->pluck('id'));
+                if (!empty($session)) {
+                    if (count($session->medias) == 0) {
+                        $session->medias()->attach($medias->pluck('id'));
+                    }
+    
+                    if (count($session->medias) > 0) {
+                        $session->medias()->syncWithoutDetaching($medias->pluck('id'));
+                    }
                 }
 
-                if (count($session->medias) > 0) {
-                    $session->medias()->syncWithoutDetaching($medias->pluck('id'));
+            } else {
+                if ($request->hasHeader('X-ip-address')) {
+                    $session = Session::where('ip_address', $request->header('X-ip-address'))->first();
+
+                    if (!empty($session)) {
+                        if (count($session->medias) == 0) {
+                            $session->medias()->attach($medias->pluck('id'));
+                        }
+
+                        if (count($session->medias) > 0) {
+                            $session->medias()->syncWithoutDetaching($medias->pluck('id'));
+                        }
+                    }
                 }
             }
         }
@@ -637,7 +669,7 @@ class MediaController extends BaseController
         $query_session_user_child = Media::where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->whereHas('sessions', function ($query) use ($request) {$query->where('sessions.user_id', $request->header('X-user-id'));})->orderByDesc('medias.created_at')->paginate(12);
         $query_session_ip_address_child = Media::where([['medias.for_youth', $for_youth], ['medias.type_id', $type_id]])->whereHas('sessions', function ($query) use ($request) {$query->where('sessions.ip_address', $request->header('X-ip-address'));})->orderByDesc('medias.created_at')->paginate(12);
 
-        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address') or $request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+        if ($request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address')) {
             $sessions = Session::where('user_id', $request->header('X-user-id'))->get();
 
             if ($sessions == null) {
@@ -654,27 +686,46 @@ class MediaController extends BaseController
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage(), count($medias));
             }
 
-        } else if ($request->hasHeader('X-ip-address')) {
-            $sessions = Session::where('ip_address', $request->header('X-ip-address'))->get();
+        } else {
+            if ($request->hasHeader('X-user-id') and !$request->hasHeader('X-ip-address')) {
+                $sessions = Session::where('user_id', $request->header('X-user-id'))->get();
 
-            if ($sessions == null) {
+                if ($sessions == null) {
+                    $medias = $for_youth == 0 ? $query_all : $query_child;
+
+                    return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
+
+                } else {
+                    $session_medias = $for_youth == 0 ? $query_session_user_all : $query_session_user_child;
+                    $global_medias = $for_youth == 0 ? $query_all : $query_child;
+                    // Merged data
+                    $medias = ($session_medias->merge($global_medias))->unique();
+
+                    return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage(), count($medias));
+                }
+
+            } else if (!$request->hasHeader('X-user-id') and $request->hasHeader('X-ip-address')) {
+                $sessions = Session::where('ip_address', $request->header('X-ip-address'))->get();
+
+                if ($sessions == null) {
+                    $medias = $for_youth == 0 ? $query_all : $query_child;
+
+                    return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
+
+                } else {
+                    $session_medias = $for_youth == 0 ? $query_session_ip_address_all : $query_session_ip_address_child;
+                    $global_medias = $for_youth == 0 ? $query_all : $query_child;
+                    // Merged data
+                    $medias = ($session_medias->merge($global_medias))->unique();
+
+                    return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage(), count($medias));
+                }
+
+            } else {
                 $medias = $for_youth == 0 ? $query_all : $query_child;
 
                 return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
-
-            } else {
-                $session_medias = $for_youth == 0 ? $query_session_ip_address_all : $query_session_ip_address_child;
-                $global_medias = $for_youth == 0 ? $query_all : $query_child;
-                // Merged data
-                $medias = ($session_medias->merge($global_medias))->unique();
-
-                return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $global_medias->lastPage(), count($medias));
             }
-
-        } else {
-            $medias = $for_youth == 0 ? $query_all : $query_child;
-
-            return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), count($medias));
         }
     }
 
