@@ -511,8 +511,8 @@ class MediaController extends BaseController
      */
     public function trends($year, $for_youth)
     {
-        $query_all = Media::whereHas('sessions', function ($query) use ($year) {$query->whereYear('sessions.created_at', '=', $year);})->distinct()->limit(5)->get();
-        $query_child = Media::where('for_youth', $for_youth)->whereHas('sessions', function ($query) use ($year) {$query->whereYear('sessions.created_at', '=', $year);})->distinct()->limit(5)->get();
+        $query_all = Media::whereHas('sessions', function ($query) use ($year) {$query->whereYear('sessions.created_at', '=', $year);})->distinct()->orderByDesc('created_at')->limit(5)->get();
+        $query_child = Media::where('for_youth', $for_youth)->whereHas('sessions', function ($query) use ($year) {$query->whereYear('sessions.created_at', '=', $year);})->distinct()->orderByDesc('created_at')->limit(5)->get();
         $medias = $for_youth == 0 ? $query_all : $query_child;
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, count($medias));
