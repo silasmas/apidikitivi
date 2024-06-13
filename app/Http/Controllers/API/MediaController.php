@@ -801,14 +801,12 @@ class MediaController extends BaseController
 
         $medias = Media::whereHas('sessions', function ($query) use ($user) {
             // $query->where('media_session.is_viewed', 1)
-            $query->where('sessions.user_id', $user->id)
-                ->orderByDesc('media_session.created_at');
-        })->paginate(12);
+            $query->where('sessions.user_id', $user->id);
+        })->orderByDesc('created_at')->paginate(12);
         $count_all = Media::whereHas('sessions', function ($query) use ($user) {
             // $query->where('media_session.is_viewed', 1)
-            $query->where('sessions.user_id', $user->id)
-                ->orderByDesc('media_session.created_at');
-        })->count();
+            $query->where('sessions.user_id', $user->id);
+        })->orderByDesc('created_at')->count();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
     }
