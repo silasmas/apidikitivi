@@ -746,12 +746,12 @@ class MediaController extends BaseController
         $sessions = Session::whereHas('medias', function ($query) use ($media) {
             // $query->where('media_session.is_viewed', 1)
             $query->where('media_session.media_id', $media->id)
-                ->orderByDesc('media_session.created_at')->get();
+                ->orderByDesc('media_session.created_at');
         })->get();
         $count_all = Session::whereHas('medias', function ($query) use ($media) {
             // $query->where('media_session.is_viewed', 1)
             $query->where('media_session.media_id', $media->id)
-                ->orderByDesc('media_session.created_at')->get();
+                ->orderByDesc('media_session.created_at');
         })->count();
 
         return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'), null, $count_all);
@@ -774,12 +774,12 @@ class MediaController extends BaseController
         $users = User::whereHas('medias', function ($query) use ($media) {
             $query->where('media_user.is_liked', 1)
                 ->where('media_user.media_id', $media->id)
-                ->orderByDesc('media_user.created_at')->get();
+                ->orderByDesc('media_user.created_at');
         })->get();
         $count_all = User::whereHas('medias', function ($query) use ($media) {
             $query->where('media_user.is_liked', 1)
                 ->where('media_user.media_id', $media->id)
-                ->orderByDesc('media_user.created_at')->get();
+                ->orderByDesc('media_user.created_at');
         })->count();
 
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $count_all);
@@ -802,12 +802,12 @@ class MediaController extends BaseController
         $medias = Media::whereHas('sessions', function ($query) use ($user) {
             // $query->where('media_session.is_viewed', 1)
             $query->where('sessions.user_id', $user->id)
-                ->orderByDesc('media_session.created_at')->get();
+                ->orderByDesc('media_session.created_at');
         })->paginate(12);
         $count_all = Media::whereHas('sessions', function ($query) use ($user) {
             // $query->where('media_session.is_viewed', 1)
             $query->where('sessions.user_id', $user->id)
-                ->orderByDesc('media_session.created_at')->get();
+                ->orderByDesc('media_session.created_at');
         })->count();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
