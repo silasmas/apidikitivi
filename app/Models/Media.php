@@ -28,7 +28,7 @@ class Media extends Model
      */
     public function sessions()
     {
-        return $this->belongsToMany(Session::class)->withTimestamps()->withPivot('is_viewed')->orderByPivot('created_at', 'desc');
+        return $this->belongsToMany(Session::class)->withTimestamps()->withPivot('is_viewed')->orderByPivot('created_at');
     }
 
     /**
@@ -37,7 +37,7 @@ class Media extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class)->withTimestamps()->withPivot(['is_liked', 'status_id'])->orderByPivot('created_at', 'desc');
+        return $this->belongsToMany(User::class)->withTimestamps()->withPivot(['is_liked', 'status_id'])->orderByPivot('created_at');
     }
 
     /**
