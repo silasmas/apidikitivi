@@ -808,7 +808,7 @@ class MediaController extends BaseController
         //                     $query->where('sessions.user_id', $user->id);
         //                 })->count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, $count_all);
+        return $this->handleResponse(ResourcesMedia::collection(collect($medias)), __('notifications.find_all_medias_success'), null, $count_all);
     }
 
     /**
