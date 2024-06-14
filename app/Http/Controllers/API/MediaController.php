@@ -790,7 +790,7 @@ class MediaController extends BaseController
     public function findViewedMedias($user_id)
     {
         $session = Session::where('user_id', $user_id)->first();
-        $medias = $session->medias();
+        $medias = $session->medias;
         $count_all = count($session->medias);
 
         // $user = User::find($user_id);
@@ -808,7 +808,7 @@ class MediaController extends BaseController
         //                     $query->where('sessions.user_id', $user->id);
         //                 })->count();
 
-        return $this->handleResponse($medias, __('notifications.find_all_medias_success'), null, $count_all);
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, $count_all);
     }
 
     /**
