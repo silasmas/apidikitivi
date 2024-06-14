@@ -791,7 +791,7 @@ class MediaController extends BaseController
     {
         $session = Session::where('user_id', $user_id)->first();
         $medias = $session->medias();
-        $count_all = count($medias);
+        $count_all = count($session->medias);
 
         // $user = User::find($user_id);
 
