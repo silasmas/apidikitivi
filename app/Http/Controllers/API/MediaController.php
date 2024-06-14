@@ -743,14 +743,17 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $sessions = Session::whereHas('medias', function ($query) use ($media) {
-            // $query->where('media_session.is_viewed', 1)
-            $query->where('media_session.media_id', $media->id);
-        })->get();
-        $count_all = Session::whereHas('medias', function ($query) use ($media) {
-            // $query->where('media_session.is_viewed', 1)
-            $query->where('media_session.media_id', $media->id);
-        })->count();
+        $sessions = $media->sessions;
+        $count_all = count($media->sessions);
+
+        // $sessions = Session::whereHas('medias', function ($query) use ($media) {
+        //     // $query->where('media_session.is_viewed', 1)
+        //     $query->where('media_session.media_id', $media->id);
+        // })->get();
+        // $count_all = Session::whereHas('medias', function ($query) use ($media) {
+        //     // $query->where('media_session.is_viewed', 1)
+        //     $query->where('media_session.media_id', $media->id);
+        // })->count();
 
         return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'), null, $count_all);
     }
@@ -769,14 +772,17 @@ class MediaController extends BaseController
             return $this->handleError(__('notifications.find_media_404'));
         }
 
-        $users = User::whereHas('medias', function ($query) use ($media) {
-            $query->where('media_user.is_liked', 1)
-                ->where('media_user.media_id', $media->id);
-        })->get();
-        $count_all = User::whereHas('medias', function ($query) use ($media) {
-            $query->where('media_user.is_liked', 1)
-                ->where('media_user.media_id', $media->id);
-        })->count();
+        $users = $media->users;
+        $count_all = count($media->users);
+
+        // $users = User::whereHas('medias', function ($query) use ($media) {
+        //     $query->where('media_user.is_liked', 1)
+        //         ->where('media_user.media_id', $media->id);
+        // })->get();
+        // $count_all = User::whereHas('medias', function ($query) use ($media) {
+        //     $query->where('media_user.is_liked', 1)
+        //         ->where('media_user.media_id', $media->id);
+        // })->count();
 
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $count_all);
     }
