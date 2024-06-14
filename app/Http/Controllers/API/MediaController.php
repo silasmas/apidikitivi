@@ -789,22 +789,26 @@ class MediaController extends BaseController
      */
     public function findViewedMedias($user_id)
     {
-        $user = User::find($user_id);
+        $session = Session::where('user_id', $user_id)->first();
+        $medias = $session->medias();
+        $count_all = count($medias);
 
-        if (is_null($user)) {
-            return $this->handleError(__('notifications.find_user_404'));
-        }
+        // $user = User::find($user_id);
 
-        $medias = Media::whereHas('sessions', function ($query) use ($user) {
-            // $query->where('media_session.is_viewed', 1)
-            $query->where('sessions.user_id', $user->id);
-        })->paginate(12);
-        $count_all = Media::whereHas('sessions', function ($query) use ($user) {
-            // $query->where('media_session.is_viewed', 1)
-            $query->where('sessions.user_id', $user->id);
-        })->count();
+        // if (is_null($user)) {
+        //     return $this->handleError(__('notifications.find_user_404'));
+        // }
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
+        // $medias = Media::whereHas('sessions', function ($query) use ($user) {
+        //                 // $query->where('media_session.is_viewed', 1)
+        //                 $query->where('sessions.user_id', $user->id);
+        //             })->paginate(12);
+        // $count_all = Media::whereHas('sessions', function ($query) use ($user) {
+        //                     // $query->where('media_session.is_viewed', 1)
+        //                     $query->where('sessions.user_id', $user->id);
+        //                 })->count();
+
+        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, $count_all);
     }
 
     /**
