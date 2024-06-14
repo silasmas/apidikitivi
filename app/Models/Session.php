@@ -30,7 +30,7 @@ class Session extends Model
      */
     public function medias()
     {
-        return $this->belongsToMany(Media::class)->withTimestamps()->withPivot('is_viewed')->orderByPivot('created_at', 'asc');
+        return $this->belongsToMany(Media::class)->orderByPivot('created_at', 'desc')->withTimestamps()->withPivot('is_viewed');
     }
 
     /**
