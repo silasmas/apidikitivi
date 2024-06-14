@@ -797,6 +797,7 @@ class MediaController extends BaseController
     {
         $session = Session::where('user_id', $user_id)->first();
         $medias = $session->medias;
+        return $this->handleResponse($session->medias, __('notifications.find_all_medias_success'));
         $count_all = count($session->medias);
 
         // $user = User::find($user_id);
