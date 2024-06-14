@@ -67,7 +67,7 @@ class User extends Authenticatable
      */
     public function medias()
     {
-        return $this->belongsToMany(Media::class)->withTimestamps()->withPivot(['is_liked', 'status_id'])->orderByPivot('created_at');
+        return $this->belongsToMany(Media::class)->withTimestamps()->withPivot(['is_liked', 'status_id'])->orderByPivot('created_at', 'asc');
     }
 
     /**
