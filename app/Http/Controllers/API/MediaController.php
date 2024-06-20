@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\Media as ResourcesMedia;
+use App\Http\Resources\MediaView as ResourcesMediaView;
 use App\Http\Resources\Session as ResourcesSession;
 use App\Http\Resources\User as ResourcesUser;
 use App\Models\Media;
+use App\Models\MediaView;
 use App\Models\Notification;
 use App\Models\Session;
 use App\Models\Status;
@@ -221,6 +223,8 @@ class MediaController extends BaseController
                 if (count($session->medias) > 0) {
                     $session->medias()->syncWithoutDetaching([$media->id]);
                 }
+
+                MediaView::create(['user_id' => $session->user_id, 'media_id' => $media->id]);
             }
 
         } else {
@@ -235,6 +239,8 @@ class MediaController extends BaseController
                     if (count($session->medias) > 0) {
                         $session->medias()->syncWithoutDetaching([$media->id]);
                     }
+
+                    MediaView::create(['user_id' => $session->user_id, 'media_id' => $media->id]);
                 }
 
             } else {
@@ -795,14 +801,8 @@ class MediaController extends BaseController
      */
     public function findViewedMedias($user_id)
     {
-        $session = Session::where('user_id', $user_id)->first();
-
-        if (is_null($session)) {
-            return $this->handleResponse(ResourcesMedia::collection([]), __('notifications.find_all_medias_success'), null, 1);
-        }
-
-        $medias = $session->medias;
-        $count_all = count($session->medias);
+        $media_views = MediaView::where('user_id', $user_id)->orderByDesc('created_at')->get();
+        $count_all = count($media_views);
 
         // $user = User::find($user_id);
 
@@ -819,7 +819,7 @@ class MediaController extends BaseController
         //                     $query->where('sessions.user_id', $user->id);
         //                 })->count();
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, $count_all);
+        return $this->handleResponse(ResourcesMediaView::collection($media_views), __('notifications.find_all_medias_success'), null, $count_all);
     }
 
     /**
