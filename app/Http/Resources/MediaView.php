@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Media;
+use App\Models\Media as MediaModel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,7 +19,7 @@ class MediaView extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $media = Media::find($this->id);
+        $media = MediaModel::find($this->id);
 
         if (!is_null($media)) {
             return [
