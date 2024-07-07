@@ -22,7 +22,7 @@ class ApiClientManager
     public static function call($method, $url, $api_token = null, $data_to_send = [], $current_ip_address = null, $current_user_id = null, $data_json = false)
     {
         // Client used for accessing API
-        $client = new Client();
+        $client = new Client(['timeout' => 5, 'verify' => false]);
 
         if ($data_json == true) {
             if ($current_ip_address != null AND $current_user_id != null) {

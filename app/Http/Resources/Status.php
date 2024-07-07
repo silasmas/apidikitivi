@@ -21,6 +21,9 @@ class Status extends JsonResource
         return [
             'id' => $this->id,
             'status_name' => $this->status_name,
+            'status_name_fr' => $this->getTranslation('status_name', 'fr'),
+            'status_name_en' => $this->getTranslation('status_name', 'en'),
+            'status_name_ln' => $this->getTranslation('status_name', 'ln'),
             'status_description' => $this->status_description,
             'icon' => $this->icon,
             'color' => $this->color,
