@@ -190,7 +190,7 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::put('cart/add_to_cart/{locale}/{type_name}/{media_id}/{user_id}', 'App\Http\Controllers\API\CartController@addToCart')->name('cart.api.add_to_cart');
     Route::delete('cart/remove_from_cart/{cart_id}/{media_id}', 'App\Http\Controllers\API\CartController@removeFromCart')->name('cart.api.remove_from_cart');
     // User
-    Route::get('user', 'App\Http\Controllers\API\UserController@userOnline')->name('user.api.userOnline');
+    Route::get('userOnline', 'App\Http\Controllers\API\UserController@userOnline')->name('user.api.userOnline');
     Route::get('user', 'App\Http\Controllers\API\UserController@index')->name('user.api.index');
     Route::get('user/find_by_id_card/not_null', 'App\Http\Controllers\API\UserController@findByIdCard')->name('user.api.find_by_id_card');
     Route::put('user/{id}', 'App\Http\Controllers\API\UserController@update')->whereNumber('id')->name('user.api.update');
