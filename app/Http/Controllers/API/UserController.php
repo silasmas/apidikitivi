@@ -43,7 +43,7 @@ class UserController extends BaseController
         $users = Session::where('user_id','!=',null)->get();
         $nombreOnline=$users->count();
 
-        return $this->handleResponse(ResourcesUser::collection($nombreOnline), __('notifications.find_all_users_success'));
+        return $this->handleResponse($nombreOnline, __('notifications.find_all_users_success'));
     }
 
     /**
@@ -849,7 +849,7 @@ class UserController extends BaseController
                                     $query->where('role_name->' . $locale, $role_name);
                                 })->orderByDesc('users.created_at')->get();
 
-        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));    
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
     }
 
     /**
@@ -865,7 +865,7 @@ class UserController extends BaseController
                                     $query->where('role_name->' . $locale, $role_name);
                                 })->orderByDesc('users.created_at')->get();
 
-        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));    
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
     }
 
     /**
