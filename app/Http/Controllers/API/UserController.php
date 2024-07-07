@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
+use session;
 use stdClass;
+use App\Models\User;
 use App\Mail\OTPCode;
+use App\Models\Status;
+use App\Models\Session;
+use Nette\Utils\Random;
+use Illuminate\Support\Str;
 use App\Models\Notification;
+use Illuminate\Http\Request;
 use App\Models\PasswordReset;
 use App\Models\PersonalAccessToken;
-use App\Models\Status;
-use App\Models\User;
-use Nette\Utils\Random;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
 
@@ -35,6 +37,13 @@ class UserController extends BaseController
         $users = User::orderByDesc('created_at')->get();
 
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+    }
+    public function userOnline()
+    {
+        $users = Session::where('user_id','!=',null)->get();
+        $nombreOnline=$users->count();
+
+        return $this->handleResponse(ResourcesUser::collection($nombreOnline), __('notifications.find_all_users_success'));
     }
 
     /**
