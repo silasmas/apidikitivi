@@ -31,7 +31,7 @@ class MediaController extends BaseController
      */
     public function index()
     {
-        $medias = Media::orderByDesc('created_at')->paginate(12);
+        $medias = Media::orderByDesc('created_at')->paginate(50);
         $count_all = Media::count();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);

@@ -848,7 +848,7 @@ class UserController extends BaseController
             $query->where('role_name', $role_name);
         })->orderByDesc('users.created_at')->get();
 
-return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'));
     }
 
     /**
