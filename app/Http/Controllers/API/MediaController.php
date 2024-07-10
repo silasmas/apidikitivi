@@ -137,7 +137,7 @@ class MediaController extends BaseController
 
             $media->update([
                 'media_url' => $path_url,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
 
@@ -557,7 +557,7 @@ class MediaController extends BaseController
                     if (count($session->medias) == 0) {
                         $session->medias()->attach($medias->pluck('id'));
                     }
-    
+
                     if (count($session->medias) > 0) {
                         $session->medias()->syncWithoutDetaching($medias->pluck('id'));
                     }
