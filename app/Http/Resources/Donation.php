@@ -21,7 +21,7 @@ class Donation extends JsonResource
         return [
             'id' => $this->id,
             'amount' => $this->amount,
-            'monaie' => $this->currency,
+            'currency' => $this->currency,
             'pricing' => Pricing::make($this->pricing),
             'user' => User::make($this->user),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
