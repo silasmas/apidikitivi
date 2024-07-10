@@ -25,7 +25,7 @@ class Donation extends JsonResource
             'pricing' => Pricing::make($this->pricing),
             'user' => User::make($this->user),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }
