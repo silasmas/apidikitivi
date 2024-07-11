@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * @author Xanders
- * @see https://www.xsam-tech.com
+ * @see https://www.linkedin.com/in/xanders-samoth-b2770737/
  */
 class ApiClientManager
 {

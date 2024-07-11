@@ -132,12 +132,13 @@ class MediaController extends BaseController
             // Upload cover
             $request->file('media_file_url')->storeAs('images/medias/' . $media->id, $filename, 's3');
 
-            // $path_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_file_url')->extension();
-            $path_url = Storage::disk('s3')->response('images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_file_url')->extension());
+            $path_url = 'images/medias/' . $media->id . '/' . Str::random() . '.' . $request->file('media_file_url')->extension();
+
+            Storage::url(Storage::disk('s3')->put($path_url, $filename));
 
             $media->update([
-                'media_url' => $path_url,
-                'updated_at' => now(),
+                'media_url' => config('filesystems.disks.s3.url') . $path_url,
+                'updated_at' => now()
             ]);
         }
 
