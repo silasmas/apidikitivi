@@ -40,9 +40,9 @@ class UserController extends BaseController
     public function userOnline()
     {
         $users = Sessions::whereNotNull('user_id')->get();
-        $nombreOnline = $users->count();
+        $nombreOnline = Sessions::whereNotNull('user_id')->count();
 
-        return $this->handleResponse($nombreOnline, __('notifications.find_all_users_success'));
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $nombreOnline);
     }
 
     /**
