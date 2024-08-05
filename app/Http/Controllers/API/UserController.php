@@ -42,8 +42,7 @@ class UserController extends BaseController
         $users = Sessions::whereNotNull('user_id')->get();
         $nombreOnline = Sessions::whereNotNull('user_id')->count();
 
-        return $users;
-        // return $this->handleResponse(($users == null ? [] : ResourcesUser::collection($users)), __('notifications.find_all_users_success'), null, $nombreOnline);
+        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $nombreOnline);
     }
 
     /**
