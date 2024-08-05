@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
 use App\Http\Resources\User as ResourcesUser;
+use App\Http\Resources\Session as ResourcesSession;
 use App\Mail\OTPCode;
 use App\Models\Notification;
 use App\Models\PasswordReset;
@@ -39,10 +40,10 @@ class UserController extends BaseController
     }
     public function userOnline()
     {
-        $users = Sessions::whereNotNull('user_id')->get();
+        $sessions = Sessions::whereNotNull('user_id')->get();
         $nombreOnline = Sessions::whereNotNull('user_id')->count();
 
-        return $this->handleResponse(ResourcesUser::collection($users), __('notifications.find_all_users_success'), null, $nombreOnline);
+        return $this->handleResponse(ResourcesSession::collection($sessions), __('notifications.find_all_sessions_success'), null, $nombreOnline);
     }
 
     /**
