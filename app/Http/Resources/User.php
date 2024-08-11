@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Notification as NotificationModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -18,6 +19,8 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
+        $unread_notifications = NotificationModel::where([['status_id', 11], ['user_id', $this->id]])->orderByDesc('created_at')->get();
+
         return [
             'id' => $this->id,
             'firstname' => $this->firstname,
@@ -51,6 +54,7 @@ class User extends JsonResource
             'owned_medias' => Media::collection($this->owned_medias)->sortByDesc('created_at')->toArray(),
             'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'notifications' => Notification::collection($this->notifications)->sortByDesc('created_at')->toArray(),
+            'unread_notifications' => Notification::collection($unread_notifications)->toArray($request),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ];
