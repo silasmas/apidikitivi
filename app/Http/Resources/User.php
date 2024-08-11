@@ -64,7 +64,7 @@ class User extends JsonResource
             'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'notifications' => Notification::collection($this->notifications)->sortByDesc('created_at')->toArray(),
             'unread_notifications' => Notification::collection($unread_notifications)->toArray($request),
-            'watchlist' => Status::make($user_watchlist)->toArray($request),
+            'watchlist' => Cart::make($user_watchlist)->toArray($request),
             'watchlist_id' => $user_watchlist->id,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
