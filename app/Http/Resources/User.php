@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Notification as NotificationModel;
+use App\Models\Cart as CartModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -20,6 +21,14 @@ class User extends JsonResource
     public function toArray($request)
     {
         $unread_notifications = NotificationModel::where([['status_id', 11], ['user_id', $this->id]])->orderByDesc('created_at')->get();
+        $user_watchlist = CartModel::where([['user_id', $this->id], ['type_id', 14]])->first();
+
+        if (is_null($user_watchlist)) {
+            $user_watchlist = CartModel::create([
+                'type_id' => 14,
+                'user_id' => $this->id
+            ]);
+        }
 
         return [
             'id' => $this->id,
@@ -55,6 +64,8 @@ class User extends JsonResource
             'payments' => Payment::collection($this->payments)->sortByDesc('created_at')->toArray(),
             'notifications' => Notification::collection($this->notifications)->sortByDesc('created_at')->toArray(),
             'unread_notifications' => Notification::collection($unread_notifications)->toArray($request),
+            'watchlist' => Status::make($user_watchlist)->toArray($request),
+            'watchlist_id' => $user_watchlist->id,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ];
