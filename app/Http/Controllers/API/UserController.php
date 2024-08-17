@@ -91,23 +91,23 @@ class UserController extends BaseController
             $inputs['email'] = 'child-' . Random::generate(10, '0-9a-zA-Z') . '@no_mail.com';
         }
 
-        if ($inputs['email'] != null) {
-            // Check if user email already exists
-            foreach ($users as $another_user):
-                if ($another_user->email == $inputs['email']) {
-                    return $this->handleError($inputs['email'], __('validation.custom.email.exists'), 400);
-                }
-            endforeach;
+        // if ($inputs['email'] != null) {
+        //     // Check if user email already exists
+        //     foreach ($users as $another_user):
+        //         if ($another_user->email == $inputs['email']) {
+        //             return $this->handleError($inputs['email'], __('validation.custom.email.exists'), 400);
+        //         }
+        //     endforeach;
 
-            // If email exists in "password_reset" table, delete it
-            if ($password_resets != null) {
-                foreach ($password_resets as $password_reset):
-                    if ($password_reset->email == $inputs['email']) {
-                        $password_reset->delete();
-                    }
-                endforeach;
-            }
-        }
+        //     // If email exists in "password_reset" table, delete it
+        //     if ($password_resets != null) {
+        //         foreach ($password_resets as $password_reset):
+        //             if ($password_reset->email == $inputs['email']) {
+        //                 $password_reset->delete();
+        //             }
+        //         endforeach;
+        //     }
+        // }
 
         if ($inputs['phone'] != null) {
             // Check if user phone already exists
