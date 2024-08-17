@@ -133,7 +133,8 @@ class MediaController extends BaseController
             try {
                 $file->storeAs('images/medias/' . $media->id, $filename, 's3');
             } catch (\Throwable $th) {
-                dd($th);
+                return $this->handleResponse($th, __('notifications.create_media_success'));
+
             }
 
             $media->update([
