@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\PasswordReset as ResourcesPasswordReset;
-use App\Http\Resources\User as ResourcesUser;
 use App\Http\Resources\Session as ResourcesSession;
+use App\Http\Resources\User as ResourcesUser;
 use App\Mail\OTPCode;
 use App\Models\Notification;
 use App\Models\PasswordReset;
@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Nette\Utils\Random;
+use Rules\Password;
 use stdClass;
 
 /**
@@ -82,7 +83,10 @@ class UserController extends BaseController
         $password_resets = PasswordReset::all();
         $basic = new \Vonage\Client\Credentials\Basic(config('vonage.api_key'), config('vonage.api_secret'));
         $client = new \Vonage\Client($basic);
-
+        $request->validate([
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
         // If "email" and "phone" are NULL, it means that it's a child. So, generate an email for him
         if (trim($inputs['email']) == null and trim($inputs['phone']) == null) {
             $inputs['email'] = 'child-' . Random::generate(10, '0-9a-zA-Z') . '@no_mail.com';
