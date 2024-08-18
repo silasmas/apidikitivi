@@ -130,12 +130,16 @@ class MediaController extends BaseController
             $file = $request->file('media_file_url');
             $filename = $file->getClientOriginalName();
             $path_url = 'images/medias/' . $media->id . '/' . $filename;
+            try {
+                $file->storeAs('images/medias/' . $media->id, $filename, 's3');
+            } catch (\Throwable $th) {
+                return $this->handleResponse($th, __('notifications.create_media_success'));
 
-            $file->storeAs('images/medias/' . $media->id, $filename, 's3');
+            }
 
             $media->update([
                 'media_url' => config('filesystems.disks.s3.url') . $path_url,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
 
