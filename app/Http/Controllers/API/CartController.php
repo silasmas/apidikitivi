@@ -52,8 +52,8 @@ class CartController extends BaseController
         }
 
         // Check if cart payment code already exists
-        foreach ($carts as $another_book):
-            if ($another_book->payment_code == $inputs['payment_code']) {
+        foreach ($carts as $another_cart):
+            if ($another_cart->payment_code == $inputs['payment_code']) {
                 return $this->handleError($inputs['payment_code'], __('validation.custom.code.exists'), 400);
             }
         endforeach;
@@ -111,28 +111,28 @@ class CartController extends BaseController
             endforeach;
 
             $cart->update([
-                'payment_code' => $request->payment_code,
+                'payment_code' => $inputs['payment_code'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['type_id'] != null) {
             $cart->update([
-                'type_id' => $request->type_id,
+                'type_id' => $inputs['type_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['status_id'] != null) {
             $cart->update([
-                'status_id' => $request->status_id,
+                'status_id' => $inputs['status_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['user_id'] != null) {
             $cart->update([
-                'user_id' => $request->user_id,
+                'user_id' => $inputs['user_id'],
                 'updated_at' => now(),
             ]);
         }
@@ -142,6 +142,9 @@ class CartController extends BaseController
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Cart  $cart
+     * @return \Illuminate\Http\Response
      */
     public function destroy(Cart $cart)
     {
