@@ -87,28 +87,28 @@ class OrderController extends BaseController
 
         if ($inputs['book_id'] != null) {
             $order->update([
-                'book_id' => $request->book_id,
+                'book_id' => $inputs['book_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['media_id'] != null) {
             $order->update([
-                'media_id' => $request->media_id,
+                'media_id' => $inputs['media_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['pricing_id'] != null) {
             $order->update([
-                'pricing_id' => $request->pricing_id,
+                'pricing_id' => $inputs['pricing_id'],
                 'updated_at' => now(),
             ]);
         }
 
         if ($inputs['cart_id'] != null) {
             $order->update([
-                'cart_id' => $request->cart_id,
+                'cart_id' => $inputs['cart_id'],
                 'updated_at' => now(),
             ]);
         }
