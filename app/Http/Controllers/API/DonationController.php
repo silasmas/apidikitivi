@@ -208,92 +208,92 @@ class DonationController extends BaseController
         // If the transaction is via bank card
         if ($request->transaction_type_id == $bank_card_type->id) {
             // If "user_id" is empty, then it's an anonymous donation
-            if ($inputs['user_id'] != null) {
-                $current_user = User::find($inputs['user_id']);
+            // if ($inputs['user_id'] != null) {
+            //     $current_user = User::find($inputs['user_id']);
 
-                if ($current_user != null) {
-                    $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $current_user->id;
+            //     if ($current_user != null) {
+            //         $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $current_user->id;
 
-                    $body = json_encode( array(
-                        'authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA",
-                        'merchant' => 'DIKITIVI',
-                        'reference' => $reference_code,
-                        'amount' => $inputs['amount'],
-                        'currency' => $inputs['currency'],
-                        'description' => __('miscellaneous.bank_transaction_description'),
-                        'callback_url' => getApiURL() . '/payment/store',
-                        'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
-                        'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
-                        'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
-                        'home_url' => $request->app_url . '/donation',
-                    ));
+            //         $body = json_encode( array(
+            //             'authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA",
+            //             'merchant' => 'DIKITIVI',
+            //             'reference' => $reference_code,
+            //             'amount' => $inputs['amount'],
+            //             'currency' => $inputs['currency'],
+            //             'description' => __('miscellaneous.bank_transaction_description'),
+            //             'callback_url' => getApiURL() . '/payment/store',
+            //             'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
+            //             'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
+            //             'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
+            //             'home_url' => $request->app_url . '/donation',
+            //         ));
 
-                    $curl = curl_init('https://cardpayment.flexpay.cd/v1.1/pay');
+            //         $curl = curl_init('https://cardpayment.flexpay.cd/v1.1/pay');
 
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            //         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+            //         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-                    $curlResponse = curl_exec($curl);
+            //         $curlResponse = curl_exec($curl);
 
-                    $jsonRes = json_decode($curlResponse,true);
-                    $code = $jsonRes['code'];
-                    $message = $jsonRes['message'];
+            //         $jsonRes = json_decode($curlResponse,true);
+            //         $code = $jsonRes['code'];
+            //         $message = $jsonRes['message'];
 
-                    if (!empty($jsonRes['error'])) {
-                        return $this->handleError($jsonRes['error'], $message, $jsonRes['status']);
+            //         if (!empty($jsonRes['error'])) {
+            //             return $this->handleError($jsonRes['error'], $message, $jsonRes['status']);
 
-                    } else {
-                        if ($jsonRes->code != '0') {
-                            try {
-                                $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
+            //         } else {
+            //             if ($jsonRes->code != '0') {
+            //                 try {
+            //                     $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
 
-                            } catch (\Throwable $th) {
-                                return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
-                            }
+            //                 } catch (\Throwable $th) {
+            //                     return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
+            //                 }
 
-                            return $this->handleError($code, $message, 400);
+            //                 return $this->handleError($code, $message, 400);
 
-                        } else {
-                            $url = $jsonRes['url'];
-                            $orderNumber = $jsonRes['orderNumber'];
-                            $object = new stdClass();
+            //             } else {
+            //                 $url = $jsonRes['url'];
+            //                 $orderNumber = $jsonRes['orderNumber'];
+            //                 $object = new stdClass();
 
-                            $object->result_response = [
-                                'message' => $message,
-                                'order_number' => $orderNumber,
-                                'url' => $url
-                            ];
+            //                 $object->result_response = [
+            //                     'message' => $message,
+            //                     'order_number' => $orderNumber,
+            //                     'url' => $url
+            //                 ];
 
-                            // The donation is registered only if the processing succeed
-                            $donation = Donation::create($inputs);
+            //                 // The donation is registered only if the processing succeed
+            //                 $donation = Donation::create($inputs);
 
-                            $object->donation = new ResourcesDonation($donation);
+            //                 $object->donation = new ResourcesDonation($donation);
 
-                            // Register payment, even if FlexPay will
-                            $payment = Payment::where('order_number', $orderNumber)->first();
+            //                 // Register payment, even if FlexPay will
+            //                 $payment = Payment::where('order_number', $orderNumber)->first();
 
-                            if (is_null($payment)) {
-                                Payment::create([
-                                    'reference' => $reference_code,
-                                    'order_number' => $jsonRes->orderNumber,
-                                    'amount' => $inputs['amount'],
-                                    'currency' => $inputs['currency'],
-                                    'type_id' => $request->transaction_type_id,
-                                    'status_id' => $jsonRes->code,
-                                    'donation_id' => $donation->id,
-                                    'user_id' => $inputs['user_id']
-                                ]);
-                            }
+            //                 if (is_null($payment)) {
+            //                     Payment::create([
+            //                         'reference' => $reference_code,
+            //                         'order_number' => $jsonRes->orderNumber,
+            //                         'amount' => $inputs['amount'],
+            //                         'currency' => $inputs['currency'],
+            //                         'type_id' => $request->transaction_type_id,
+            //                         'status_id' => $jsonRes->code,
+            //                         'donation_id' => $donation->id,
+            //                         'user_id' => $inputs['user_id']
+            //                     ]);
+            //                 }
 
-                            return $this->handleResponse($object, __('notifications.create_donation_success'));
-                        }
-                    }
+            //                 return $this->handleResponse($object, __('notifications.create_donation_success'));
+            //             }
+            //         }
 
-                } else {
-                    return $this->handleError(__('notifications.find_user_404'));
-                }
+            //     } else {
+            //         return $this->handleError(__('notifications.find_user_404'));
+            //     }
 
-            } else {
+            // } else {
                 $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-ANONYMOUS';
 
                 $body = json_encode( array(
@@ -304,9 +304,9 @@ class DonationController extends BaseController
                     'currency' => $inputs['currency'],
                     'description' => __('miscellaneous.bank_transaction_description'),
                     'callback_url' => getApiURL() . '/payment/store',
-                    'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
-                    'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
-                    'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
+                    'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/anonymous',
+                    'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/anonymous',
+                    'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/anonymous',
                     'home_url' => $request->app_url . '/donation',
                 ));
 
@@ -350,11 +350,11 @@ class DonationController extends BaseController
                         if (is_null($payment)) {
                             Payment::create([
                                 'reference' => $reference_code,
-                                'order_number' => $jsonRes->orderNumber,
+                                'order_number' => $orderNumber,
                                 'amount' => $inputs['amount'],
                                 'currency' => $inputs['currency'],
                                 'type_id' => $request->transaction_type_id,
-                                'status_id' => $jsonRes->code,
+                                'status_id' => $code,
                                 'donation_id' => $donation->id,
                             ]);
                         }
@@ -362,7 +362,7 @@ class DonationController extends BaseController
                         return $this->handleResponse($object, __('notifications.create_donation_success'));
                     }
                 }
-            }
+            // }
         }
     }
 
