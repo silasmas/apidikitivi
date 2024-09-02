@@ -214,22 +214,33 @@ class DonationController extends BaseController
                 if ($current_user != null) {
                     $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $current_user->id;
 
-                    // Create response by sending request to FlexPay
-                    $jsonRes = $api_manager::call('POST', $gateway_card, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA', [
+                    $body = json_encode( array(
+                        'authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA",
                         'merchant' => 'DIKITIVI',
                         'reference' => $reference_code,
                         'amount' => $inputs['amount'],
-                        'description' => __('miscellaneous.bank_transaction_description'),
                         'currency' => $inputs['currency'],
-                        'callbackUrl' => getApiURL() . '/payment/store',
+                        'description' => __('miscellaneous.bank_transaction_description'),
+                        'callback_url' => getApiURL() . '/payment/store',
                         'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
                         'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
                         'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
-                        'language' => app()->getLocale(),
-                    ], null, null, true);
+                        'home_url' => $request->app_url . '/donation',
+                    ));
 
-                    if (!empty($jsonRes->error)) {
-                        return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+                    $curl = curl_init('https://cardpayment.flexpay.cd/v1.1/pay');
+
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+                    $curlResponse = curl_exec($curl);
+
+                    $jsonRes = json_decode($curlResponse,true);
+                    $code = $jsonRes['code'];
+                    $message = $jsonRes['message'];
+
+                    if (!empty($jsonRes['error'])) {
+                        return $this->handleError($jsonRes['error'], $message, $jsonRes['status']);
 
                     } else {
                         if ($jsonRes->code != '0') {
@@ -240,15 +251,17 @@ class DonationController extends BaseController
                                 return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
                             }
 
-                            return $this->handleError($jsonRes->code, $jsonRes->message, 400);
+                            return $this->handleError($code, $message, 400);
 
                         } else {
+                            $url = $jsonRes['url'];
+                            $orderNumber = $jsonRes['orderNumber'];
                             $object = new stdClass();
 
                             $object->result_response = [
-                                'message' => $jsonRes->message,
-                                'order_number' => $jsonRes->orderNumber,
-                                'url' => $jsonRes->url
+                                'message' => $message,
+                                'order_number' => $orderNumber,
+                                'url' => $url
                             ];
 
                             // The donation is registered only if the processing succeed
@@ -257,7 +270,7 @@ class DonationController extends BaseController
                             $object->donation = new ResourcesDonation($donation);
 
                             // Register payment, even if FlexPay will
-                            $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+                            $payment = Payment::where('order_number', $orderNumber)->first();
 
                             if (is_null($payment)) {
                                 Payment::create([
@@ -283,34 +296,47 @@ class DonationController extends BaseController
             } else {
                 $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-ANONYMOUS';
 
-                // Create response by sending request to FlexPay
-                $jsonRes = $api_manager::call('POST', $gateway_card, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA', [
+                $body = json_encode( array(
+                    'authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA",
                     'merchant' => 'DIKITIVI',
                     'reference' => $reference_code,
                     'amount' => $inputs['amount'],
-                    'description' => __('miscellaneous.bank_transaction_description'),
                     'currency' => $inputs['currency'],
-                    'callbackUrl' => getApiURL() . '/payment/store',
-                    'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/anonymous',
-                    'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/anonymous',
-                    'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/anonymous',
-                    'language' => app()->getLocale(),
-                ], null, null, true);
+                    'description' => __('miscellaneous.bank_transaction_description'),
+                    'callback_url' => getApiURL() . '/payment/store',
+                    'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
+                    'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
+                    'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
+                    'home_url' => $request->app_url . '/donation',
+                ));
 
-                if (!empty($jsonRes->error)) {
-                    return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+                $curl = curl_init('https://cardpayment.flexpay.cd/v1.1/pay');
+
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+                $curlResponse = curl_exec($curl);
+
+                $jsonRes = json_decode($curlResponse,true);
+                $code = $jsonRes['code'];
+                $message = $jsonRes['message'];
+
+                if (!empty($jsonRes['error'])) {
+                    return $this->handleError($jsonRes['error'], $message, $jsonRes['status']);
 
                 } else {
-                    if ($jsonRes->code != '0') {
-                        return $this->handleError($jsonRes->code, $jsonRes->message, 400);
+                    if ($code != '0') {
+                        return $this->handleError($code, $message, 400);
 
                     } else {
+                        $url = $jsonRes['url'];
+                        $orderNumber = $jsonRes['orderNumber'];
                         $object = new stdClass();
 
                         $object->result_response = [
-                            'message' => $jsonRes->message,
-                            'order_number' => $jsonRes->orderNumber,
-                            'url' => $jsonRes->url
+                            'message' => $message,
+                            'order_number' => $orderNumber,
+                            'url' => $url
                         ];
 
                         // The donation is registered only if the processing succeed
@@ -319,7 +345,7 @@ class DonationController extends BaseController
                         $object->donation = new ResourcesDonation($donation);
 
                         // Register payment, even if FlexPay will
-                        $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
+                        $payment = Payment::where('order_number', $orderNumber)->first();
 
                         if (is_null($payment)) {
                             Payment::create([
