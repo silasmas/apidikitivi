@@ -215,7 +215,7 @@ class DonationController extends BaseController
                     $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $current_user->id;
 
                     // Create response by sending request to FlexPay
-                    $jsonRes = $api_manager::call('POST', $gateway_card, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA'), [
+                    $jsonRes = $api_manager::call('POST', $gateway_card, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA', [
                         'merchant' => 'DIKITIVI',
                         'reference' => $reference_code,
                         'amount' => $inputs['amount'],
