@@ -121,7 +121,7 @@ class DonationController extends BaseController
                     curl_close($ch); 
 
                     $jsonRes = json_decode($response); 
-                    $code = $jsonRes->code; // statut d'envoi du push
+                    $code = $jsonRes->code; // Push sending status
 
                     if ($code != '0') {
                         return $this->handleError(__('miscellaneous.error_label'), __('notifications.transaction_push_failed'), 400);
