@@ -82,76 +82,14 @@ class DonationController extends BaseController
             //     if ($current_user != null) {
             //         $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $inputs['user_id'];
 
-            //         // Create response by sending request to FlexPay
-            //         $jsonRes = $api_manager::call('POST', $gateway_mobile, config('services.flexpay.api_token'), [
-            //             'merchant' => 'DIKITIVI',
-            //             'type' => $request->transaction_type_id,
-            //             'phone' => $request->other_phone,
-            //             'reference' => $reference_code,
-            //             'amount' => $inputs['amount'],
-            //             'currency' => $inputs['currency'],
-            //             'callbackUrl' => getApiURL() . '/payment/store'
-            //         ], null, null, true);
-
-            //         if (!empty($jsonRes->error)) {
-            //             return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
-
-            //         } else {
-            //             $code = $jsonRes->code;
-
-            //             if ($code != '0') {
-            //                 try {
-            //                     $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
-
-            //                 } catch (\Throwable $th) {
-            //                     return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
-            //                 }
-
-            //                 return $this->handleError($jsonRes->code, $jsonRes->message, 400);
-
-            //             } else {
-            //                 $object = new stdClass();
-
-            //                 $object->result_response = [
-            //                     'message' => $jsonRes->message,
-            //                     'order_number' => $jsonRes->orderNumber
-            //                 ];
-
-            //                 // The donation is registered only if the processing succeed
-            //                 $donation = Donation::create($inputs);
-
-            //                 $object->donation = new ResourcesDonation($donation);
-
-            //                 // Register payment, even if FlexPay will
-            //                 $payment = Payment::where('order_number', $jsonRes->orderNumber)->first();
-
-            //                 if (is_null($payment)) {
-            //                     Payment::create([
-            //                         'reference' => $reference_code,
-            //                         'order_number' => $jsonRes->orderNumber,
-            //                         'amount' => $inputs['amount'],
-            //                         'phone' => $request->other_phone,
-            //                         'currency' => $inputs['currency'],
-            //                         'type_id' => $request->transaction_type_id,
-            //                         'status_id' => $code,
-            //                         'donation_id' => $donation->id,
-            //                         'user_id' => $inputs['user_id']
-            //                     ]);
-            //                 }
-
-            //                 return $this->handleResponse($object, __('notifications.create_donation_success'));
-            //             }
-            //         }
-
             //     } else {
             //         return $this->handleError(__('notifications.find_user_404'));
             //     }
 
             // } else {
                 $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-ANONYMOUS';
-
                 // Create response by sending request to FlexPay
-                $jsonRes = $api_manager::call('POST', $gateway_mobile, config('services.flexpay.api_token'), [
+                $data = array(
                     'merchant' => 'DIKITIVI',
                     'type' => $request->transaction_type_id,
                     'phone' => $request->other_phone,
@@ -159,16 +97,34 @@ class DonationController extends BaseController
                     'amount' => $inputs['amount'],
                     'currency' => $inputs['currency'],
                     'callbackUrl' => getApiURL() . '/payment/store'
-                ], null, null, true);
+                );
+                $data = json_encode($data);
+                $ch = curl_init();
 
-                if (!empty($jsonRes->error)) {
-                    return $this->handleError($jsonRes->error, $jsonRes->message, $jsonRes->status);
+                curl_setopt($ch, CURLOPT_URL, $gateway_mobile);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, Array(
+                    'Content-Type: application/json',
+                    'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA'
+                ));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
+
+                $response = curl_exec($ch);
+
+                if (curl_errno($ch)) {
+                    return $this->handleError(curl_errno($ch), __('notifications.transaction_failed'), 400);
 
                 } else {
-                    $code = $jsonRes->code;
+                    curl_close($ch); 
+
+                    $jsonRes = json_decode($response); 
+                    $code = $jsonRes->code; // statut d'envoi du push
 
                     if ($code != '0') {
-                        return $this->handleError($jsonRes->code, $jsonRes->message, 400);
+                        return $this->handleError(__('miscellaneous.error_label'), __('notifications.transaction_failed'), 400);
 
                     } else {
                         $object = new stdClass();
@@ -214,79 +170,6 @@ class DonationController extends BaseController
             //     if ($current_user != null) {
             //         $reference_code = 'REF-' . ((string) random_int(10000000, 99999999)) . '-' . $current_user->id;
 
-            //         $body = json_encode( array(
-            //             'authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzc3MjEyNjA5LCJzdWIiOiJmNmJjMWUzYTkxYTQzNTQzMjNmODc0YWY1NGZmNzUyMyJ9.n2VVIuubjSo1f5ZFB7UfR8K-ckT1cMPTN1saiY3NhLA",
-            //             'merchant' => 'DIKITIVI',
-            //             'reference' => $reference_code,
-            //             'amount' => $inputs['amount'],
-            //             'currency' => $inputs['currency'],
-            //             'description' => __('miscellaneous.bank_transaction_description'),
-            //             'callback_url' => getApiURL() . '/payment/store',
-            //             'approve_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0/' . $current_user->id,
-            //             'cancel_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1/' . $current_user->id,
-            //             'decline_url' => $request->app_url . '/donated/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2/' . $current_user->id,
-            //             'home_url' => $request->app_url . '/donation',
-            //         ));
-
-            //         $curl = curl_init('https://cardpayment.flexpay.cd/v1.1/pay');
-
-            //         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-            //         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-            //         $curlResponse = curl_exec($curl);
-
-            //         $jsonRes = json_decode($curlResponse,true);
-            //         $code = $jsonRes['code'];
-            //         $message = $jsonRes['message'];
-
-            //         if (!empty($jsonRes['error'])) {
-            //             return $this->handleError($jsonRes['error'], $message, $jsonRes['status']);
-
-            //         } else {
-            //             if ($jsonRes->code != '0') {
-            //                 try {
-            //                     $client->sms()->send(new \Vonage\SMS\Message\SMS($current_user->phone, 'DikiTivi', __('notifications.process_failed')));
-
-            //                 } catch (\Throwable $th) {
-            //                     return $this->handleError($th->getMessage(), __('notifications.process_failed'), 500);
-            //                 }
-
-            //                 return $this->handleError($code, $message, 400);
-
-            //             } else {
-            //                 $url = $jsonRes['url'];
-            //                 $orderNumber = $jsonRes['orderNumber'];
-            //                 $object = new stdClass();
-
-            //                 $object->result_response = [
-            //                     'message' => $message,
-            //                     'order_number' => $orderNumber,
-            //                     'url' => $url
-            //                 ];
-
-            //                 // The donation is registered only if the processing succeed
-            //                 $donation = Donation::create($inputs);
-
-            //                 $object->donation = new ResourcesDonation($donation);
-
-            //                 // Register payment, even if FlexPay will
-            //                 $payment = Payment::where('order_number', $orderNumber)->first();
-
-            //                 if (is_null($payment)) {
-            //                     Payment::create([
-            //                         'reference' => $reference_code,
-            //                         'order_number' => $jsonRes->orderNumber,
-            //                         'amount' => $inputs['amount'],
-            //                         'currency' => $inputs['currency'],
-            //                         'type_id' => $request->transaction_type_id,
-            //                         'status_id' => $jsonRes->code,
-            //                         'donation_id' => $donation->id,
-            //                         'user_id' => $inputs['user_id']
-            //                     ]);
-            //                 }
-
-            //                 return $this->handleResponse($object, __('notifications.create_donation_success'));
-            //             }
             //         }
 
             //     } else {
