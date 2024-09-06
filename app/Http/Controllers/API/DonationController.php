@@ -115,7 +115,7 @@ class DonationController extends BaseController
                 $response = curl_exec($ch);
 
                 if (curl_errno($ch)) {
-                    return $this->handleError(curl_errno($ch), __('notifications.transaction_failed'), 400);
+                    return $this->handleError(curl_errno($ch), __('notifications.transaction_request_failed'), 400);
 
                 } else {
                     curl_close($ch); 
@@ -124,7 +124,7 @@ class DonationController extends BaseController
                     $code = $jsonRes->code; // statut d'envoi du push
 
                     if ($code != '0') {
-                        return $this->handleError(__('miscellaneous.error_label'), __('notifications.transaction_failed'), 400);
+                        return $this->handleError(__('miscellaneous.error_label'), __('notifications.transaction_push_failed'), 400);
 
                     } else {
                         $object = new stdClass();
