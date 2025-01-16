@@ -97,6 +97,6 @@ class Media extends Model
         }
 
         // Select the necessary columns and limit the results
-        return $query->select('medias.*')->limit(5)->get();
+        return $query->select('medias.*')->orderByDesc('media_session.created_at')->limit(5)->get();
     }
 }
