@@ -98,6 +98,6 @@ class Media extends Model
         }
 
         // Select the necessary columns and limit the results
-        return $query->select('media_session.*', 'medias.*', 'sessions.*')->limit(5)->get();
+        return $query->select('medias.*')->limit(5)->get();
     }
 }
