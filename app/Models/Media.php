@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @author Xanders
@@ -74,5 +75,29 @@ class Media extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Current trends
+     */
+    public static function getMediaSessions($year, $for_youth)
+    {
+        // Start the query with the association table
+        $query = DB::table('media_session') // Association table
+            ->leftJoin('medias', 'media_session.media_id', '=', 'medias.id') // Join with the medias table
+            ->leftJoin('sessions', 'media_session.session_id', '=', 'sessions.id') // Join with sessions table
+            ->whereYear('media_session.created_at', $year) // Dynamic year filter
+            ->orWhereNull('media_session.session_id'); // Include records where "session_id" is null
+
+        // Add condition for "for_youth" and "is_public" dynamically
+        if ($for_youth == 0) {
+            $query->where('medias.is_public', 1);
+
+        } else {
+            $query->where([['medias.for_youth', $for_youth], ['medias.is_public', 1]]);
+        }
+
+        // Select the necessary columns and limit the results
+        return $query->select('media_session.*', 'medias.*', 'sessions.*')->limit(5)->get();
     }
 }
