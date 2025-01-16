@@ -83,11 +83,10 @@ class Media extends Model
     public static function getMediaSessions($year, $for_youth)
     {
         // Start the query with the association table
-        $query = DB::table('media_session') // Association table
-            ->leftJoin('medias', 'media_session.media_id', '=', 'medias.id') // Join with the medias table
-            ->leftJoin('sessions', 'media_session.session_id', '=', 'sessions.id') // Join with sessions table
-            ->whereYear('media_session.created_at', $year) // Dynamic year filter
-            ->orWhereNull('media_session.session_id'); // Include records where "session_id" is null
+        $query = self::join('media_session', 'media_session.media_id', '=', 'medias.id')
+                        ->leftJoin('sessions', 'media_session.session_id', '=', 'sessions.id')
+                        ->whereYear('media_session.created_at', $year)
+                        ->orWhereNull('media_session.session_id');
 
         // Add condition for "for_youth" and "is_public" dynamically
         if ($for_youth == 0) {
