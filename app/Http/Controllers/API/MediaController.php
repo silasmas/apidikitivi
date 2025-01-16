@@ -530,7 +530,8 @@ class MediaController extends BaseController
     {
         $medias = Media::getMediaSessions($year, $for_youth);
 
-        return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, count($medias));
+        return $medias;
+        // return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), null, count($medias));
     }
 
     /**
