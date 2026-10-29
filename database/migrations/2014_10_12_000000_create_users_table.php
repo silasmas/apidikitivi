@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Base créée à partir d'un dump SQL : ne pas recréer une table existante.
+        if (Schema::hasTable('users')) {
+            return;
+        }
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -27,6 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        // Table issue du dump SQL de production : un rollback ne doit jamais la supprimer.
+        // Schema::dropIfExists('users');
     }
 };

@@ -102,6 +102,12 @@ class MediaController extends BaseController
 
         $media = Media::create($inputs);
 
+        $playback_fields = $this->playbackFields($request);
+
+        if (!empty($playback_fields)) {
+            $media->update($playback_fields);
+        }
+
         if ($inputs['belongs_to'] != null) {
             $media_parent = Media::find($inputs['belongs_to']);
 
@@ -460,6 +466,12 @@ class MediaController extends BaseController
             ]);
         }
 
+        $playback_fields = $this->playbackFields($request);
+
+        if (!empty($playback_fields)) {
+            $media->update(array_merge($playback_fields, ['updated_at' => now()]));
+        }
+
         if ($request->categories_ids == null) {
             if (count($media->categories) > 0) {
                 $media->categories()->detach();
@@ -605,6 +617,70 @@ class MediaController extends BaseController
         $count_all = Media::where([['belongs_to', $media_id], ['is_public', 1]])->count();
 
         return $this->handleResponse(ResourcesMedia::collection($medias), __('notifications.find_all_medias_success'), $medias->lastPage(), $count_all);
+    }
+
+    /**
+     * Get all episodes of a series, in watching order (season, episode, then creation).
+     * Unlike "find_by_belongs_to", the list is complete (not paginated).
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function episodes($id)
+    {
+        $series = Media::find($id);
+
+        if (is_null($series)) {
+            return $this->handleError(__('notifications.find_media_404'));
+        }
+
+        $episodes = Media::with(['type', 'categories'])
+                            ->where([['belongs_to', $series->id], ['id', '!=', $series->id], ['is_public', 1]])
+                            ->orderByRaw('season_number IS NULL, season_number')
+                            ->orderByRaw('episode_number IS NULL, episode_number')
+                            ->orderBy('id')
+                            ->get();
+
+        return $this->handleResponse(ResourcesMedia::collection($episodes), __('notifications.find_all_medias_success'), null, count($episodes));
+    }
+
+    /**
+     * Playback / recommendation fields from the Admin Media form (slide 9).
+     * Only the fields present in the request are returned, so a partial update never resets them.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    private function playbackFields(Request $request): array
+    {
+        $fields = [];
+
+        if ($request->has('age_range')) {
+            $fields['age_range'] = in_array($request->age_range, Media::AGE_RANGES, true) ? $request->age_range : null;
+        }
+
+        foreach (['is_autoplay_eligible', 'is_downloadable'] as $flag) {
+            if ($request->has($flag)) {
+                $fields[$flag] = filter_var($request->input($flag), FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+            }
+        }
+
+        foreach (['season_number', 'episode_number'] as $number) {
+            if ($request->has($number)) {
+                $fields[$number] = is_numeric($request->input($number)) ? max(0, (int) $request->input($number)) : null;
+            }
+        }
+
+        if ($request->has('faith_step')) {
+            $fields['faith_step'] = in_array($request->faith_step, Media::FAITH_STEPS, true) ? $request->faith_step : null;
+        }
+
+        if ($request->has('tags')) {
+            $tags = is_array($request->tags) ? $request->tags : explode(',', (string) $request->tags);
+            $fields['tags'] = array_values(array_filter(array_map(fn ($tag) => trim((string) $tag), $tags)));
+        }
+
+        return $fields;
     }
 
     /**

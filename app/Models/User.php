@@ -40,6 +40,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'last_connection' => 'datetime:Y-m-d H:i:s',
+        'preferred_themes' => 'array',
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s'
     ];
@@ -140,5 +141,40 @@ class User extends Authenticatable
     public function sessions()
     {
         return $this->hasMany(Session::class);
+    }
+
+    /**
+     * MANY-TO-ONE
+     * Several child profiles for a parent account
+     */
+    public function children()
+    {
+        return $this->hasMany(User::class, 'belongs_to');
+    }
+
+    /**
+     * ONE-TO-MANY
+     * One parent account for a child profile
+     */
+    public function parent()
+    {
+        return $this->belongsTo(User::class, 'belongs_to');
+    }
+
+    /**
+     * MANY-TO-ONE
+     * Several watch progress entries for a profile
+     */
+    public function watch_progress()
+    {
+        return $this->hasMany(WatchProgress::class);
+    }
+
+    /**
+     * Account holding the family (the parent itself, or the parent of a child profile).
+     */
+    public function familyOwner(): User
+    {
+        return $this->belongs_to != null ? ($this->parent ?? $this) : $this;
     }
 }

@@ -226,3 +226,35 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::delete('payment/{id}', 'App\Http\Controllers\API\PaymentController@destroy')->name('payment.api.destroy');
     Route::get('payment/find_by_phone/{phone_number}', 'App\Http\Controllers\API\PaymentController@findByPhone')->name('payment.api.find_by_phone');
 });
+/*
+|--------------------------------------------------------------------------
+| Dikitivi v2 : lecture, profils enfants, recommandations, logs
+|--------------------------------------------------------------------------
+ */
+Route::group(['middleware' => ['api', 'localization']], function () {
+    // Filtres Jeunesse administrables
+    Route::get('content_filter', 'App\Http\Controllers\API\ContentFilterController@index')->name('content_filter.api.index');
+    // Épisodes d'une série dans l'ordre (saison, épisode)
+    Route::get('media/{id}/episodes', 'App\Http\Controllers\API\MediaController@episodes')->whereNumber('id')->name('media.api.episodes');
+    // Logs de lecture / performance (visiteurs compris)
+    Route::post('playback_event/batch', 'App\Http\Controllers\API\PlaybackEventController@batch')->middleware('throttle:30,1')->name('playback_event.api.batch');
+});
+Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function () {
+    // Profils de la famille
+    Route::get('profiles', 'App\Http\Controllers\API\ProfileController@index')->name('profiles.api.index');
+    Route::post('profiles', 'App\Http\Controllers\API\ProfileController@store')->name('profiles.api.store');
+    Route::put('profiles/{id}', 'App\Http\Controllers\API\ProfileController@update')->whereNumber('id')->name('profiles.api.update');
+    Route::delete('profiles/{id}', 'App\Http\Controllers\API\ProfileController@destroy')->whereNumber('id')->name('profiles.api.destroy');
+    Route::post('profiles/{id}/switch', 'App\Http\Controllers\API\ProfileController@switchProfile')->whereNumber('id')->middleware('throttle:10,1')->name('profiles.api.switch');
+    // Code parental
+    Route::post('parental_code/verify', 'App\Http\Controllers\API\ProfileController@verifyParentalCode')->middleware('throttle:10,1')->name('parental_code.api.verify');
+    Route::put('parental_code', 'App\Http\Controllers\API\ProfileController@updateParentalCode')->middleware('throttle:10,1')->name('parental_code.api.update');
+    // Historique de lecture du profil connecté
+    Route::get('history', 'App\Http\Controllers\API\WatchProgressController@index')->name('history.api.index');
+    Route::put('history/{media_id}', 'App\Http\Controllers\API\WatchProgressController@update')->whereNumber('media_id')->name('history.api.update');
+    Route::post('history/sync', 'App\Http\Controllers\API\WatchProgressController@sync')->name('history.api.sync');
+    // Recommandations : signal "Commun"
+    Route::get('recommendation/common', 'App\Http\Controllers\API\RecommendationController@common')->name('recommendation.api.common');
+    // Tableau de bord des logs (Administrateur / Contrôleur)
+    Route::get('playback_event/stats', 'App\Http\Controllers\API\PlaybackEventController@stats')->name('playback_event.api.stats');
+});

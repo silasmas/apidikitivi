@@ -24,6 +24,34 @@ class Media extends Model
     protected $guarded = [];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'tags' => 'array',
+    ];
+
+    /**
+     * Values accepted by the "faith_step" field (Progression dans la foi, in order).
+     */
+    public const FAITH_STEPS = ['jesus', 'bible_stories', 'prayer', 'faith_character', 'worship_music', 'christian_life', 'series'];
+
+    /**
+     * Values accepted by the "age_range" field.
+     */
+    public const AGE_RANGES = ['3-5', '6-8', '9-11', '12+', 'all'];
+
+    /**
+     * MANY-TO-ONE
+     * Several episodes for a series
+     */
+    public function episodes()
+    {
+        return $this->hasMany(Media::class, 'belongs_to');
+    }
+
+    /**
      * MANY-TO-MANY
      * Several sessions for several medias
      */

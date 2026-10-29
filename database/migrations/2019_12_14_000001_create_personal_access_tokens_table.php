@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Base créée à partir d'un dump SQL : ne pas recréer une table existante.
+        if (Schema::hasTable('personal_access_tokens')) {
+            return;
+        }
+
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
             $table->morphs('tokenable');
@@ -28,6 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('personal_access_tokens');
+        // Table issue du dump SQL de production : un rollback ne doit jamais la supprimer.
+        // Schema::dropIfExists('personal_access_tokens');
     }
 };

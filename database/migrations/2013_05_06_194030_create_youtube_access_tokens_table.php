@@ -13,6 +13,11 @@ class CreateYoutubeAccessTokensTable extends Migration {
 	 */
 	public function up()
 	{
+		// Base créée à partir d'un dump SQL : ne pas recréer une table existante.
+		if (Schema::hasTable('youtube_access_tokens')) {
+		    return;
+		}
+
 		Schema::create('youtube_access_tokens', function(Blueprint $table)
 		{
 			$table->increments('id');
@@ -28,7 +33,8 @@ class CreateYoutubeAccessTokensTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('youtube_access_tokens');
+		// Table issue du dump SQL de production : un rollback ne doit jamais la supprimer.
+		// Schema::dropIfExists('youtube_access_tokens');
 	}
 
 }

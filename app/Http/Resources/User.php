@@ -48,6 +48,8 @@ class User extends JsonResource
             'password' => $this->password,
             'belongs_to' => $this->belongs_to,
             'parental_code' => $this->parental_code,
+            'autoplay_enabled' => (bool) ($this->autoplay_enabled ?? true),
+            'preferred_themes' => $this->preferred_themes ?? [],
             'email_verified_at' => $this->email_verified_at,
             'phone_verified_at' => $this->phone_verified_at,
             'remember_token' => $this->remember_token,
