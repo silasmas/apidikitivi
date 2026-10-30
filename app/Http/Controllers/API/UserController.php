@@ -85,7 +85,8 @@ class UserController extends BaseController
         $client = new \Vonage\Client($basic);
 
         $request->validate([
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            // e-mail facultatif à l'inscription (le téléphone suffit) ; s'il est fourni, il doit être valide et unique
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
         ]);
 
         // If "email" and "phone" are NULL, it means that it's a child. So, generate an email for him
