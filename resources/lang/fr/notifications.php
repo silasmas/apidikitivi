@@ -172,6 +172,8 @@ return [
     'confirm_password_error' => 'Veuillez confirmer votre mot de passe',
     'confirm_new_password' => 'Veuillez confirmer le nouveau mot de passe',
     'delete_user_success' => 'Utilisateur supprimé',
+    'delete_account_success' => 'Votre compte et toutes ses données ont été supprimés',
+    'delete_account_forbidden' => 'Seul le compte parent peut être supprimé',
     // PasswordReset
     'find_all_password_resets_success' => 'Réinitialisations des mots de passe trouvées',
     'find_password_reset_success' => 'Réinitialisation de mot de passe trouvée',

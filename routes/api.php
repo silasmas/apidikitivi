@@ -195,6 +195,8 @@ Route::group(['middleware' => ['api', 'auth:sanctum', 'localization']], function
     Route::get('user/find_by_id_card/not_null', 'App\Http\Controllers\API\UserController@findByIdCard')->name('user.api.find_by_id_card');
     Route::put('user/{id}', 'App\Http\Controllers\API\UserController@update')->whereNumber('id')->name('user.api.update');
     Route::delete('user/{id}', 'App\Http\Controllers\API\UserController@destroy')->whereNumber('id')->name('user.api.destroy');
+    // Suppression du compte connecté (et de ses profils enfants), depuis l'app
+    Route::delete('account', 'App\Http\Controllers\API\UserController@destroyAccount')->middleware('throttle:5,1')->name('account.api.destroy');
     Route::get('user/profile/{username}', 'App\Http\Controllers\API\UserController@profile')->name('user.api.profile');
     Route::get('user/find_by_role/{locale}/{role_name}', 'App\Http\Controllers\API\UserController@findByRole')->name('user.api.find_by_role');
     Route::get('user/find_by_not_role/{locale}/{role_name}', 'App\Http\Controllers\API\UserController@findByNotRole')->name('user.api.find_by_not_role');

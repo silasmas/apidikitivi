@@ -172,6 +172,8 @@ return [
     'confirm_password_error' => 'Please confirm your password',
     'confirm_new_password' => 'Please confirm the new password',
     'delete_user_success' => 'User deleted',
+    'delete_account_success' => 'Your account and all its data have been deleted',
+    'delete_account_forbidden' => 'Only the parent account can be deleted',
     // PasswordReset
     'find_all_password_resets_success' => 'Passwords resets found',
     'find_password_reset_success' => 'Password reset found',

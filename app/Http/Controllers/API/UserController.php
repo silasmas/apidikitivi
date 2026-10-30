@@ -824,6 +824,45 @@ class UserController extends BaseController
         return $this->handleResponse(ResourcesUser::collection($users), __('notifications.delete_user_success'));
     }
 
+    /**
+     * Suppression définitive du compte connecté, demandée depuis l'app (exigence App Store 5.1.1(v)).
+     * Supprime le compte parent et ses profils enfants. Les listes, vues, historiques et rôles partent
+     * en cascade (clés étrangères) ; les logs de lecture sont anonymisés.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyAccount(Request $request)
+    {
+        $account = $request->user();
+        // un profil enfant ne peut pas supprimer le compte familial
+        if ($account->belongs_to != null) {
+            return $this->handleError(null, __('notifications.delete_account_forbidden'), 403);
+        }
+
+        $users = User::where('belongs_to', $account->id)->get()->push($account);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($users) {
+            foreach ($users as $user) {
+                PersonalAccessToken::where('tokenable_id', $user->id)->delete();
+                Notification::where('user_id', $user->id)->delete();
+                if ($user->email) PasswordReset::where('email', $user->email)->delete();
+                if ($user->phone) PasswordReset::where('phone', $user->phone)->delete();
+                \Illuminate\Support\Facades\DB::table('playback_events')->where('user_id', $user->id)->update(['user_id' => null]);
+                $user->delete();
+            }
+        });
+
+        foreach ($users as $user) {
+            $directory = $_SERVER['DOCUMENT_ROOT'] . '/public/storage/images/users/' . $user->id;
+            if (Storage::exists($directory)) {
+                Storage::deleteDirectory($directory);
+            }
+        }
+
+        return $this->handleResponse(null, __('notifications.delete_account_success'));
+    }
+
     // ==================================== CUSTOM METHODS ====================================
     /**
      * Find by "username"
